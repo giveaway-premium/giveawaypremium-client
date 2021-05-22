@@ -17,12 +17,20 @@ class AboutUsScreen extends React.PureComponent {
   }
   constructor (props) {
     super(props)
-    this.state = {}
+    this.state = {
+      isShowSectionOne: false,
+      isShowSectionTwo: false
+    }
     this.myModal = React.createRef()
   }
 
   componentDidMount () {
-
+    setTimeout(() => {
+      this.setState({
+        isShowSectionOne: true,
+        isShowSectionTwo: true
+      })
+    }, 100)
   }
   componentDidUpdate () {
   }
@@ -35,12 +43,14 @@ class AboutUsScreen extends React.PureComponent {
   // }
 
   render () {
+    const { isShowSectionOne, isShowSectionTwo } = this.state
+
     return (
       <div className='home-page-container'>
         <div className='home-page-wrapper'>
           <div className='main-content radius-bottom'>
             <div className='wrapper'>
-              <div className='box-content-introduce'>
+              <div className={'box-content-introduce' + (isShowSectionOne ? ' show' : '')}>
                 <h2 className='text text-center text-color-0 txt-big-intro MB30'>Give Away</h2>
                 <h2 className='text text-left text-color-10 txt-small-intro MB15'>{`Là cộng đồng tái sử dụng đầu tiên và lớn nhất Việt Nam với hơn một triệu người dùng \nGive Away giúp các sản phẩm thanh lý nhanh chóng tìm được chủ mới phù hợp \nChính sách ký gửi rõ ràng và uy tín.`}</h2>
        
@@ -51,14 +61,21 @@ class AboutUsScreen extends React.PureComponent {
             </div>
           </div>
 
-          <div className='bg-black'>
+          <div className={'bg-black' + (isShowSectionTwo ? ' show' : '')}>
             <div className='main-content full-height'>
-              <div className='wrapper flex align-center direction-column'>
-                <div className='box-content-introduce'>
-                  <h2>Ý tưởng xây dựng cộng đồng tái sử dụng tại Việt Nam được Founder Give Away - Lê Diệp Hồng Loan lan toả từ năm 2013.</h2>
+              <div className='wrapper flex align-center direction-column justify-between'>
+                <div className={'box-content-introduce' + (isShowSectionOne ? ' show' : '')}>
+                  <h2 className='text txt-small-intro text-color-5 text-center'>{`\nFounder Give Away Lê Diệp Hồng Loan \n đã lan toả ý tưởng từ năm 2013`}</h2>
                 </div>
                 <img src={images.founderAvatar} className='founder-avatar' />
+              </div>
+            </div>
+          </div>
 
+          <div className='bg-white'>
+            <div className='main-content full-height'>
+              <div className='wrapper flex align-center direction-column justify-between'>
+                <img src={images.timeLine} className='time-line' />
               </div>
             </div>
           </div>

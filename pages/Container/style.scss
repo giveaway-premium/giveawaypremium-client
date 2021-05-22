@@ -4,7 +4,7 @@
     overflow: hidden !important;
 
     @media screen and (max-width: 500px) {
-        height: calc(100vh - 80px);
+        // height: calc(100vh - 80px);
     }
     #parallax {
         opacity: 0;

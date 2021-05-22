@@ -11,6 +11,7 @@ export const images = {
   successJson: require('static/Assets/Image/Lottie/success.json'),
   rightArrowJson: require('static/Assets/Image/Lottie/rightArrow.json'),
   founderAvatar: require('static/Assets/Image/founder-avater.jpeg'),
+  timeLine: require('static/Assets/Image/homeScreen/timeLine.jpg'),
 
   favicon: require('static/favicon.png'),
   threeDots: require('static/Assets/Image/Common/three-dots.svg'),

@@ -11,6 +11,7 @@ import { CloseOutlined, DownOutlined } from '@ant-design/icons'
 import Observer from 'common/observer'
 import { images } from 'config/images'
 import './style.scss'
+import { checkIsSigned } from 'common/function'
 
 class Header extends React.PureComponent {
   constructor (props) {
@@ -134,7 +135,9 @@ class Header extends React.PureComponent {
     const { locale, userData } = this.props
     const { isShowRightSideHeader } = this.state
     const { messages } = locale
-    const isSigned = false
+    const isAdminPage = this.props.router.asPath === '/admin'
+
+    const isSigned = checkIsSigned(userData)
 
     setTimeout(() => {
       this.setState({
@@ -145,6 +148,13 @@ class Header extends React.PureComponent {
     return (
       <div className='wrapper-custom-header'>
         {this.renderLeftSide()}
+        {isSigned && isAdminPage &&
+        <div className='flex align-center'>
+          <div className='status-on MR3' />
+          <h1 className='text text-bold'>
+            {userData && userData.name}
+          </h1>
+        </div>}
         <div className={'right-side'}>
           {this.renderMainNav()}
           <div className='ctn-btn-signin ML5'>

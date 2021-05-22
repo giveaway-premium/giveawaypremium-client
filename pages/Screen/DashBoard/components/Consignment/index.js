@@ -63,7 +63,7 @@ class Consignment extends React.PureComponent {
       const res = await GapService.getConsignmentID()
       if (res && res.results && res.results.length > 0) {
         this.setState({
-          allInfoTag: res.results,
+          allInfoTag: res.results.reverse(),
           isLoadingTags: false
         }, console.log(this.state))
       } else {
