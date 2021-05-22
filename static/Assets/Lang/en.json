@@ -1,0 +1,56 @@
+{
+  "signIn": "Sign in",
+  "warnInternerOffline": "Keyring currently works in Offline mode. Please check your network connection!!",
+  "warnInternerOnline": "Internet connection is back",
+  "txtWarningActiveMetaMask": "Please activate wallet first.",
+  "txtWarningInstallMetaMask": "Please install Pantograph first.",
+  "txtWarningSigninMetaMaskError": "Sign in Error. Please try again!",
+  "networkNotMatched": "Network is not matched. Please check the network of your application.",
+  "common": {
+    "back": "Back",
+    "backToHome": "Back to Homepage",
+    "yes": "Yes",
+    "no": "No",
+    "next": "Next",
+    "uploading": "Uploading...",
+    "create": "Create",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  },
+  "form": {
+    "pleaseUseOnlyNumber": "Please use only number.",
+    "pleaseInputNumber": "Please input a number!",
+    "notSupport": "File type is not support",
+    "notSupportVideo": "File type is not support! Only support MP4 or MOV file type",
+    "smallerThan2MB": "File size must smaller than 10MB!",
+    "smallerThan10MB": "File size must smaller than 10MB!",
+    "uploadVideoFailed": "Uploading video is failed. Please try to upload again!"
+  },
+  "errors": {
+    "deniedTransaction": "Error: User denied transaction signature",
+    "somethingWrong": "Something went wrong with your transaction. Please wait a minute and try again.",
+    "insufficientBalance": "Insufficient balance",
+    "invalidAddress": "Invalid address (42 characters start with 0x)",
+    "numberMustGreaterThanZero": "The number must be greater than zero!",
+    "numberMustGreaterThan": "The number must be greater than [number]!",
+    "noLogin": "Please register (Sign in) to the website first",
+    "txtNoLogin": "register (Sign in)",
+    "notAllowed": "You are not allowed to create NFT",
+    "pageNotFound": "SORRY! PAGE NOT FOUND",
+    "weCanNotSeem": "We can't seem to find the page you’re looking for."
+  },
+  "policy": {
+    "title": "Privacy Policy"
+  },
+  "terms": {
+    "title": "Terms of Service"
+  },
+  "connectApp": {
+    "connectWebsiteWith": "Connect this website with",
+    "pantographExtension": "Pantograph extension",
+    "useAppToScanQRcode": "To connect, please use KeyRing app to scan this QR code.",
+    "disconnect": "Disconnect",
+    "copyToClipboard": "Copy to clipboard",
+    "qrCodeWillUnavailable": "The QR Code above will become unavailable if you turn this off"
+  }
+}

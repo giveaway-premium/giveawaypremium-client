@@ -1,0 +1,55 @@
+{
+  "signIn": "登录",
+  "warnInternerOffline": "Keyring当前为离线模式运行。请检查网络连接",
+  "warnInternerOnline": "网络连接已恢复",
+  "txtWarningActiveMetaMask": "首先请激活您的钱包。",
+  "txtWarningInstallMetaMask": "请先安装Pantograph。",
+  "txtWarningSigninMetaMaskError": "无法登录。请重新尝试",
+  "common": {
+    "back": "返回",
+    "backHomepage": "返回首页",
+    "yes": "同意",
+    "no": "不同意",
+    "next": "下一步",
+    "uploading": "上传...",
+    "create": "创建",
+    "cancel": "取消",
+    "confirm": "Confirm"
+  },
+  "form": {
+    "pleaseUseOnlyNumber": "Please use only number.",
+    "pleaseInputNumber": "请输入数字!",
+    "notSupport": "不支持文件的类型",
+    "notSupportVideo": "不支持文件的类型",
+    "smallerThan2MB": "请将图片小于2MB",
+    "smallerThan10MB": "请将图片小于10MB",
+    "uploadVideoFailed": "无法上传。请重新尝试。"
+  },
+  "errors": {
+    "deniedTransaction": "发生了错误。用户拒绝了交易签名",
+    "somethingWrong": "出了些问题。请稍后再进行尝试。",
+    "insufficientBalance": "余额不足",
+    "invalidAddress": "无效的地址（从0x开始的42文字）",
+    "numberMustGreaterThanZero": "数字必须为大于0！",
+    "numberMustGreaterThan": "数字必须为大于[number]！",
+    "noLogin": "请您先登录",
+    "txtNoLogin": "登录",
+    "notAllowed": "You are not allowed to create NFT",
+    "pageNotFound": "SORRY! PAGE NOT FOUND",
+    "weCanNotSeem": "We can't seem to find the page you’re looking for."
+  },
+  "payment": {
+    "confirmPayment": "确认付款",
+    "waitingBlockchain": "等待来自区块链的确认...",
+    "createNFTHasStarted": "您的NFT已创建。",
+    "createNFTSucceeded": "您的NFT已创建。",
+    "pleaseWaitForNftName": "在您的账户显示[nftName]之前请耐心等候。",
+    "tomoNetworkProcessing": "Tomo网络正在处理您的交易，请稍候。"
+  },
+  "policy": {
+    "title": "隐私政策"
+  },
+  "terms": {
+    "title": "使用规章"
+  }
+}

@@ -1,0 +1,102 @@
+.consignment-home-container {
+    width: 100%;
+    height: calc(100vh - 125.5px);
+    max-width: 1000px;
+    margin: auto;
+    .body-box {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        .consignment-txt {
+            opacity: 0;
+            pointer-events: none;
+            font-size: 50px;
+            margin-bottom: 3vh;
+
+            transform: translate(-150px, 0px);
+            transition: 1s all;
+
+            &.show {
+                pointer-events: unset;
+                opacity: 1;
+                cursor: pointer;
+                transform: translate(0);
+            }
+
+            &:hover {
+              transform: translate(0, -10px) !important;
+            }
+
+            @media screen and (max-width: 768px) {
+                font-size: 9vw;
+            }
+        }
+
+        .info-search-txt {
+            pointer-events: none;
+            opacity: 0;
+            font-size: 50px;
+            margin-bottom: 3vh;
+
+            transform: translate(-150px, 0px);
+            transition: 1.5s all;
+        
+            &.show {
+              pointer-events: unset;
+              opacity: 1;
+              cursor: pointer;
+              transform: translate(0);
+            }
+
+            &:hover {
+              pointer-events: unset;
+              transform: translate(0, -10px) !important;
+            }
+
+            @media screen and (max-width: 768px) {
+                font-size: 9vw;
+              }
+        
+        }
+
+        .instrument-txt {
+            pointer-events: none;
+            opacity: 0;
+            font-size: 50px;
+
+            transform: translate(-150px, 0px);
+            transition: 2s all;
+
+            &.show {
+                pointer-events: unset;
+                opacity: 1;
+                cursor: pointer;
+                transform: translate(0);
+            }
+
+            &:hover {
+                transform: translate(0, -10px) !important;
+              }
+
+              @media screen and (max-width: 768px) {
+                font-size: 9vw;
+              }
+
+        }
+    }
+
+    .content-box {
+        transform: translate(-50vw, 0px);
+        transition: 1.5s all;
+        position: fixed;
+        &.show {
+            position: relative;
+            opacity: 1;
+            transform: translate(0);
+        }
+    }
+}

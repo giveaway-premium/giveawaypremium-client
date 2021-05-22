@@ -1,0 +1,9 @@
+@import "pages/Style/variable.scss";
+
+.settingScreen-container {
+    padding: 20px 10px 10px 10px;
+    .title-setting {
+        font-weight: 700;
+        font-size: map-get($font-sizes, '5x');
+    }
+}

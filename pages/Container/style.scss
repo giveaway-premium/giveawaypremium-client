@@ -1,0 +1,34 @@
+.main-base-container {
+    background: transparent !important;
+    width: 100vw;
+    overflow: hidden !important;
+
+    @media screen and (max-width: 500px) {
+        height: calc(100vh - 80px);
+    }
+    #parallax {
+        opacity: 0;
+        position: absolute;
+        width: 100%;
+        height: 100vh;
+        background-image: url(../../static/Assets/Image/Icon/ALogoWhite.svg);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-position: 22.34% 69.745%, 47.34% 49.745%, 47.34% 49.745%;
+
+        @media screen and (max-width: 500px) {
+            height: calc(100vh - 125.5px);
+            background-position: 25% 50%;
+            background-size: auto 120vh;
+        }
+      }
+    .ant-layout {
+        background: transparent;
+    }
+    .base-content {
+        // margin-top: 10px;
+        .base-container {
+            // min-height: calc(100vh - 102px);
+        }
+    }
+}

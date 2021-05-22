@@ -1,0 +1,20 @@
+
+.consignment-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    max-width: 800px;
+    .button-confirm-box { 
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .button-confirm-box {
+        .ant-form-item-control-input-content {
+            display: flex !important;
+            justify-content: center !important;
+        }
+    }
+}

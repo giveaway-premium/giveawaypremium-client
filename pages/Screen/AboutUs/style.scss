@@ -1,0 +1,697 @@
+@import 'pages/Style/variable.scss';
+
+.home-page-container {
+
+  .home-page-wrapper {
+    .box-video {
+      text-align: center;
+      margin: 75px 0 0px 0;
+      @media screen and (max-width: 768px) {
+        margin: 35px 0 0 0;
+        padding: 0 16px;
+      }
+      video {
+        width: 500px;
+        @media screen and (max-width: 768px) {
+          width: 100%;
+        }
+      }
+    }
+    .text-custom {
+      text-align: center;
+      align-self: center;
+    }
+    .announce-wrapper {
+      background-color:#F2C94C;
+      padding: 20px 0;
+      margin: 0 auto;
+      text-align: center;
+      .text-pre-line {
+        @media screen and (max-width: 768px) {
+          padding: 20px 20px;
+          white-space: normal;
+        }
+      }
+    }
+    .main-content {
+    //   height: 100vh;
+      padding: 25px 20px;
+      @media screen and (max-width: 767px) {
+        padding: 35px 16px 35px 20px;
+      }
+
+      &.full-height {
+          min-height: 100vh;
+      }
+
+      &.radius-bottom {
+        border-bottom-left-radius: 30px;
+        border-bottom-right-radius: 30px;
+      }
+    }
+    .intro {
+      margin: 0 auto;
+      text-align: center;
+      display: block;
+      max-width: 100%;
+    }
+    .wrapper {
+        .founder-avatar {
+            width: 100%;
+            height: 50vh;
+            object-fit: contain;
+        }
+      @media screen and (max-width: 768px) {
+        padding: 0;
+      }
+    }
+    .bg-yellow {
+      background-color: #FFFE;
+    }
+    .bg-gray {
+      background-color: #F2F2F2;
+    }
+    .bg-black {
+      background-color: #000;
+    }
+    .cardIntroBox {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      padding: 3vh 0;
+      .cardHomeIntro1 {
+        width: 15vw;
+      }
+
+      .cardHomeIntro2 {
+        width: 15vw;
+      }
+
+      .cardHomeIntro4 {
+        width: 15vw;
+      }
+
+      .cardHomeIntro5 {
+        width: 15vw;
+      }
+
+
+      .cardHomeIntroPhone {
+        width: 20vw;
+        margin: 0 10px;
+      }
+    }
+    .txt-big-intro {
+      font-size: 5vw;
+      line-height: 60px;
+      font-weight: 600;
+      white-space: pre-line;
+      @media screen and (max-width: 768px) {
+        font-size: 19px;
+        line-height: 28px;
+        font-weight: 700;
+      }
+    }
+    .txt-small-intro {
+      font-size: 1.8vw;
+      white-space: pre-line;
+      @media screen and (max-width: 768px) {
+        font-size: 3.5vw;
+        font-weight: 700;
+      }
+    }
+    .box-content-introduce {
+      margin: 20px 0;
+      @media screen and (max-width: 768px) {
+        margin: 0;
+      }
+      .box-img {
+        margin-top: 10px;
+        @media screen and (max-width: 768px) {
+          margin-top: 0;
+        }
+      }
+      .box-under-image {
+        display: flex; 
+        flex-direction: row; 
+        flex-wrap: nowrap; 
+        justify-content: flex-end; 
+        align-items: baseline; 
+        align-content: center; 
+        margin-top: -6px;
+        @media screen and (max-width: 768px) {
+          margin-top: 5px;
+        }
+        &-content {
+          > p {
+            font-size: 24px;
+            @media screen and (max-width: 768px) {
+              font-size: 12px;
+            }
+          }
+        }
+      }
+      .box-groups-artists {
+        &-txtHead {
+          font-size: 24px;
+          @media screen and (max-width: 768px) {
+            font-size: 18px;
+            span {
+              display: block;
+            }
+          }
+        }
+        &-list {
+          li {
+            color: #000;
+            font-size: 16px;
+            margin-top: 20px;
+            font-weight: 400;
+          }
+        }
+      }
+    }
+    .box-content-specialised {
+      padding: 0;
+      @media screen and (max-width: 768px) {
+        padding: 0;
+      }
+      .box-text-top {
+        margin: 46px 0;
+        @media screen and (max-width: 768px) {
+          margin: 22px 0;
+        }
+        .txt-yoshi {
+          font-size: 64px;
+          @media screen and (max-width: 768px) {
+            font-size: 24px;
+          }
+        }
+        .txt-spec {
+          font-size: 36px;
+          @media screen and (max-width: 768px) {
+            font-size: 18px;
+          }
+        }
+        .txt-enjoy {
+          font-size: 24px; 
+          @media screen and (max-width: 768px) {
+            font-size: 18px;
+            margin-top: 15px;
+          }
+        }
+      }
+      .box-phone-function {
+        padding: 105px 0;
+        color: #000;
+        @media screen and (max-width: 768px) {
+          padding: 0 50px;
+        }
+        @media screen and (min-width: 320px) and (max-width: 414px) {
+          padding: 0 30px
+        }
+        .txt-function {
+          font-size: 24px;
+          @media screen and (max-width: 768px) {
+            font-size: 18px;
+          }
+        }
+      }
+      .img-phone {
+        text-align: right;
+        @media screen and (max-width: 768px) {
+          text-align: center;
+        }
+      }
+      .block-social-intro {
+        margin: 38px auto;
+        display: flex;
+        @media screen and (max-width: 567px) {
+          margin-top: 15px;
+        }
+        a {
+          display: flex; 
+          flex-direction: row; 
+          flex-wrap: wrap; 
+          align-items: center; 
+          align-content: center; 
+          width: 100%;
+          padding: 0 20px;
+          &.col-1 {
+            justify-content: flex-end; 
+          }
+          &.col-2 {
+            justify-content: flex-start; 
+          }
+          @media screen and (max-width: 768px) {
+            justify-content: space-around; 
+            padding: 0 5px;
+          }
+        }
+      }
+      .box-img {
+        margin-top: 85px;
+        @media screen and (max-width: 768px) {
+          margin-top: 32px;
+        }
+      }
+    }
+    .box-content-what {
+      .text-real {
+        font-size: 30px;
+        text-align: center;
+        width: 100%;
+        margin: 0 auto;
+        @media screen and (max-width: 768px) {
+          font-size: 18px;
+          width: 100%
+        }
+      }
+      .box-content-edition {
+        .box-process {
+          display: flex; 
+          flex-direction: row; 
+          flex-wrap: wrap; 
+          justify-content: center; 
+          align-items: center; 
+          align-content: space-around; 
+          margin-top: 42px;
+          .txt-edition, .txt-real {
+            font-size: 18px;
+            margin-bottom: 24px;
+            text-align: center;
+            line-height: 22px;
+            @media screen and (max-width: 768px) {
+              font-size: 16px;
+              margin-bottom: 12px;
+            }
+          }
+          .box-img {
+            text-align: center;
+          }
+          .txt-real {
+            margin-top: 24px;
+            @media screen and (max-width: 768px) {
+              margin-top: 12px;
+            }
+          }
+          .col-arrow {
+            text-align: center;
+            @media screen and (max-width: 768px) {
+              margin: 22px 0;
+            }
+          }
+          .txt-action {
+            position: absolute;
+            left: 0;
+            float: left;
+            // margin-top: 40px;
+            @media screen and (max-width: 768px) {
+              float: none;
+            }
+          }
+        }
+      }
+      .box-content-experience {
+        margin-top: 200px;
+        @media screen and (max-width: 768px) {
+          margin-top: 120px;
+        }
+        &__txt-big, span {
+          font-size: 28px;
+          width: 80%;
+          margin: 0 auto;
+          @media screen and (max-width: 768px) {
+            font-size: 18px;
+            width: 100%;
+          }
+        }
+        .box-img-control {
+          display: flex;
+          justify-content: center;
+          margin-top: 30px;
+          .box-control {
+            text-align: center;
+            padding-top: 65px;
+            @media screen and (min-width: 568px) and (max-width: 768px) {
+              padding: 0 100px
+            }
+            @media screen and (max-width: 768px) {
+              padding-top: 0;
+            }
+            .box-arrow {
+              margin-top: 40px;
+              @media screen and (max-width: 768px) {
+                margin-top: 20px;
+              }
+            }
+            &__turn {
+              margin-bottom: 20px;
+              @media screen and (max-width: 768px) {
+                margin-bottom: 0;
+              }
+            }
+          }
+        }
+      }
+    }
+    .box-content-receive {
+      .txt-receive, span {
+        font-size: 36px;
+        width: 100%;
+        margin: 23px auto 40px;
+        text-align: center;
+        @media screen and (max-width: 768px) {
+          font-size: 18px;
+          width: 100%;
+          margin-bottom: 27px;
+        }
+        @media screen and (max-width: 413px) {
+          width: 100%
+        }
+      }
+      .txt-hidden {
+        display: inline;
+        @media screen and (max-width: 768px) {
+          display: none;
+        }
+      }
+      .box-img {
+        padding: 10px;
+        img {
+          border-radius: 10px;
+          width: 100%;
+        }
+        .lbl-number {
+          height: 20px;
+          width: 20px;
+          background: #000;
+          font-size: 12px;
+          color: #fff;
+          font-weight: 700;
+          text-align: center;
+          border-radius: 50%;
+          padding: 4px 8px;
+          margin-right: 5px;
+        }
+      }
+      .txt-small-recevie {
+        font-size: 18px;
+        font-weight: 400 !important;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        @media screen and (max-width: 768px) {
+          font-size: 3.2vw !important;
+          margin-top: 14px;
+          margin-bottom: 10px;
+        }
+      }
+      .row-limited {
+        margin-top: 44px;
+        text-align: center;
+        @media screen and (max-width: 768px) {
+          margin-top: 22px;
+        }
+        &__algin-center {
+          display: flex;
+          align-items: center;
+          justify-content: center
+        }
+      }
+      .txt-buy {
+        font-size: 18px;
+        margin: 24px 0 30px;
+        font-weight: 400;
+        @media screen and (max-width: 768px) {
+          font-size: 16px;
+        }
+      }
+    }
+    .box-content-bonus, .box-content-card-market {
+      .txt-sm {
+        padding-right: 30px;
+        @media screen and (max-width: 768px) {
+          padding-right: 0;
+        }
+      }
+    }
+    .box-content-card-market {
+      .box-main-info {
+        .txt-big {
+          margin-right: 65px;
+        }
+      }
+    }
+    .box-content-bonus {
+      .box-main-info {
+        .txt-big {
+          @media screen and (max-width: 768px) {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+    .box-content-buy {
+      .txt-big {
+        font-size: 64px;
+        @media screen and (max-width: 768px) {
+          font-size: 24px;
+        }
+      }
+      .txt-small {
+        font-size: 34px;
+        margin: 30px 0 40px;
+        @media screen and (max-width: 768px) {
+          font-size: 18px;
+          margin: 17px 0;
+        }
+      }
+      .txt-xs {
+        font-size: 18px;
+        text-align: center;
+        @media screen and (max-width: 768px) {
+          font-size: 16px;
+          text-align: left;
+        }
+      }
+      .yoshimoto {
+        margin: 50px 0;
+        @media screen and (max-width: 768px) {
+          margin: 25px 0;
+        }
+        .spacing {
+          display: block;
+          text-align: center;
+          padding: 0 20px;
+          @media screen and (max-width: 768px) {
+            margin-bottom: 27px;
+            padding: 0;
+          }
+        }
+      }
+    }
+    .box-main-info {
+      display: flex;
+      align-items: flex-end;
+      .txt-big {
+        margin-bottom: 20px;
+        font-size: 55px;
+        line-height: 55px;
+        @media screen and (max-width: 768px) {
+          margin-bottom: 17px;
+          font-size: 24px;
+          line-height: 29px;
+        }
+      }
+      .txt-md {
+        margin-bottom: 25px;
+        font-size: 28px;
+        @media screen and (max-width: 768px) {
+          margin-bottom: 15px;
+          font-size: 18px;
+        }
+      }
+      .txt-sm {
+        font-size: 18px;
+        font-weight: 400;
+        @media screen and (max-width: 768px) {
+          font-size: 16px;
+          margin-bottom: 25px;
+        }
+      }
+      .txt-under-img {
+        margin-top: 7px;
+        font-size: 18px;
+        font-weight: 400;
+        @media screen and (max-width: 768px) {
+          font-size: 16px;
+        }
+      }
+    }
+    .box-content-board {
+      .txt-xs {
+        font-size: 18px;
+        margin: 36px auto 100px;
+        width: 80%;
+        text-align: center;
+        @media screen and (max-width: 768px) {
+          font-size: 16px;
+          margin: 26px 0;
+          width: 100%;
+          text-align: left;
+        }
+      }
+    }
+    .box-content-ranking {
+      ul li, ul li p {
+        font-size: 16px;
+        @media screen and (max-width: 768px) {
+          font-size: 16px;
+        }
+      }
+      ul {
+        @media screen and (max-width: 768px) {
+          margin-bottom: 23px;
+        }
+        li{
+          p {
+            font-weight: 400;
+            margin-bottom: 20px;
+          }
+          &:last-child p {
+            margin-bottom: 0;
+          }
+        }
+      }
+      .box-main-info {
+        align-items: center;
+        .txt-md {
+          padding-right: 33px;
+          @media screen and (max-width: 768px) {
+            padding-right: 0;
+          }
+        }
+      }
+    }
+    .box-content-black {
+      height: 618px;
+      width: 100%;
+      position: relative;
+      @media screen and (max-width: 768px) {
+        height: 318px;
+      }
+      .lineBlack {
+        position: absolute;
+        top: -7px;
+        left: 0;
+        right: auto;
+        height: 30px;
+        width: 100%;
+        @media screen and (max-width: 768px) {
+          top: -10px;
+        }
+        @media screen and (max-width: 568px) {
+          top: -12px;
+        }
+      }
+      &__languages {
+        .logo {
+          width: 150px;
+          height: 150px;
+          @media screen and (max-width: 768px) {
+            width: 80px;
+            height: 80px;
+          }
+        }
+        .txt-big {
+          font-size: 48px;
+          line-height: 58px;
+          margin: 40px 0;
+          @media screen and (max-width: 768px) {
+            font-size: 24px;
+            line-height: 29px;
+            margin: 25px 0;
+          }
+        }
+        .ant-col:first-child {
+          @media screen and (max-width: 768px) {
+            text-align: right;
+          }
+          .btn-app {
+            float: right;
+            @media screen and (max-width: 768px) {
+              text-align: center;
+              margin-right: 0;
+              margin-left: -5px;
+              float: none;
+            }
+          }
+        }
+        .btn-gg {
+          text-align: left;
+          margin-left: 20px;
+          @media screen and (max-width: 768px) {
+            text-align: center;
+            margin-left: 5px;
+          }
+        }
+      }
+    }
+  }
+
+  .gift-cards {
+    margin: auto;
+    margin-top: 50px;
+    margin-bottom: 20px;
+    width: 80vw;
+    .gift-card-item {
+      background-color: map-get($background-colors, 'main');
+      border: none !important;
+      padding: 0 !important;
+      border-radius: 0px !important;
+      // border: 1px solid map-get($border-colors, 'main');
+      text-align: center;
+      // padding: 18px;
+      // @media screen and (max-width: 567px) {
+      //   padding: 10px;
+      // }
+      .gift-card-img {
+        margin-bottom: 18px;
+        img {
+          max-width: 100%;
+          height: auto;
+          cursor: pointer;
+        }
+      }
+      .gift-card-amount {
+        color: map-get($text-colors, 'main');
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        font-size: 18px;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .document-flex {
+    width: 80%;
+    margin: auto ;
+    margin-bottom: 50px;
+  }
+
+  .logoHomeWithText {
+    width: 250px;
+    height: 250px;
+    object-fit: contain;
+    margin: 30px 0;
+
+    @media screen and (max-width: 768px) {
+      width: 150px;
+      height: 150px;
+      margin: 0;
+      object-fit: contain;
+    }
+  }
+}

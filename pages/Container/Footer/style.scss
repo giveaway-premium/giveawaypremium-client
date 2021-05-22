@@ -1,0 +1,37 @@
+@use "sass:map";
+@import "pages/Style/variable.scss";
+
+.footer-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @media screen and (min-width: 568px) {
+    justify-content: flex-end;
+  }
+  .footer-nav {
+    display: flex;
+    border-bottom: none;
+    background: transparent;
+    margin: 0;
+    .footer-nav-item {
+      cursor: pointer;
+      padding: 0 20px;
+      line-height: 20px;
+      color: map-get($text-colors, 'color-1');
+      transition: color 0.3s;
+      border-left: 1px solid map-get($border-colors, 'color-1');
+      &:hover,
+      &.selected {
+        color: map-get($text-colors, "color-1");
+      }
+      &:first-child {
+        border-left: none;
+      }
+      @media screen and (max-width: 567px) {
+        &:first-child {
+          padding-left: 0;
+        }
+      }
+    }
+  }
+}
