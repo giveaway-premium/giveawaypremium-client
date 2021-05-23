@@ -1,0 +1,16 @@
+
+version: "3.2"
+
+services:
+  storage:
+    restart: "always"
+    container_name: giveaway-premium-client
+    build:
+      context: .
+      dockerfile: Dockerfile
+    hostname: "0.0.0.0"
+    environment:
+      - PORT=1337
+      - SERVER_URL=https://giveaway-premium.herokuapp.com/api
+    ports:
+      - "1337:1337"
