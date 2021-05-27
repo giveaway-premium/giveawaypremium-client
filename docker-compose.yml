@@ -12,5 +12,17 @@ services:
     environment:
       - PORT=1337
       - SERVER_URL=https://giveaway-premium.herokuapp.com/api
+      - NODE_PATH=src
+      - SKIP_PREFLIGHT_CHECK=true
+      - REACT_APP_STATE=PRODUCTION
+      - REACT_NEED_DEBUG=true
+      - PORT = 3003
+      - API_APP=https://giveaway-premium.herokuapp.com/api
+      - APP_ID=EJKfA5jFxiC98aMbvir0vSAuDHO4NQ7x
+      - APP_NAME=GIVEAWAY_PREMIUM
+      - JAVASCRIPT_KEY=npx9ZOI6fokHfvaJQjDjidPnogS8PCH0
+      - REST_API_KEY=6t7KSmWTkxxuvrF3a1jfqT6Vu0suWfEY
+      - SERVER_URL=https://giveaway-premium.herokuapp.com/api
     ports:
       - "1337:1337"
+      
