@@ -24,5 +24,5 @@ services:
       - REST_API_KEY=6t7KSmWTkxxuvrF3a1jfqT6Vu0suWfEY
       - SERVER_URL=https://giveaway-premium.herokuapp.com/api
     ports:
-      - "1337:1337"
+      - "127.0.0.1:1337:1337"
       
