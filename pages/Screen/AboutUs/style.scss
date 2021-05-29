@@ -91,7 +91,7 @@
           font-size: 18px;
           white-space: pre-line;
           @media screen and (max-width: 768px) {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 500;
           }
         }
@@ -162,10 +162,11 @@
       font-size: 1.8vw;
       white-space: pre-line;
       @media screen and (max-width: 768px) {
-        font-size: 3.5vw;
-        font-weight: 700;
+        font-size: 16px;
+        font-weight: 400;
       }
     }
+    //
     .box-content-introduce {
       margin: 20px 0;
       opacity: 0;

@@ -25,8 +25,16 @@ import '../static/jank-empty.css'
 import Lottie from 'react-lottie'
 import { images } from 'config/images'
 import { Router } from 'common/routes'
+import NProgress from 'nprogress'
 
 addLocaleData([...intlEN, ...intlJA, ...intlCN])
+
+Router.events.on('routeChangeStart', (url) => {
+  console.log(`Loading: ${url}`)
+  NProgress.start()
+})
+Router.events.on('routeChangeComplete', () => NProgress.done())
+Router.events.on('routeChangeError', () => NProgress.done())
 
 class GiveAway extends App {
   static async getInitialProps (ctx) {
@@ -73,12 +81,12 @@ class GiveAway extends App {
           // seoData,
           isLoading: false
         })
-      }, 2500)
+      }, 2000)
     }
   }
 
   componentWillUnmount () {
-    clearInterval(this.currentInterval)
+    // clearInterval(this.currentInterval)
   }
 
   render () {
@@ -95,9 +103,9 @@ class GiveAway extends App {
           <meta charSet='utf-8' />
           <link rel='shortcut icon' href={'https://i.ibb.co/pr24d1c/favicon.png'} />
           <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css' />
-          {/* <meta httpEquiv='Cache-Control' content='no-cache, no-store, must-revalidate' /> */}
-          {/* <meta httpEquiv='Pragma' content='no-cache' /> */}
-          {/* <meta httpEquiv='Expires' content='0' /> */}
+          <meta httpEquiv='Cache-Control' content='no-cache, no-store, must-revalidate' />
+          <meta httpEquiv='Pragma' content='no-cache' />
+          <meta httpEquiv='Expires' content='0' />
           <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no' />
           <meta name='theme-color' content='#000000' />
           <meta name='description' content='GiveAway Premium' />
@@ -108,6 +116,7 @@ class GiveAway extends App {
           <meta property='og:image:width' content='828' />
           <meta property='og:image:height' content='434' />
           <meta property='og:image:alt' content='GiveAway Premium' />
+          <link rel='stylesheet' type='text/css' href='/nprogress.css' />
         </Head>
         <NextSeo {...this.state.seoData} />
         {
@@ -119,7 +128,6 @@ class GiveAway extends App {
                 height='100%'
                 width='80%'
                 style={{ maxWidth: '300px' }}
-                duration={2000}
                 speed={1.2}
                 isStopped={false}
                 isPaused={false}

@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { Link } from 'common/routes'
 
 function CustomLink ({ route, children, disabled }) {
-  let className = children.props.className || ''
+  let className = children.props && children.props.className ? children.props.className : ''
   const router = useRouter()
   if (router.asPath === route) {
     className = `${className} selected`

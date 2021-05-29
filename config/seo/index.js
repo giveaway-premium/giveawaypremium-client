@@ -1,24 +1,20 @@
 const DEFAULT_SEO = {
-  title: 'Pantograph',
-  description: 'A future of token economy',
+  title: 'GiveAwayPremium',
+  description: 'GiveAwayPremium',
   openGraph: {
     type: 'website',
-    url: process.env.REACT_APP_URL,
-    title: 'Pantograph',
-    description: 'A future of token economy',
-    site_name: 'Pantograph',
+    url: 'https://giveAwaypremium.com.vn',
+    title: 'GiveAwayPremium',
+    description: 'GiveAwayPremium',
+    site_name: 'GiveAwayPremium.com.vn',
     images: [
       {
-        url: 'https://ipfs.pantograph.app/ipfs/QmeASCmkmGwyxsL6pswhvyV9R84NKgXSbL98VA5DmcdXs4?filename=default.png',
+        url: 'https://i.ibb.co/pr24d1c/favicon.png',
         width: 828,
         height: 434,
-        alt: 'Pantograph'
+        alt: 'GiveAwayPremium'
       }
     ]
-  },
-  twitter: {
-    handle: '@pantograph_io',
-    cardType: 'summary_large_image'
   }
 }
 export default DEFAULT_SEO
