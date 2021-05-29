@@ -22,11 +22,11 @@ ol, ul, dl {
 }
 
 span {
-  font-family: MyriadPro-Regular;
+  font-family: 'myriadpro-regular';
 }
 
 h1, h2, h3, h4 {
-  font-family: MyriadPro-Regular;
+  font-family: 'myriadpro-regular';
 }
 
 @for $i from 0 through 100 {
@@ -190,11 +190,11 @@ h1, h2, h3, h4 {
   }
 
   &.text-bold {
-    font-family: 'MyriadPro-Bold';
+    font-family: 'myriadpro-bold';
   }
 
   &.text-bold-500 {
-    font-family: 'MyriadPro-SemiBold';
+    font-family: 'myriadpro-semibold';
   }
 
   &.text-center {
