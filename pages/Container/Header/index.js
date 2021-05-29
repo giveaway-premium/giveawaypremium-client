@@ -79,7 +79,7 @@ class Header extends React.PureComponent {
 
         <CustomLink route='/'>
           <div className='logo cursor-pointer'>
-            <img className='' src={images.logoHeaderWhite} style={{ objectFit: 'contain', height: '100%', width: 'auto' }} />
+            <img className='' src={images.logoHeaderWhite} style={{ objectFit: 'contain', height: '100%', width: 'auto', marginRight: '10px' }} />
             <img className='' src={images.giveawayTextBlack} style={{ objectFit: 'contain', height: 'unset', width: 'unset' }} />
           </div>
         </CustomLink>
@@ -240,7 +240,7 @@ class Header extends React.PureComponent {
             <div className='top-box'>
               {/* <img className='MT30 MB30' width={100} src={images.logo} /> */}
               <h1 className='logo'>
-                <img width={90} src={images.logoHeaderBlack} style={{ objectFit: 'contain' }} />
+                <img width={90} src={images.logoHeaderWhite} style={{ objectFit: 'contain' }} />
               </h1>
               {this.renderMainNavMobile('vertical')}
 
