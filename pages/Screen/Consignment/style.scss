@@ -42,7 +42,7 @@
             font-size: 50px;
             margin-bottom: 3vh;
 
-            transform: translate(-150px, 0px);
+            transform: translate(-20vw, 0px);
             transition: 0.6s all;
         
             &.show {
@@ -90,7 +90,9 @@
     }
 
     .content-box {
-        transform: translate(-50vw, 0px);
+        opacity: 0;
+        pointer-events: none;
+        transform: translate(-100vw, 0px);
         transition: 0.5s all;
         position: fixed;
         &.show {
