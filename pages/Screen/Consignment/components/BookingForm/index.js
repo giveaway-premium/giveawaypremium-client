@@ -231,12 +231,10 @@ class ConsignmentScreen extends React.PureComponent {
             isHideUserForm: true,
             isConsigning: false
           }, () => {
-            setTimeout(() => {
-              this.setState({
-                step: 3,
-                isHideDayColumn: true
-              })
-            }, 1000)
+            this.setState({
+              step: 3,
+              isHideDayColumn: true
+            })
           })
         } else {
           this.setState({
@@ -307,7 +305,7 @@ class ConsignmentScreen extends React.PureComponent {
   }
 
   render () {
-    const { 
+    const {
       step, dayBooking, choosenDayCode, timeBooking, bookingDataCode,
       choosenTimeCode, formData, isHideUserForm, isConsigning, isHideDayColumn
     } = this.state

@@ -1,6 +1,14 @@
 @use "sass:map";
 @import "pages/Style/variable.scss";
 
+@import "pages/Screen/AboutUs/style.scss";
+@import "pages/Screen/HomeScreen/style.scss";
+@import "pages/Screen/Consignment/style.scss";
+@import "pages/Screen/Consignment/components/BookingForm/style.scss";
+@import "pages/Screen/Consignment/components/SearchForm/style.scss";
+@import "pages/Screen/DashBoard/style.scss";
+
+
 html, body {
   background: map-get($background-colors, page);
   overflow-x: hidden !important;

@@ -13,10 +13,13 @@ export const images = {
   founderAvatar: require('static/Assets/Image/founder-avater.jpeg'),
   timeLine: require('static/Assets/Image/homeScreen/timeLine.jpg'),
 
+  homeLoadingJson: require('static/Assets/Image/Lottie/homeLoadingBar.json'),
   favicon: require('static/favicon.png'),
   threeDots: require('static/Assets/Image/Common/three-dots.svg'),
   error: require('static/Assets/Image/Common/error.png'),
   pageNotFound: require('static/Assets/Image/Common/404.svg'),
+  pageNotFoundJson: require('static/Assets/Image/Common/404.json'),
+
   flags: {
     'en': require('static/Assets/Image/Flags/en.png'),
     'ja': require('static/Assets/Image/Flags/ja.png'),

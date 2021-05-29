@@ -21,12 +21,14 @@ import { getDataLocal } from 'common/function'
 import { Spin } from 'antd'
 import './Style/override.less'
 import './Style/global.scss'
+import '../static/jank-empty.css'
 import Lottie from 'react-lottie'
 import { images } from 'config/images'
+import { Router } from 'common/routes'
 
 addLocaleData([...intlEN, ...intlJA, ...intlCN])
 
-class Owarai extends App {
+class GiveAway extends App {
   static async getInitialProps (ctx) {
     if (ctx.ctx.req) {
       // const { dataItem } = ctx.ctx.req
@@ -66,10 +68,12 @@ class Owarai extends App {
 
       // in the case reload page: need to wait for detect connection method already in use before showing page
     } finally {
-      this.setState({
-        // seoData,
-        isLoading: false
-      })
+      setTimeout(() => {
+        this.setState({
+          // seoData,
+          isLoading: false
+        })
+      }, 2500)
     }
   }
 
@@ -80,9 +84,9 @@ class Owarai extends App {
   render () {
     const { Component, pageProps } = this.props
     const defaultOptions = {
-      loop: true,
+      loop: false,
       autoplay: true,
-      animationData: images.jo1LoadingJson
+      animationData: images.homeLoadingJson
     }
     return (
       <Provider store={store}>
@@ -96,27 +100,29 @@ class Owarai extends App {
           <meta httpEquiv='Expires' content='0' />
           <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no' />
           <meta name='theme-color' content='#000000' />
-          <meta name='description' content='JO1デジタルメッセージトレーディングカード' />
+          <meta name='description' content='GiveAway Premium' />
           <meta name='google-site-verification' content='D1F12tMnugBHZLza2KcmBK5gWmnC32N6e3U5pKw8DFk' />
-          <meta property='og:image' content='https://ipfsgw.jo1digitaltradingcards.com/ipfs/QmSNiZPVKH9kw4KLU5jdGgRiqwBZfBaugJNdKfTWqw5FoN?filename=JO1-share-thumbnail-NEW.png' />
-          <meta property='og:image:secure_url' content='https://ipfsgw.jo1digitaltradingcards.com/ipfs/QmSNiZPVKH9kw4KLU5jdGgRiqwBZfBaugJNdKfTWqw5FoN?filename=JO1-share-thumbnail-NEW.png' />
+          <meta property='og:image' content='https://i.ibb.co/pr24d1c/favicon.png' />
+          <meta property='og:image:secure_url' content='https://i.ibb.co/pr24d1c/favicon.png' />
           <meta property='og:image:type' content='image/png' />
           <meta property='og:image:width' content='828' />
           <meta property='og:image:height' content='434' />
-          <meta property='og:image:alt' content='JO1デジタルメッセージトレーディングカード' />
+          <meta property='og:image:alt' content='GiveAway Premium' />
         </Head>
         <NextSeo {...this.state.seoData} />
         {
           this.state.isLoading ? (
             <div className='loading-container'>
-              <Spin size='large' />
-              {/* <Lottie
+              {/* <Spin size='large' /> */}
+              <Lottie
                 options={defaultOptions}
-                height={60}
-                width={100}
+                height='100%'
+                width='80%'
+                duration={2000}
+                speed={1.2}
                 isStopped={false}
                 isPaused={false}
-              /> */}
+              />
             </div>
           ) : (
             <ReduxConnectIntl>
@@ -131,4 +137,4 @@ class Owarai extends App {
   }
 }
 
-export default Owarai
+export default GiveAway

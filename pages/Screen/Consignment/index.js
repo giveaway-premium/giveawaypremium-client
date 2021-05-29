@@ -62,7 +62,7 @@ class ConsignmentScreen extends React.PureComponent {
             isShowSearchForm: false,
             isShowBookingForm: true
           })
-        }, 1200)
+        }, 500)
         break
       case 'search':
         setTimeout(() => {
@@ -71,7 +71,7 @@ class ConsignmentScreen extends React.PureComponent {
             isShowSearchForm: true,
             isShowBookingForm: false
           })
-        }, 1200)
+        }, 500)
         break
       case 'instrument':
         setTimeout(() => {
@@ -80,7 +80,7 @@ class ConsignmentScreen extends React.PureComponent {
             isShowBookingForm: false,
             isShowInstrumentForm: true
           })
-        }, 1200)
+        }, 500)
         break
       }
     })
