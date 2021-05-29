@@ -54,7 +54,7 @@ class HomeCarousel extends React.Component {
         isHideText: true
       }, () => {
         setTimeout(() => {
-          Router.pushRoute(pageNameRoute)
+          Router.pushRoute(pageNameRoute, undefined, { shallow: true })
         }, 1000)
       })
     }

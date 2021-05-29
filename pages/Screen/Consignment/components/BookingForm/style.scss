@@ -22,7 +22,7 @@
 
       flex-basis: 20%;
       transform: translate(-50vw, 0px);
-      transition: 1s all;
+      transition: 0.5s all;
       opacity: 0;
 
       @media screen and (max-width: 700px) {
@@ -132,7 +132,7 @@
       .timeBooking-form {
         border-top: 1px solid #eceaea;
         padding-top: 2vh !important;
-        transition: 1s all;
+        transition: 0.5s all;
         transform: translate(-150px, 0px);
         opacity: 0;
         pointer-events: none;
@@ -145,7 +145,7 @@
       }
 
       .timeBooking-confirm {
-        transition: 1s all;
+        transition: 0.5s all;
         transform: translate(-150px, 0px);
         opacity: 0;
         pointer-events: none;
@@ -167,7 +167,7 @@
       }
 
       .timeBooking-footer {
-        transition: 1s all;
+        transition: 0.5s all;
         transform: translate(-150px, 0px);
         height: 10%;
         opacity: 0;

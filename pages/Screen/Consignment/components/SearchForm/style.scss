@@ -24,8 +24,8 @@
         max-width: 500px;
         position: absolute;
         opacity: 0;
-        transition: 2s all;
-        transform: translate(-50vw, 0px);
+        transition: 0.5s all;
+        transform: translate(-10vw, 0px);
 
         &.show {
           opacity: 1;
@@ -36,8 +36,8 @@
       }
 
       .searching-table {
-        transform: translate(-50vw, 0px);
-        transition: 2s all;
+        transform: translate(-10vw, 0px);
+        transition: 0.5s all;
         opacity: 0;
         position: absolute;
         // @media screen and (max-width: 700px) {
