@@ -258,7 +258,7 @@ class ConsignmentScreen extends React.PureComponent {
         this.setState({
           step: 2
         })
-      }, 500)
+      }, 200)
     })
   }
 
@@ -271,7 +271,7 @@ class ConsignmentScreen extends React.PureComponent {
         this.setState({
           step: 1
         })
-      }, 500)
+      }, 200)
     })
   }
 

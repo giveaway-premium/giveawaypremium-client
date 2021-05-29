@@ -64,7 +64,7 @@
         }
 
         .instrument-txt {
-            pointer-events: none;
+            // pointer-events: none;
             opacity: 0;
             font-size: 50px;
 
@@ -91,7 +91,7 @@
 
     .content-box {
         opacity: 0;
-        pointer-events: none;
+        // pointer-events: none;
         transform: translate(-100vw, 0px);
         transition: 0.5s all;
         position: fixed;

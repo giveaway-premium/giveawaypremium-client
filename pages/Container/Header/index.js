@@ -76,10 +76,13 @@ class Header extends React.PureComponent {
   renderLeftSide () {
     return (
       <div className='left-side'>
-        <h1 className='logo' onClick={this.backHome}>
-          <img src={images.logoHeaderWhite} style={{ objectFit: 'contain', height: '100%', width: 'auto' }} />
-          <img src={images.giveawayTextBlack} style={{ objectFit: 'contain', height: 'unset', width: 'unset' }} />
-        </h1>
+
+        <CustomLink route='/'>
+          <div className='logo cursor-pointer'>
+            <img className='' src={images.logoHeaderWhite} style={{ objectFit: 'contain', height: '100%', width: 'auto' }} />
+            <img className='' src={images.giveawayTextBlack} style={{ objectFit: 'contain', height: 'unset', width: 'unset' }} />
+          </div>
+        </CustomLink>
       </div>
     )
   }
