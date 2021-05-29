@@ -227,7 +227,9 @@ class Header extends React.PureComponent {
           width={'100%'}
           placement='right'
           onClose={this.closeDrawer}
-          closeIcon={<CloseOutlined />}
+          // closeicon={<CloseOutlined />}
+          maskClosable
+          closable={false}
           visible={this.state.isOpen}
           // drawerStyle={{ background: '#000' }}
         >
