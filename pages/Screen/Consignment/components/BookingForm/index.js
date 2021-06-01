@@ -106,7 +106,8 @@ class ConsignmentScreen extends React.PureComponent {
       isHideDayColumn: false,
       choosenDayCode: null,
       choosenTimeCode: null,
-      bookingDataCode: []
+      bookingDataCode: [],
+      isErrorMax: false
     }
     this.myModal = React.createRef()
   }
@@ -304,9 +305,25 @@ class ConsignmentScreen extends React.PureComponent {
     return '---'
   }
 
+  changeData = (e) => {
+    console.log('value')
+    console.log(e.target.value)
+    console.log(e.target.name)
+
+    if (e.target.value > 50 ) {
+      this.setState({
+        isErrorMax: true
+      })
+    } else {
+      this.setState({
+        isErrorMax: false
+      })
+    }
+  }
+
   render () {
     const {
-      step, dayBooking, choosenDayCode, timeBooking, bookingDataCode,
+      step, dayBooking, choosenDayCode, timeBooking, bookingDataCode, isErrorMax,
       choosenTimeCode, formData, isHideUserForm, isConsigning, isHideDayColumn
     } = this.state
     const layout = {
@@ -398,15 +415,19 @@ class ConsignmentScreen extends React.PureComponent {
                   </Col>
                 </Form.Item>
 
-                <Form.Item name='numberOfProduct' rules={[{ required: true, message: 'Vui lòng nhập số lượng hàng' }]} label='Số lượng Hàng Hoá'>
+                <Form.Item  
+                  name='numberOfProduct' 
+                  rules={[{ required: true, message: 'Vui lòng nhập số lượng hàng' }]} 
+                  label='Số lượng Hàng Hoá'
+                  {...isErrorMax ? { validateStatus: 'error', help:"Với số lượng hàng hoá trên 50, Xin vui lòng liên hệ số Zalo 0703334443" } : {}}
+                >
                   <Col sm={24} md={6}>
-                    <Input value={formData.numberOfProduct} size='small' defaultValue={1} type={'number'} id='numberOfProduct' key='numberOfProduct' onChange={this.changeData} allowClear placeholder='...' />
+                    <Input value={formData.numberOfProduct} size='small' defaultValue={1} name='numberOfProduct' type={'number'} id='numberOfProduct' key='numberOfProduct' onChange={this.changeData} placeholder='...' />
                   </Col>
                 </Form.Item>
-
                 <div className='flex justify-around align-center' style={{ width: '100%' }}>
                   <Button onClick={this.backStepOne} type='secondary'>Quay lại</Button>
-                  <Button loading={isConsigning} type='secondary' htmlType='submit'>Xác nhận</Button>
+                  <Button disabled={isErrorMax} loading={isConsigning} type='secondary' htmlType='submit'>Xác nhận</Button>
                 </div>
               </Row>
             </Form>

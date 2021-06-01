@@ -1,7 +1,7 @@
 .main-base-container {
     background: transparent !important;
     width: 100vw;
-    overflow: hidden !important;
+    // overflow:  !important;
 
     @media screen and (max-width: 500px) {
         // height: calc(100vh - 80px);
@@ -17,7 +17,7 @@
         background-position: 22.34% 69.745%, 47.34% 49.745%, 47.34% 49.745%;
 
         @media screen and (max-width: 500px) {
-            height: calc(100vh - 125.5px);
+            height: calc(100vh - 50px);
             background-position: 25% 50%;
             background-size: auto 120vh;
         }

@@ -8,8 +8,80 @@ import { images } from 'config/images'
 import { isMobile } from 'react-device-detect'
 import MyModal from 'pages/Components/MyModal'
 import Typist from 'react-typist'
+import ImageGallery from 'react-image-gallery';
 
 import './style.scss'
+
+const imagesPhoto = [
+  {
+    original: images.aLogoBlack,
+    thumbnail: images.aLogoBlack
+  },
+  {
+    original: images.store1,
+    thumbnail: images.store1
+  },
+  {
+    original: images.store2,
+    thumbnail: images.store2
+  },
+  {
+    original: images.store3,
+    thumbnail: images.store3
+  },
+  {
+    original: images.store4,
+    thumbnail: images.store5
+  },
+  {
+    original: images.store6,
+    thumbnail: images.store6
+  },
+  {
+    original: images.store7,
+    thumbnail: images.store7
+  },
+  {
+    original: images.store8,
+    thumbnail: images.store8
+  },
+  {
+    original: images.store8,
+    thumbnail: images.store8
+  },
+  {
+    original: images.store9,
+    thumbnail: images.store9
+  },
+  {
+    original: images.store10,
+    thumbnail: images.store10
+  },
+  {
+    original: images.store11,
+    thumbnail: images.store11
+  },
+  {
+    original: images.store12,
+    thumbnail: images.store12
+  },
+  {
+    original: images.store13,
+    thumbnail: images.store13
+  },
+  {
+    original: images.store14,
+    thumbnail: images.store14
+  },
+  {
+    original: images.store15,
+    thumbnail: images.store15
+  },
+  {
+    original: images.store16,
+    thumbnail: images.store16
+  }
+]
 
 class AboutUsScreen extends React.PureComponent {
   static async getInitialProps ({ query }) {
@@ -52,11 +124,15 @@ class AboutUsScreen extends React.PureComponent {
             <div className='wrapper'>
               <div className={'box-content-introduce' + (isShowSectionOne ? ' show' : '')}>
                 <h2 className='text text-center text-color-0 txt-big-intro MB30'>Give Away</h2>
-                <h2 className='text text-left text-color-10 txt-small-intro MB15'>{`Là cộng đồng tái sử dụng đầu tiên và lớn nhất Việt Nam với hơn một triệu người dùng \nGive Away giúp các sản phẩm thanh lý nhanh chóng tìm được chủ mới phù hợp \nChính sách ký gửi rõ ràng và uy tín.`}</h2>
+                <h2 className='text text-left text-color-10 txt-small-intro MB15'>{`Thời trang bền vững là một khái niệm vĩ mô trong những lần đầu bạn nghe đến, thế nhưng trong vai trò một khách hàng thông minh, chúng ta có rất nhiều cách đơn giản nhằm hưởng ứng tinh thần từ chủ nghĩa tái sử dụng.`}</h2>
 
-                <h2 className='text text-left text-color-10 txt-small-intro MB15'>Chúng tôi luôn hướng tới mục tiêu Thời Trang Bền Vững. Vậy đó là gì ?</h2>
-                <h2 className='text text-left text-color-10 txt-small-intro MB15'>{`Thời trang bền vững - thương hiệu sẽ tập trung vào việc mang đến các sản phẩm sử dụng chất liệu xanh, chất liệu hữu cơ hay tái chế, hoặc cắt giảm những chất thải phát sinh trong quá trình sản xuất và vận chuyển. Việc tái sử dụng thì khác - tập trung kéo dài tuổi thọ của vật chất, sản phẩm. Nhằm loại bỏ mọi tác động tiêu cực đến môi trường.`}</h2>
-                <h2 className='text text-left text-color-10 txt-small-intro MB15'>Thời trang bền vững là một khái niệm vĩ mô trong những lần đầu bạn nghe đến, thế nhưng trong vai trò một khách hàng thông minh, chúng ta có rất nhiều cách đơn giản nhằm hưởng ứng tinh thần từ chủ nghĩa tái sử dụng.</h2>
+                <h2 className='text text-left text-color-10 txt-small-intro MB15'>{'Thời trang bền vững - thương hiệu sẽ tập trung vào việc mang đến các sản phẩm sử dụng chất liệu xanh, chất liệu hữu cơ hay tái chế, hoặc cắt giảm những chất thải phát sinh trong quá trình sản xuất và vận chuyển. Việc tái sử dụng thì khác - tập trung kéo dài tuổi thọ của vật chất, sản phẩm. Nhằm loại bỏ mọi tác động tiêu cực đến môi trường.'}</h2>
+                <h2 className='text text-left text-color-10 txt-small-intro MB15'>{`Đến thời điểm hiện tại, chuỗi Give Away đã có mặt tại Quận 1, Quận 3, Quận 10, Quận 7, Bình Thạnh, Gò Vấp, Tân Phú, Thủ Đức và các tỉnh thành khác như Biên Hoà, Bình Dương, Đà Nẵng.\n
+                  Give Away có ba phân khúc chính:\n
+                  - Give Away dành cho Học Sinh Sinh Viên\n
+                  - Give Away Kid dành cho Mẹ và Bé\n
+                  - Give Away Premium chuyên thanh lý sản phẩm cao cấp, chính hãng`}</h2>
+                <h2 className='text text-left text-color-10 txt-small-intro MB15'>Là cộng đồng tái sử dụng đầu tiên và lớn nhất Việt Nam với hơn một triệu người dùng - Give Away giúp các sản phẩm thanh lý nhanh chóng tìm được chủ mới phù hợp. Chính sách ký gửi rõ ràng và uy tín, đã đến lúc giải phóng tủ đồ của bạn. Tạo dòng tiền quay trở lại từ việc mua sắm bằng cách tham gia Give Away ngay hôm nay.</h2>
               </div>
             </div>
           </div>
@@ -109,10 +185,18 @@ class AboutUsScreen extends React.PureComponent {
                   <Timeline.Item style={{ minHeight: '100px' }}>
                     <span className='text text-center text-color-0 text-year'>2019</span>
                     <br />
-                    <span className='text text-center text-color-0 text-timeline '>Mở rộng phân khúc Luxury - hàng hiệu cao cấp. Cập nhật công Entrupy - ứng dụng trí tuệ nhân tạo phân biệt hàng giả. Đồng thời cập nhật dịch vụ vệ sinh túi xách</span>
+                    <span className='text text-center text-color-0 text-timeline '>Mở rộng phân khúc Luxury - hàng hiệu cao cấp. Cập nhật công nghệ Entrupy - ứng dụng trí tuệ nhân tạo phân biệt hàng giả. Đồng thời cập nhật dịch vụ vệ sinh túi xách</span>
                   </Timeline.Item>
                 </Timeline>
                 {/* <img src={images.timeLine} className='time-line' /> */}
+              </div>
+            </div>
+          </div>
+
+          <div className={'bg-black' + (isShowSectionTwo ? ' show' : '')}>
+            <div className='main-content full-height'>
+              <div className='wrapper flex align-center direction-column justify-between'>
+                <ImageGallery autoPlay style={{ maxWidth: '96vw' }} items={imagesPhoto} />
               </div>
             </div>
           </div>

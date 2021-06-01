@@ -242,8 +242,11 @@
 .mobile-menu {
 	padding: 20px 0 0;
 	text-align: center;
-	justify-content: space-between;
-	min-height: 100%;
+	display: flex !important;
+	justify-content: center !important;
+  	align-items: center !important;
+	min-height: 70vh !important;
+
 	.ant-menu-vertical {
 		border-right: none;
 		.ant-menu-item {

@@ -20,6 +20,24 @@ export const images = {
   pageNotFound: require('static/Assets/Image/Common/404.svg'),
   pageNotFoundJson: require('static/Assets/Image/Common/404.json'),
 
+  // store
+  store1: require('static/Assets/Image/Store/store1.jpg'),
+  store2: require('static/Assets/Image/Store/store2.jpg'),
+  store3: require('static/Assets/Image/Store/store3.jpg'),
+  store4: require('static/Assets/Image/Store/store4.jpg'),
+  store5: require('static/Assets/Image/Store/store5.jpg'),
+  store6: require('static/Assets/Image/Store/store6.jpg'),
+  store7: require('static/Assets/Image/Store/store7.jpg'),
+  store8: require('static/Assets/Image/Store/store8.jpg'),
+  store9: require('static/Assets/Image/Store/store9.jpg'),
+  store10: require('static/Assets/Image/Store/store10.jpg'),
+  store11: require('static/Assets/Image/Store/store11.jpg'),
+  store12: require('static/Assets/Image/Store/store12.jpg'),
+  store13: require('static/Assets/Image/Store/store13.jpg'),
+  store14: require('static/Assets/Image/Store/store14.jpg'),
+  store15: require('static/Assets/Image/Store/store15.jpg'),
+  store16: require('static/Assets/Image/Store/store16.jpg'),
+
   flags: {
     'en': require('static/Assets/Image/Flags/en.png'),
     'ja': require('static/Assets/Image/Flags/ja.png'),

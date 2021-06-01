@@ -6,7 +6,7 @@ import { withRouter } from 'next/router'
 import { images } from 'config/images'
 import { isMobile } from 'react-device-detect'
 import MyModal from 'pages/Components/MyModal'
-import { Form, Row, Col, Layout, Input, Button, Spin, Descriptions, Tabs, Table, Radio, Popconfirm } from 'antd'
+import { Form, Row, Col, Layout, Input, Button, Spin, Descriptions, Tabs, Table, Radio, Popconfirm, List } from 'antd'
 import GapService from 'controller/Api/Services/Gap'
 
 import './style.scss'
@@ -146,6 +146,9 @@ class SearchForm extends React.PureComponent {
 
   onConsign = async () => {
     const { page, formData } = this.state
+    if (window) {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
     this.setState({
       isSearching: true
     }, async () => {
@@ -206,6 +209,42 @@ class SearchForm extends React.PureComponent {
     this.props.backConsignment()
   }
 
+  renderDrawItem (item, index) {
+    const { locale } = this.props
+    const { messages, lang } = locale
+    console.log('item')
+    console.log(item)
+
+    return (
+      <List.Item key={index}>
+        <div className='note-box' style={item.isGetMoney ? { border: '1px solid #09e486', background: '#d2e8c9' } : {}}>
+          <Descriptions>
+            <Descriptions.Item span={24} label='Tên Khách Hàng'>{item.consignerName}</Descriptions.Item>
+            <Descriptions.Item span={24} label='Số điện thoại'>{item.phoneNumber}</Descriptions.Item>
+            <Descriptions.Item span={24} label='Số lượng hàng hoá'>{item.numberOfProducts}</Descriptions.Item>
+            <Descriptions.Item span={24} label='Số lượng đã bán'>{item.numSoldConsignment}</Descriptions.Item>
+            <Descriptions.Item span={24} label='Số lượng còn lại'>{item.remainNumConsignment}</Descriptions.Item>
+            <Descriptions.Item span={24} label='Ngân hàng đăng ký'>{item.banks[0].type}</Descriptions.Item>
+            <Descriptions.Item span={24} label='Số lượng còn lại'>{item.banks[0].accNumber}</Descriptions.Item>
+            <Descriptions.Item span={24} label='Tổng tiền'>{item.moneyBack}</Descriptions.Item>
+
+            {
+              item.remainNumConsignment > 0
+                ? <>
+                  <Descriptions.Item span={24} label='Đã nhận tiền'>{item.isGetMoney ? 'Rồi' : 'Chưa'}</Descriptions.Item>
+                  <Descriptions.Item span={24} label='Thời gian nhận tiền'>{item.timeGetMoney}</Descriptions.Item>
+                </>
+                : <>
+                  <Descriptions.Item span={24} label='Đã chuyển tiền'>{item.isGetMoney ? 'Rồi' : 'Chưa'}</Descriptions.Item>
+              </>
+            }
+
+          </Descriptions>
+        </div>
+      </List.Item>
+    )
+  }
+
   // closeModal = () => {
   //   this.myModal.current.closeModal()
   // }
@@ -255,23 +294,24 @@ class SearchForm extends React.PureComponent {
           </Form>
 
           <div className={'searching-table' + (isHideUserForm && step === 1 ? ' show' : '')}>
-            <Table
-              size='small'
-              loading={isLoadingData}
-              columns={this.columns}
-              dataSource={consignmentData}
-              bordered
-              pagination={{
-                total: total,
-                pageSize: 20,
-                onChange: this.paginationChange
-              }}
-              scroll={{ x: 1500, y: '65vh' }}
-            />
-
-            <div className='flex justify-around align-center' style={{ width: '100%' }}>
-              <Button onClick={this.backPropStepOne} type='secondary'>Quay lại</Button>
-            </div>
+            <Row id='gacha-machine-list' className='flex MT10 MB30' style={{ height: '90vh', padding: '20px 5px' }}>
+              <Col span={24}>
+                <List
+                  grid={{
+                    gutter: 10,
+                    xs: 1,
+                    sm: 1,
+                    lg: 2,
+                    md: 2
+                  }}
+                  dataSource={consignmentData}
+                  renderItem={(item, index) => this.renderDrawItem(item, index)}
+                />
+              </Col>
+                <div className='flex justify-around align-center back-button' style={isHideUserForm && step === 1 ? { width: '100%' } : { display: 'none' }}>
+                  <Button onClick={this.backProp} type='secondary'>Quay lại</Button>
+                </div>
+            </Row>
           </div>
         </div>
         <MyModal ref={this.myModal} />

@@ -30,8 +30,10 @@ class BaseContainer extends PureComponent {
 
     setTimeout(() => {
       const elem = document.querySelector('#parallax')
-      elem.style.transition = 'all 1s'
-      elem.style.opacity = 1
+      if (elem) {
+        elem.style.transition = 'all 1s'
+        elem.style.opacity = 1
+      }
     }, 1000)
   }
   render () {

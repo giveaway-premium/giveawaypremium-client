@@ -2,6 +2,13 @@
 
 .aboutUs-page-container {
 
+  .image-gallery {
+    max-width: 96vw !important;
+    .image-gallery-image {
+      height: 80vh;
+    }
+  }
+
   .home-page-wrapper {
     .box-video {
       text-align: center;
