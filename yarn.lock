@@ -14434,10 +14434,10 @@ react-highlight-words@^0.17.0:
     memoize-one "^4.0.0"
     prop-types "^15.5.8"
 
-react-image-gallery@1.0.7:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/react-image-gallery/-/react-image-gallery-1.0.7.tgz#75e0d3f995d1475762f80f5a6958b4a9bb88bf97"
-  integrity sha512-4M8HdzTmH13kFNXezcsL6gWT460HUUqlKoAN0XUZMFSQIXdx7eGSj7dkjQlij2UJVZ6LGpjXcEVR7YzJ1Gz9Sg==
+react-image-gallery@^1.0.10:
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/react-image-gallery/-/react-image-gallery-1.0.10.tgz#2362a6d63017b2c128c477102c035698bf1397b2"
+  integrity sha512-kMsBQ8pld+MoFUQWztCCSv6ZFujAgMEptFyrZips14ifpVR37lsnntn9c3vytvzfLoPYvMWc8COaNg+MJ3V/Dw==
   dependencies:
     clsx "^1.0.4"
     lodash.debounce "^4.0.8"

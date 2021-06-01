@@ -49,6 +49,10 @@ h1, h2, h3, h4, h5, h6 {
 	> label {
 		height: auto;
 		color: #828282;
+		@media screen and (max-width: 400px) {
+			font-size: 12px
+		}
+
 		&.ant-form-item-required {
 			&::before {
 				content: '';
@@ -144,7 +148,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 .ant-input-affix-wrapper {
 	border-radius: 6px;
-	padding: 6px 11px 4px;
+	padding: 6px 11px 4px !important;
+
+	// @media screen and (min-width: 568px) {
+	// 	padding: 2px 6px 2px !important;
+	// }
 }
 .ant-upload {
 	.ant-btn {
@@ -172,6 +180,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 .ant-form-item-explain {
 	padding-top: 5px;
+	@media screen and (min-width: 568px) {
+		font-size: 12px
+	}
 }
 .ant-menu-horizontal {
 	border: none;

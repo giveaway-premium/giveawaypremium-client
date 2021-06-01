@@ -236,11 +236,11 @@ class Header extends React.PureComponent {
           visible={this.state.isOpen}
           // drawerStyle={{ background: '#000' }}
         >
-          <div className='mobile-menu flex direction-column justify-center'>
+          <div className='mobile-menu'>
             <div className='top-box'>
               {/* <img className='MT30 MB30' width={100} src={images.logo} /> */}
               <h1 className='logo'>
-                <img width={90} src={images.logoHeaderWhite} style={{ objectFit: 'contain' }} />
+                <img width={90} src={images.logoHeaderWhite} style={{ objectFit: 'contain', marginBottom: '10px' }} />
               </h1>
               {this.renderMainNavMobile('vertical')}
 
