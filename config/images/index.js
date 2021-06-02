@@ -7,19 +7,19 @@ export const images = {
   aLogoWhite: '/static/Assets/Image/Icon/ALogoWhite.svg',
   instagramIcon: '/static/Assets/Image/Icon/instagramIcon.svg',
   facebookIcon: '/static/Assets/Image/Icon/facebookIcon.svg',
-  consignmentForm: '/static/Assets/Image/Lottie/consignmentForm.json',
-  successJson: '/static/Assets/Image/Lottie/success.json',
-  rightArrowJson: '/static/Assets/Image/Lottie/rightArrow.json',
+
   founderAvatar: '/static/Assets/Image/founder-avater.jpeg',
   timeLine: '/static/Assets/Image/homeScreen/timeLine.jpg',
 
-  homeLoadingJson: '/static/Assets/Image/Lottie/homeLoadingBar.json',
   favicon: '/static/favicon.png',
   threeDots: '/static/Assets/Image/Common/three-dots.svg',
   error: '/static/Assets/Image/Common/error.png',
   pageNotFound: '/static/Assets/Image/Common/404.svg',
-  pageNotFoundJson: '/static/Assets/Image/Common/404.json',
-
+  pageNotFoundJson: require('static/Assets/Image/Common/404.json'),
+  consignmentForm: require('static/Assets/Image/Lottie/consignmentForm.json'),
+  successJson: require('static/Assets/Image/Lottie/success.json'),
+  rightArrowJson: require('static/Assets/Image/Lottie/rightArrow.json'),
+  homeLoadingJson: require('static/Assets/Image/Lottie/homeLoadingBar.json'),
   // store
   store1: '/static/Assets/Image/Store/store1.jpg',
   store2: '/static/Assets/Image/Store/store2.jpg',
