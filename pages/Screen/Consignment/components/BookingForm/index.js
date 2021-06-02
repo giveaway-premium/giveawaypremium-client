@@ -208,6 +208,19 @@ class ConsignmentScreen extends React.PureComponent {
     })
   }
 
+  convertCodeToTime = () => {
+    const { choosenTimeCode, choosenDayCode } = this.state
+
+    if (choosenTimeCode && choosenDayCode) {
+      const formatedTime = choosenTimeCode.substring(0, 2) + ':' + choosenTimeCode.substring(2, 4)
+      const formatedDay = choosenDayCode.substring(0, 2) + '-' + choosenDayCode.substring(2, 4) + '-' + choosenDayCode.substring(4, 8)
+      return formatedDay + ' ' + formatedTime
+    }
+
+    return '---'
+  }
+
+
   onHandleOpenContent = () => {
   }
 
@@ -293,28 +306,16 @@ class ConsignmentScreen extends React.PureComponent {
     })
   }
 
-  convertCodeToTime = () => {
-    const { choosenTimeCode, choosenDayCode } = this.state
-
-    if (choosenTimeCode && choosenDayCode) {
-      const formatedTime = choosenTimeCode.substring(0, 2) + ':' + choosenTimeCode.substring(2, 4)
-      const formatedDay = choosenDayCode.substring(0, 2) + '-' + choosenDayCode.substring(2, 4) + '-' + choosenDayCode.substring(4, 8)
-      return formatedDay + ' ' + formatedTime
-    }
-
-    return '---'
-  }
-
   changeData = (e) => {
     console.log('value')
     console.log(e.target.value)
     console.log(e.target.name)
 
-    if (e.target.value > 50 ) {
+    if (e.target.value > 50 && e.target.name === 'numberOfProduct') {
       this.setState({
         isErrorMax: true
       })
-    } else {
+    } else if (e.target.value <= 50 && e.target.name === 'numberOfProduct') {
       this.setState({
         isErrorMax: false
       })
@@ -415,10 +416,11 @@ class ConsignmentScreen extends React.PureComponent {
                   </Col>
                 </Form.Item>
 
-                <Form.Item  
+                <Form.Item
                   name='numberOfProduct' 
                   rules={[{ required: true, message: 'Vui lòng nhập số lượng hàng' }]} 
                   label='Số lượng Hàng Hoá'
+                  {...formData.numberOfProduct < 1 ? { validateStatus: 'error', help:"Số lượng tối thiểu là 1" } : {}}
                   {...isErrorMax ? { validateStatus: 'error', help:"Với số lượng hàng hoá trên 50, Xin vui lòng liên hệ số Zalo 0703334443" } : {}}
                 >
                   <Col sm={24} md={6}>
@@ -427,7 +429,7 @@ class ConsignmentScreen extends React.PureComponent {
                 </Form.Item>
                 <div className='flex justify-around align-center' style={{ width: '100%' }}>
                   <Button onClick={this.backStepOne} type='secondary'>Quay lại</Button>
-                  <Button disabled={isErrorMax} loading={isConsigning} type='secondary' htmlType='submit'>Xác nhận</Button>
+                  <Button disabled={isErrorMax || formData.numberOfProduct < 1 || formData.numberOfProduct > 50} loading={isConsigning} type='secondary' htmlType='submit'>Xác nhận</Button>
                 </div>
               </Row>
             </Form>

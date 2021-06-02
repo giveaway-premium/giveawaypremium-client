@@ -25,11 +25,12 @@
                 opacity: 1;
                 cursor: pointer;
                 transform: translate(0);
+
+                &:hover {
+                  transform: translate(0, -10px) !important;
+                }
             }
 
-            &:hover {
-              transform: translate(0, -10px) !important;
-            }
 
             @media screen and (max-width: 768px) {
                 font-size: 9vw;
@@ -44,17 +45,16 @@
 
             transform: translate(-20vw, 0px);
             transition: 0.6s all;
-        
+
             &.show {
               pointer-events: unset;
               opacity: 1;
               cursor: pointer;
               transform: translate(0);
-            }
-
-            &:hover {
-              pointer-events: unset;
-              transform: translate(0, -10px) !important;
+               &:hover {
+                pointer-events: unset;
+                transform: translate(0, -10px) !important;
+              }
             }
 
             @media screen and (max-width: 768px) {
