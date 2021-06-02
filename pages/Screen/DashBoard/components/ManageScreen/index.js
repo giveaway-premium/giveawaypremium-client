@@ -13,6 +13,8 @@ import Lottie from 'react-lottie'
 import GapService from 'controller/Api/Services/Gap'
 import TableConsignemntScreen from './comppnents/TableConsignemntScreen'
 import TableCustomer from './comppnents/TableCustomer'
+import TableAppointment from './comppnents/TableAppointment'
+
 const { TabPane } = Tabs
 
 class ManageScreen extends React.PureComponent {
@@ -66,7 +68,8 @@ class ManageScreen extends React.PureComponent {
             <TableCustomer />
             {/* Content of Tab Pane 2 */}
           </TabPane>
-          <TabPane tab='Lịch làm' key='3'>
+          <TabPane tab='Lịch hẹn' key='3'>
+            <TableAppointment />
             {/* Content of Tab Pane 3 */}
           </TabPane>
         </Tabs>

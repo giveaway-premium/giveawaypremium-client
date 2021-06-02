@@ -301,8 +301,8 @@ class SearchForm extends React.PureComponent {
                     gutter: 10,
                     xs: 1,
                     sm: 1,
-                    lg: 2,
-                    md: 2
+                    lg: 3,
+                    md: 3
                   }}
                   dataSource={consignmentData}
                   renderItem={(item, index) => this.renderDrawItem(item, index)}
