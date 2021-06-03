@@ -25,17 +25,9 @@ import '../static/jank-empty.css'
 import Lottie from 'react-lottie'
 import { images } from 'config/images'
 import { Router } from 'common/routes'
-import NProgress from 'nprogress'
+// import NProgress from 'nprogress'
 
 addLocaleData([...intlEN, ...intlJA, ...intlCN])
-
-Router.events.on('routeChangeStart', (url) => {
-  console.log(`Loading: ${url}`)
-  NProgress.start()
-})
-Router.events.on('routeChangeComplete', () => NProgress.done())
-Router.events.on('routeChangeError', () => NProgress.done())
-
 class GiveAway extends App {
   static async getInitialProps (ctx) {
     if (ctx.ctx.req) {
@@ -102,7 +94,7 @@ class GiveAway extends App {
           <title>GiveAwayPremium</title>
           <meta charSet='utf-8' />
           <link rel='shortcut icon' href={'https://i.ibb.co/pr24d1c/favicon.png'} />
-          <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css' />
+          {/* <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css' /> */}
           <meta httpEquiv='Cache-Control' content='no-cache, no-store, must-revalidate' />
           <meta httpEquiv='Pragma' content='no-cache' />
           <meta httpEquiv='Expires' content='0' />
@@ -116,7 +108,7 @@ class GiveAway extends App {
           <meta property='og:image:width' content='828' />
           <meta property='og:image:height' content='434' />
           <meta property='og:image:alt' content='GiveAway Premium' />
-          <link rel='stylesheet' type='text/css' href='/nprogress.css' />
+          {/* <link rel='stylesheet' type='text/css' href='/nprogress.css' /> */}
         </Head>
         <NextSeo {...this.state.seoData} />
         {
