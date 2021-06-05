@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { Layout } from 'antd'
-import CustomLink from 'pages/Components/CustomLink'
+import CustomLink from 'pages/Components/CustomLink/index.js'
 import './style.scss'
 class Footer extends React.PureComponent {
   render () {
