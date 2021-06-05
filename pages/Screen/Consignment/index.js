@@ -60,6 +60,7 @@ class ConsignmentScreen extends React.PureComponent {
           this.setState({
             isShowForm: true,
             isShowSearchForm: false,
+            isShowInstrumentForm: false,
             isShowBookingForm: true
           })
         }, 500)
@@ -69,6 +70,7 @@ class ConsignmentScreen extends React.PureComponent {
           this.setState({
             isShowForm: true,
             isShowSearchForm: true,
+            isShowInstrumentForm: false,
             isShowBookingForm: false
           })
         }, 500)
@@ -78,6 +80,7 @@ class ConsignmentScreen extends React.PureComponent {
           this.setState({
             isShowForm: true,
             isShowBookingForm: false,
+            isShowSearchForm: false,
             isShowInstrumentForm: true
           })
         }, 500)
