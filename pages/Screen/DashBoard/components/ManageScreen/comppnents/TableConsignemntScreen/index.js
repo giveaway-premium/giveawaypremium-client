@@ -14,6 +14,7 @@ import Lottie from 'react-lottie'
 import GapService from 'controller/Api/Services/Gap'
 import { isEqual } from 'lodash'
 import Highlighter from 'react-highlight-words'
+const { TabPane } = Tabs
 
 const EditableRow = ({ index, ...props }) => {
   const [form] = Form.useForm()
@@ -186,13 +187,18 @@ class TableConsignemntScreen extends React.PureComponent {
       total: 0,
       page: 1,
       searchText: '',
-      searchedColumn: ''
+      searchedColumn: '',
+      tabKey: '1',
+      isLoadingTags: false,
+      tags: [],
+      allInfoTag: [],
+      currentTag: ''
     }
     this.myModal = React.createRef()
   }
 
   componentDidMount () {
-    this.fetchTableData()
+    this.fetchAllTags()
   }
 
   componentDidUpdate () {
@@ -307,17 +313,41 @@ class TableConsignemntScreen extends React.PureComponent {
     this.setState({ searchText: '' })
   };
 
+  fetchAllTags = async () => {
+    this.setState({
+      searchText: '',
+      isLoadingTags: true
+    }, async () => {
+      const res = await GapService.getConsignmentID()
+      if (res && res.results && res.results.length > 0) {
+        const tempArray = res.results.reverse()
+        this.setState({
+          currentTag: tempArray[0].objectId,
+          allInfoTag: tempArray,
+          isLoadingTags: false
+        }, () => this.fetchTableData())
+      } else {
+        this.setState({
+          isLoadingTags: false
+        })
+      }
+    })
+  }
+
   fetchTableData = async (page = 1, keyword) => {
-    const { searchText } = this.state
+    const { searchText, currentTag } = this.state
     this.setState({
       isLoadingData: true
     }, async () => {
       let res
 
       if (!searchText) {
-        res = await GapService.getConsignment(page)
+        console.log('fetchTableData 13213123123123')
+        console.log(currentTag)
+
+        res = await GapService.getConsignment(page, null, null, currentTag)
       } else {
-        res = await GapService.getConsignment(page, searchText)
+        res = await GapService.getConsignment(page, searchText, null, currentTag)
       }
 
       console.log('res')
@@ -387,9 +417,18 @@ class TableConsignemntScreen extends React.PureComponent {
     this.fetchTableData(page)
   }
 
+  onChangeTab = (tabKey) => {
+    const { allInfoTag } = this.state
+    this.setState({
+      currentTag: allInfoTag[tabKey].objectId
+    }, () => {
+      this.fetchTableData()
+    })
+  }
+
   render () {
     const { userData } = this.props
-    const { isLoadingData, consignmentData, total } = this.state
+    const { isLoadingData, consignmentData, total, isLoadingTags, tags, allInfoTag } = this.state
 
     const components = {
       body: {
@@ -417,10 +456,16 @@ class TableConsignemntScreen extends React.PureComponent {
 
     return (
       <div className='tableConsignemntScreen-container'>
+        {
+          isLoadingTags ? <LoadingOutlined />
+            : <Tabs defaultActiveKey='0' onChange={this.onChangeTab} >
+              {allInfoTag.map((tag, indexTag) => <TabPane tab={tag.code} key={`${indexTag}`} />)}
+            </Tabs>
+        }
         <Table
           components={components}
           size='small'
-          loading={isLoadingData}
+          loading={isLoadingData || isLoadingTags}
           columns={columns}
           dataSource={consignmentData}
           bordered
@@ -429,7 +474,7 @@ class TableConsignemntScreen extends React.PureComponent {
             pageSize: 20,
             onChange: this.paginationChange
           }}
-          scroll={{ x: 1500, y: '65vh' }}
+          scroll={{ x: 1500, y: '55vh' }}
         />
         <MyModal ref={this.myModal} />
       </div>

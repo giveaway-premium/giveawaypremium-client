@@ -1,7 +1,7 @@
 import React from 'react'
 import { withRouter } from 'next/router'
 import { connect } from 'react-redux'
-import { Input, Button, Spin, Tabs, Tag, DatePicker, Row } from 'antd'
+import { Input, Button, Spin, Tabs, Tag, DatePicker, Row, Descriptions } from 'antd'
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
 import { showNotification } from 'common/function'
@@ -130,7 +130,7 @@ class TableAppointment extends React.Component {
 
     this.setState({
       choosenDayCode: dayBookingTemp && dayBookingTemp[0] ? dayBookingTemp[0].dayCode : '',
-      dayBooking: dayBookingTemp,
+      dayBooking: dayBookingTemp
     }, async () => {
       await this.fetchAppointment()
     })
@@ -162,6 +162,7 @@ class TableAppointment extends React.Component {
         console.log(bookingDataCode)
 
         this.setState({
+          bookingUserInfo: res.results,
           bookingDataCode: bookingDataCode,
           isLoadingBooking: false
         })
@@ -209,7 +210,44 @@ class TableAppointment extends React.Component {
     this.setState({
       step: 1,
       choosenTimeCode: choosenTime ? choosenTime.timeCode : ''
+    }, () => {
+      this.myModal.current.openModal(this.renderInfoAppointment(), { closable: true })
     })
+  }
+
+  renderInfoAppointment = () => {
+    const { bookingUserInfo, choosenTimeCode, choosenDayCode } = this.state
+    let findUser = bookingUserInfo.filter(user => {
+      return user.slot === (choosenTimeCode + choosenDayCode)
+    })
+    console.log('renderInfoAppointment')
+    console.log(findUser[0])
+    console.log(choosenTimeCode)
+    console.log(bookingUserInfo)
+    if (findUser && findUser[0] && findUser[0].objectId) {
+      return (
+        <div>
+          <span className='text text-title'>Thông tin lịch hẹn</span>
+          <Descriptions className='MT10'>
+            <Descriptions.Item span={24} label='Tên Khách Hàng'>{findUser[0].customerName}</Descriptions.Item>
+            <Descriptions.Item span={24} label='Số lượng Hàng Hoá'>{findUser[0].numberOfProduct}</Descriptions.Item>
+            <Descriptions.Item span={24} label='Số điện thoại'>{findUser[0].phoneNumber}</Descriptions.Item>
+            <Descriptions.Item span={24} label='Đã đặt lúc'>{moment(findUser[0].createdAt).format('HH:MM DD/MM/YYYY')}</Descriptions.Item>
+          </Descriptions>
+
+          <Button onClick={this.closeModal}>
+            Quay lại
+          </Button>
+        </div>
+      )
+    } else {
+      showNotification('Không tìm thấy thông tin')
+    }
+  }
+
+
+  closeModal = () => {
+    this.myModal.current.closeModal()
   }
 
   convertCodeToTime = () => {
@@ -252,24 +290,24 @@ class TableAppointment extends React.Component {
           <div className='timeBooking-box'>
             <div className={'timeBooking-grid show'}>
               {
-                isLoadingBooking ? 
-                <div className='flex justity-center align-center'>
-                  <LoadingOutlined width={60} height={60} /> 
-                </div>
-                : timeBooking.map((itemTime, indexTime) => {
-                  const isReady = !bookingDataCode.includes(choosenTimeCode + choosenDayCode) && itemTime.timeCode === choosenTimeCode
-                  const isBusy = bookingDataCode.includes(itemTime.timeCode + choosenDayCode)
-                  // console.log(bookingDataCode)
-                  // console.log(itemTime.timeCode + choosenDayCode)
-                  // console.log(isReady)
-                  // console.log(isBusy)
+                isLoadingBooking
+                  ? <div className='flex justity-center align-center'>
+                    <LoadingOutlined width={60} height={60} />
+                  </div>
+                  : timeBooking.map((itemTime, indexTime) => {
+                    const isReady = !bookingDataCode.includes(choosenTimeCode + choosenDayCode) && itemTime.timeCode === choosenTimeCode
+                    const isBusy = bookingDataCode.includes(itemTime.timeCode + choosenDayCode)
+                    // console.log(bookingDataCode)
+                    // console.log(itemTime.timeCode + choosenDayCode)
+                    // console.log(isReady)
+                    // console.log(isBusy)
 
-                  return (
-                    <div style={isBusy ? { pointerEvents: 'none', cursor: 'none' } : {}} onClick={() => isBusy ? {} : this.onChooseTime(itemTime)} key={indexTime} className={'time-box' + (isReady ? ' ready' : isBusy ? ' busy' : '')}>
-                      <span className='text'>{itemTime.timeName}</span>
-                    </div>
-                  )
-              })}
+                    return (
+                      <div style={!isBusy ? { pointerEvents: 'none', cursor: 'none' } : {}} onClick={() => isBusy ? this.onChooseTime(itemTime) : {}} key={indexTime} className={'time-box' + (isReady ? ' ready' : isBusy ? ' busy' : '')}>
+                        <span className='text'>{itemTime.timeName}</span>
+                      </div>
+                    )
+                  })}
             </div>
           </div>
         </div>

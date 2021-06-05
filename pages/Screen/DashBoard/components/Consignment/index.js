@@ -216,31 +216,6 @@ class Consignment extends React.PureComponent {
         isShowConfirmForm: false,
         isFoundUser: false
       })
-      // this.setState({
-      //   allInfoTag: [],
-      //   formData: {
-      //     consigneeName: this.props.userData.name || '',
-      //     consignerName: '',
-      //     phoneNumber: phoneKey.target.value,
-      //     consignerIdCard: '',
-      //     mail: '',
-      //     birthday: moment(),
-      //     bankName: '',
-      //     bankId: '',
-      //     numberOfProducts: 1,
-      //     consignmentId: '',
-      //     timeGetMoney: moment().format('MM-YYYY'),
-      //     numberOfConsignmentTime: 0,
-      //     numberOfConsignment: 0
-      //   },
-      //   isLoadingTags: false,
-      //   objectIdFoundUser: '',
-      //   birthday: moment(),
-      //   isConsigning: false,
-      //   isShowConfirmForm: false,
-      //   isFoundUser: false,
-      //   isLoadingUser: false
-      // })
     } else {
       console.log('fetchUserByPhoneNumber dont run 2')
       this.setState({
@@ -337,7 +312,7 @@ class Consignment extends React.PureComponent {
           ...formData,
           timeGetMoney: findTag[0].timeGetMoney
         },
-        timeGroupId: findTag[0].code
+        timeGroupId: findTag[0].objectId
       }, () => {
         console.log(this.state)
       })
