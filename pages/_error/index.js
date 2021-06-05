@@ -5,6 +5,7 @@ import { Row, Col, Button } from 'antd'
 import { images } from 'config/images'
 import './style.scss'
 import Lottie from 'react-lottie'
+import pageNotFoundJson from 'static/Assets/Image/Common/404.json'
 
 class Error404Screen extends React.PureComponent {
   backToHome = () => {
@@ -17,7 +18,7 @@ class Error404Screen extends React.PureComponent {
     const defaultOptions = {
       loop: true,
       autoplay: true,
-      animationData: images.pageNotFoundJson
+      animationData: pageNotFoundJson
     }
 
     return (

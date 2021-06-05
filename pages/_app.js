@@ -26,6 +26,7 @@ import Lottie from 'react-lottie'
 import { images } from 'config/images'
 import { Router } from 'common/routes'
 // import NProgress from 'nprogress'
+import homeLoadingJson from 'static/Assets/Image/Lottie/homeLoadingBar.json'
 
 addLocaleData([...intlEN, ...intlJA, ...intlCN])
 class GiveAway extends App {
@@ -86,7 +87,7 @@ class GiveAway extends App {
     const defaultOptions = {
       loop: false,
       autoplay: true,
-      animationData: images.homeLoadingJson
+      animationData: homeLoadingJson
     }
     return (
       <Provider store={store}>
