@@ -8,7 +8,16 @@
 @import "pages/Screen/Consignment/style.scss";
 @import "pages/Screen/Consignment/components/BookingForm/style.scss";
 @import "pages/Screen/Consignment/components/SearchForm/style.scss";
+@import "pages/Screen/Consignment/components/InstrumentForm/style.scss";
+
 @import "pages/Screen/DashBoard/style.scss";
+@import "pages/Screen/DashBoard/components/Consignment/style.scss";
+@import "pages/Screen/DashBoard/components/SettingScreen/style.scss";
+@import "pages/Screen/DashBoard/components/SettingScreen/Components/ConfigConsignmentId/style.scss";
+
+@import "pages/Screen/DashBoard/components/ManageScreen/components/TableAppointment/style.scss";
+@import "pages/Screen/DashBoard/components/ManageScreen/components/TableConsignemntScreen/style.scss";
+@import "pages/Screen/DashBoard/components/ManageScreen/components/TableCustomer/style.scss";
 
 // SCSS
 @import "~react-image-gallery/styles/scss/image-gallery.scss";

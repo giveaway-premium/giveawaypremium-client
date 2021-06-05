@@ -11,9 +11,9 @@ import { isMobile } from 'react-device-detect'
 import './style.scss'
 import Lottie from 'react-lottie'
 import GapService from 'controller/Api/Services/Gap'
-import TableConsignemntScreen from './comppnents/TableConsignemntScreen'
-import TableCustomer from './comppnents/TableCustomer'
-import TableAppointment from './comppnents/TableAppointment'
+import TableConsignemntScreen from './components/TableConsignemntScreen'
+import TableCustomer from './components/TableCustomer'
+import TableAppointment from './components/TableAppointment'
 
 const { TabPane } = Tabs
 
