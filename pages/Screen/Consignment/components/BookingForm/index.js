@@ -10,6 +10,7 @@ import moment from 'moment'
 import GapService from 'controller/Api/Services/Gap'
 import { Form, Row, Col, Input, Button, Descriptions, Divider, DatePicker, Select } from 'antd'
 import Lottie from 'react-lottie'
+import successJson from 'static/Assets/Image/Lottie/success.json'
 
 import './style.scss'
 import { showNotification } from 'common/function'
@@ -334,7 +335,7 @@ class ConsignmentScreen extends React.PureComponent {
     const defaultOptionsSuccess = {
       loop: false,
       autoplay: true,
-      animationData: images.successJson
+      animationData: successJson
     }
 
     return (

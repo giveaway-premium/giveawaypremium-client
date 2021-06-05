@@ -12,6 +12,7 @@ import './style.scss'
 import Lottie from 'react-lottie'
 import GapService from 'controller/Api/Services/Gap'
 import moment from 'moment'
+import successJson from 'static/Assets/Image/Lottie/success.json'
 
 const { Option } = Select
 
@@ -340,7 +341,7 @@ class Consignment extends React.PureComponent {
     const defaultOptionsSuccess = {
       loop: false,
       autoplay: true,
-      animationData: images.successJson
+      animationData: successJson
     }
 
     return (

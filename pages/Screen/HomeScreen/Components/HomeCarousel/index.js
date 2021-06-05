@@ -7,6 +7,7 @@ import './alice-carousel.scss'
 import './HomeCarousel.scss'
 import { Router } from 'common/routes'
 import Lottie from 'react-lottie'
+import rightArrowJson from 'static/Assets/Image/Lottie/rightArrow.json'
 
 class HomeCarousel extends React.Component {
   constructor (props) {
@@ -68,7 +69,7 @@ class HomeCarousel extends React.Component {
     const defaultOptionsRightArrow = {
       loop: true,
       autoplay: true,
-      animationData: images.rightArrowJson
+      animationData: rightArrowJson
     }
 
     return (
@@ -98,7 +99,7 @@ class HomeCarousel extends React.Component {
     const defaultOptionsRightArrow = {
       loop: true,
       autoplay: true,
-      animationData: images.rightArrowJson
+      animationData: rightArrowJson
     }
 
     return (
@@ -264,7 +265,7 @@ class HomeCarousel extends React.Component {
     const defaultOptionsRightArrow = {
       loop: true,
       autoplay: true,
-      animationData: images.rightArrowJson
+      animationData: rightArrowJson
     }
 
     return (
@@ -321,7 +322,7 @@ class HomeCarousel extends React.Component {
     const defaultOptionsRightArrow = {
       loop: true,
       autoplay: true,
-      animationData: images.rightArrowJson
+      animationData: rightArrowJson
     }
 
     return (
