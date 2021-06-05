@@ -9,7 +9,7 @@ import { isMobile } from 'react-device-detect'
 import MyModal from 'pages/Components/MyModal'
 import BookingForm from './components/BookingForm'
 import SearchForm from './components/SearchForm'
-
+import InstrumentForm from './components/InstrumentForm'
 import './style.scss'
 
 class ConsignmentScreen extends React.PureComponent {
@@ -101,13 +101,13 @@ class ConsignmentScreen extends React.PureComponent {
   // }
 
   render () {
-    const { isShowText1, isShowText2, isShowText3, isShowForm, isShowText, isShowSearchForm, isShowBookingForm } = this.state
+    const { isShowText1, isShowText2, isShowText3, isShowForm, isShowText, isShowSearchForm, isShowBookingForm, isShowInstrumentForm } = this.state
     return (
       <div className='consignment-home-container'>
         <div className='body-box' style={!isShowText && isShowForm ? { position: 'absolute', width: 0 } : {}}>
           <span onClick={() => this.onHandleOpenContent('consignment')} className={'text consignment-txt' + (isShowText1 ? ' show' : '')} >Đặt Lịch</span>
           <span onClick={() => this.onHandleOpenContent('search')} className={'text info-search-txt' + (isShowText2 ? ' show' : '')}>Xem Tổng Kết</span>
-          <span onClick={() => this.onHandleOpenContent('instrument')} className={'text instrument-txt' + (isShowText3 ? ' show' : '')}>Hướng Dẫn</span>
+          <span onClick={() => this.onHandleOpenContent('instrument')} className={'text instrument-txt' + (isShowText3 ? ' show' : '')}>Phương Thức Ký Gửi</span>
         </div>
         {/* <div className='content-box' style={!isShowForm ? { position: 'absolute', width: 0 } : {}}> */}
         <div className={'content-box' + (isShowForm && isShowBookingForm ? ' show' : '')}>
@@ -116,6 +116,10 @@ class ConsignmentScreen extends React.PureComponent {
 
         <div className={'content-box' + (isShowForm && isShowSearchForm ? ' show' : '')}>
           <SearchForm backConsignment={this.onBackConsignment} />
+        </div>
+
+        <div className={'content-box' + (isShowForm && isShowInstrumentForm ? ' show' : '')}>
+          <InstrumentForm backConsignment={this.onBackConsignment} />
         </div>
 
         <MyModal ref={this.myModal} />

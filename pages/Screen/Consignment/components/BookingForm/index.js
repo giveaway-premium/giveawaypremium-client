@@ -220,7 +220,6 @@ class ConsignmentScreen extends React.PureComponent {
     return '---'
   }
 
-
   onHandleOpenContent = () => {
   }
 
@@ -417,11 +416,11 @@ class ConsignmentScreen extends React.PureComponent {
                 </Form.Item>
 
                 <Form.Item
-                  name='numberOfProduct' 
-                  rules={[{ required: true, message: 'Vui lòng nhập số lượng hàng' }]} 
+                  name='numberOfProduct'
+                  rules={[{ required: true, message: 'Vui lòng nhập số lượng hàng' }]}
                   label='Số lượng Hàng Hoá'
-                  {...formData.numberOfProduct < 1 ? { validateStatus: 'error', help:"Số lượng tối thiểu là 1" } : {}}
-                  {...isErrorMax ? { validateStatus: 'error', help:"Với số lượng hàng hoá trên 50, Xin vui lòng liên hệ số Zalo 0703334443" } : {}}
+                  {...formData.numberOfProduct < 1 ? { validateStatus: 'error', help: 'Số lượng tối thiểu là 1' } : {}}
+                  {...isErrorMax ? { validateStatus: 'error', help: 'Với số lượng hàng hoá trên 50, Xin vui lòng liên hệ số Zalo 0703334443' } : {}}
                 >
                   <Col sm={24} md={6}>
                     <Input value={formData.numberOfProduct} size='small' defaultValue={1} name='numberOfProduct' type={'number'} id='numberOfProduct' key='numberOfProduct' onChange={this.changeData} placeholder='...' />
