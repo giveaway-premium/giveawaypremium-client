@@ -93,7 +93,7 @@ export default class Gap {
     return this.fetchData('/classes/Consignment', REQUEST_TYPE.POST, null, body)
   }
 
-  static async getConsignment (page = 1, keyword = null, limit = 20) {
+  static async getConsignment (page = 1, keyword = null, limit = 20, currentTagId) {
     let skip = (20 * page) - 20
 
     const queryBody = {
@@ -103,10 +103,12 @@ export default class Gap {
     }
 
     if (keyword) {
-      const customQuery = `where={"phoneNumber":{"$regex":"${keyword}"}}`
+      const customQuery = `where={"phoneNumber":{"$regex":"${keyword}"},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
       return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, queryBody, null, null, null, customQuery)
     } else {
-      return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, queryBody)
+      const customQuery = `where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+
+      return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, queryBody, null, null, null, customQuery)
     }
   }
 
