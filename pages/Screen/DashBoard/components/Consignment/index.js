@@ -24,7 +24,7 @@ class Consignment extends React.PureComponent {
     this.state = {
       allInfoTag: [],
       formData: {
-        consigneeName: this.props.userData.name || '',
+        consigneeName: this.props && this.props.userData && this.props.userData.name ? this.props.userData.name : '',
         consignerName: '',
         phoneNumber: '',
         consignerIdCard: '',
@@ -246,7 +246,7 @@ class Consignment extends React.PureComponent {
   onRefeshAll = () => {
     this.setState({
       formData: {
-        consigneeName: this.props.userData.name || '',
+        consigneeName: this.props && this.props.userData && this.props.userData.name ? this.props.userData.name : '',
         consignerName: '',
         phoneNumber: '',
         consignerIdCard: '',
@@ -472,7 +472,7 @@ class Consignment extends React.PureComponent {
                   </Form.Item>
 
                   <Form.Item name='consigneeName' label='Tên Nhân Viên'>
-                    <Input defaultValue={userData.name} id='consigneeName' key='consigneeName' value={userData.name} disabled placeholder={userData.name} />
+                    <Input defaultValue={userData && userData.name ? userData.name : ''} id='consigneeName' key='consigneeName' value={userData && userData.name ? userData.name : ''} disabled placeholder={userData && userData.name ? userData.name : ''} />
                   </Form.Item>
 
                   <Form.Item className='button-confirm-box MT20 MB40'>
