@@ -31,6 +31,5 @@ yarn.lock
 
 # vscode extension
 .history
-static/Assets/Image/CreateNFT/Pantograph_files
 .idea
 .env

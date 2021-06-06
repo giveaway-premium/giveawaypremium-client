@@ -216,7 +216,7 @@ class TableAppointment extends React.Component {
   }
 
   renderInfoAppointment = () => {
-    const { bookingUserInfo, choosenTimeCode, choosenDayCode } = this.state
+    const { bookingUserInfo, choosenTimeCode, choosenDayCode, bookingDataCode } = this.state
     let findUser = bookingUserInfo.filter(user => {
       return user.slot === (choosenTimeCode + choosenDayCode)
     })
@@ -225,6 +225,26 @@ class TableAppointment extends React.Component {
     console.log(choosenTimeCode)
     console.log(bookingUserInfo)
     if (findUser && findUser[0] && findUser[0].objectId) {
+      const deleteAppointment = async () => {
+        const res = await GapService.deleteAppointmentWithSlotId(findUser[0].objectId)
+
+        console.log('res')
+        console.log(res)
+
+        if (res.code === 101 || res.error) {
+          showNotification('Xoá không thành công')
+          this.closeModal()
+        } else {
+          showNotification('Xoá thành công')
+          this.closeModal()
+          const bookingDataCodeTemp = bookingDataCode.replace(choosenTimeCode + choosenDayCode, '')
+          this.setState({
+            choosenTimeCode: null,
+            bookingDataCode: bookingDataCodeTemp
+          })
+        }
+      }
+
       return (
         <div>
           <span className='text text-title'>Thông tin lịch hẹn</span>
@@ -238,13 +258,16 @@ class TableAppointment extends React.Component {
           <Button onClick={this.closeModal}>
             Quay lại
           </Button>
+
+          <Button className='ML10' onClick={deleteAppointment}>
+            Xoá
+          </Button>
         </div>
       )
     } else {
       showNotification('Không tìm thấy thông tin')
     }
   }
-
 
   closeModal = () => {
     this.myModal.current.closeModal()
