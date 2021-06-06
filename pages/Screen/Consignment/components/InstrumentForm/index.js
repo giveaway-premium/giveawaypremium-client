@@ -69,6 +69,10 @@ class ConsignmentScreen extends React.PureComponent {
     }
   }
 
+  backPageProps = () => {
+    this.props.backConsignment()
+  }
+
   render () {
     const { isShowSectionOne, moneyBack, moneySold } = this.state
 
@@ -115,7 +119,7 @@ class ConsignmentScreen extends React.PureComponent {
                 `}</h2>
               </div>
               <div style={{ margin: 'auto' }}>
-                <Button onClick={() => this.props.backConsignment()} type='secondary'>Quay lại</Button>
+                <Button onClick={this.backPageProps} type='secondary'>Quay lại</Button>
               </div>
             </div>
           </div>
