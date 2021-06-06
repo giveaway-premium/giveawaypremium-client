@@ -103,8 +103,8 @@ class GiveAway extends App {
           <meta name='theme-color' content='#000000' />
           <meta name='description' content='GiveAway Premium' />
           <meta name='google-site-verification' content='D1F12tMnugBHZLza2KcmBK5gWmnC32N6e3U5pKw8DFk' />
-          <meta property='og:image' content='https://i.ibb.co/pr24d1c/favicon.png' />
-          <meta property='og:image:secure_url' content='https://i.ibb.co/pr24d1c/favicon.png' />
+          <meta property='og:image' content='https://i.ibb.co/NSz5YLK/Frame-1.png' />
+          <meta property='og:image:secure_url' content='https://i.ibb.co/NSz5YLK/Frame-1.png' />
           <meta property='og:image:type' content='image/png' />
           <meta property='og:image:width' content='828' />
           <meta property='og:image:height' content='434' />
