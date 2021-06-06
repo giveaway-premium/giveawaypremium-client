@@ -25,6 +25,10 @@ export default class Gap {
     return this.fetchData('/classes/AppointmentSchedule', REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
 
+  static async deleteAppointmentWithSlotId (objectId) {
+    return this.fetchData(`/classes/AppointmentSchedule/${objectId}`, REQUEST_TYPE.DELETE)
+  }
+
   static async setAppointment (formData, slotID, formatedTime, formatedDay) {
     const res = await this.getAppointmentWithSlotId(slotID)
 
