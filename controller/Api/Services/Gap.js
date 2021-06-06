@@ -2,6 +2,8 @@
 import { REQUEST_TYPE } from 'common/constants'
 import ReduxService from 'common/redux'
 import QueryString from 'query-string'
+import moment from 'moment'
+import { numberWithCommas } from 'common/function'
 
 export default class Gap {
   static logInAdmin (username, password) {
@@ -11,6 +13,31 @@ export default class Gap {
     }
 
     return this.fetchData('/login', REQUEST_TYPE.GET, queryBody, null, null, null, null, true)
+  }
+
+  // Mail
+
+  static async sendMail (customerInfo, consignmentInfo, type, title) {
+    if (type) {
+      const body = {
+        'mailTo': customerInfo.mail,
+        'title': (title + ' ' + consignmentInfo.consignmentId) || ('GAP' + consignmentInfo.consignmentId),
+        'type': type,
+        'data': {
+          'moneyBack': consignmentInfo.moneyBack ? `${numberWithCommas(consignmentInfo.moneyBack)} vnd` : 'vnd',
+          'customerName': customerInfo.consignerName,
+          'phoneNumber': customerInfo.phoneNumber,
+          'identityId': customerInfo.consignerIdCard,
+          'consignmentId': consignmentInfo.consignmentId,
+          'numberOfProduct': consignmentInfo.numberOfProducts.toString(),
+          'bankName': consignmentInfo.bankName,
+          'bankId': consignmentInfo.bankId,
+          'timeGetMoney': consignmentInfo.timeGetMoney,
+          'timeCheck': moment(consignmentInfo.timeGetMoney).subtract(3, 'day').format('DD-MM-YYYY')
+        }
+      }
+      return this.fetchData('/functions/email', REQUEST_TYPE.POST, null, body, null, null, null, true)
+    }
   }
 
   // Appointment
@@ -80,6 +107,7 @@ export default class Gap {
       consignmentId: formData.consignmentId,
       consignerName: formData.consignerName,
       consignerIdCard: formData.consignerIdCard,
+      mail: formData.mail,
       consignee: { '__type': 'Pointer', 'className': '_User', 'objectId': consigneeData },
       consigner: { '__type': 'Pointer', 'className': '_User', 'objectId': consignerData },
       group: { '__type': 'Pointer', 'className': 'ConsignmentGroup', 'objectId': timeGroupId },
