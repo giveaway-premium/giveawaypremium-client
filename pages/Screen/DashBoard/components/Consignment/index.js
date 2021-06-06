@@ -13,6 +13,7 @@ import Lottie from 'react-lottie'
 import GapService from 'controller/Api/Services/Gap'
 import moment from 'moment'
 import successJson from 'static/Assets/Image/Lottie/success.json'
+import { EMAIL_TITLE, EMAIL_TYPE } from 'common/constants'
 
 const { Option } = Select
 
@@ -109,6 +110,7 @@ class Consignment extends React.PureComponent {
             console.log(customerFormData)
             console.log(objectIdFoundUser)
 
+            GapService.sendMail(customerFormData, formData, EMAIL_TYPE.CONSIGNMENT, EMAIL_TITLE.CONSIGNMENT)
             GapService.updateCustomer(customerFormData, objectIdFoundUser)
           })
         } else {
@@ -145,6 +147,7 @@ class Consignment extends React.PureComponent {
               isShowConfirmForm: true,
               isConsigning: false
             })
+            GapService.sendMail(customerFormData, formData, EMAIL_TYPE.CONSIGNMENT, EMAIL_TITLE.CONSIGNMENT)
           }
         } else {
           showNotification('Tạo khách hàng thất bại')
@@ -242,7 +245,6 @@ class Consignment extends React.PureComponent {
 
   onRefeshAll = () => {
     this.setState({
-      allInfoTag: [],
       formData: {
         consigneeName: this.props.userData.name || '',
         consignerName: '',

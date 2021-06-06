@@ -14,6 +14,7 @@ import Lottie from 'react-lottie'
 import GapService from 'controller/Api/Services/Gap'
 import { isEqual } from 'lodash'
 import Highlighter from 'react-highlight-words'
+import { EMAIL_TITLE, EMAIL_TYPE } from 'common/constants'
 const { TabPane } = Tabs
 
 const EditableRow = ({ index, ...props }) => {
@@ -283,6 +284,27 @@ class TableConsignemntScreen extends React.PureComponent {
         consignmentData: newData
       }, async () => {
         console.log(newItem)
+        const customerFormData = {
+          consignerName: row.consignerName,
+          phoneNumber: row.phoneNumber,
+          numberOfProducts: row.numberOfProducts,
+          consignerIdCard: row.consignerIdCard,
+          mail: row.email,
+          bankName: row.bankName,
+          bankId: row.bankId
+        }
+        // <p>Họ tên khách hàng: {{customerName}}</p>
+        // <p>Số điện thoại: {{phoneNumber}}</p>
+        // <p>CMND: {{identityId}}</p>
+        // <p>Mã ký gửi: {{consignmentId}}</p>
+        // <p>Số lượng: {{numberOfProduct}}</p>
+        // <p>Ngân hàng đăng ký: {{bankName}}</p>
+        // <p>ID Ngân hàng: {{bankId}}</p>
+        // <p>Số tiền chuyển khoản: {{moneyBack}}</p>
+        if (newItem && newItem.isGetMoney) {
+          GapService.sendMail(customerFormData, row, EMAIL_TYPE.PAYMENT, EMAIL_TITLE.PAYMENT)
+        }
+
         const res = await GapService.updateConsignment(newItem)
         console.log(res)
         if (res) {
@@ -355,6 +377,8 @@ class TableConsignemntScreen extends React.PureComponent {
       let consignmentData = []
       if (res && res.results) {
         res.results.map((item, indexItem) => {
+          console.log('indexItem')
+          console.log(item)
           consignmentData.push({
             key: indexItem,
             objectId: item.objectId,
@@ -369,7 +393,7 @@ class TableConsignemntScreen extends React.PureComponent {
             bankName: res.results[0].banks[0] ? res.results[0].banks[0].type : '',
             bankId: res.results[0].banks[0] ? res.results[0].banks[0].accNumber : '',
             moneyBack: item.moneyBack,
-            email: item.email,
+            email: item.mail,
             birthday: item.birthday,
             isGetMoney: item.isGetMoney
           })

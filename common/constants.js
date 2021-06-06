@@ -19,6 +19,16 @@ export const REQUEST_TYPE = {
   PATCH: 'PATCH'
 }
 
+export const EMAIL_TYPE = {
+  CONSIGNMENT: 'CONSIGNMENT',
+  PAYMENT: 'PAYMENT'
+}
+
+export const EMAIL_TITLE = {
+  CONSIGNMENT: 'Xác nhận thông tin ký gửi',
+  PAYMENT: 'Xác nhận thông tin chuyển khoản'
+}
+
 export const LOCALE_DATA = {
   JA: 'ja',
   CN: 'cn',
