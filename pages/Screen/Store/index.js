@@ -9,7 +9,6 @@ import comingSoonJson from 'static/Assets/Image/Lottie/comingSoon.json'
 import Lottie from 'react-lottie'
 
 import './style.scss'
-import { FormatListNumberedRtlSharp } from '@material-ui/icons'
 
 class StoreScreen extends React.PureComponent {
   static async getInitialProps ({ query }) {
