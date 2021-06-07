@@ -8,9 +8,12 @@ import { images } from 'config/images'
 import { isMobile } from 'react-device-detect'
 import MyModal from 'pages/Components/MyModal'
 import Typist from 'react-typist'
-import ImageGallery from 'react-image-gallery';
-
+import ImageGallery from 'react-image-gallery'
+import Lottie from 'react-lottie'
+import phoneJson from 'static/Assets/Image/Lottie/phone.json'
+import locationJson from 'static/Assets/Image/Lottie/location.json'
 import './style.scss'
+import { LoadingOutlined, PhoneOutlined } from '@ant-design/icons'
 
 const imagesPhoto = [
   {
@@ -41,10 +44,10 @@ const imagesPhoto = [
     original: images.store7,
     thumbnail: images.store7
   },
-  {
-    original: images.store8,
-    thumbnail: images.store8
-  },
+  // {
+  //   original: images.store8,
+  //   thumbnail: images.store8
+  // },
   {
     original: images.store8,
     thumbnail: images.store8
@@ -53,14 +56,14 @@ const imagesPhoto = [
     original: images.store9,
     thumbnail: images.store9
   },
-  {
-    original: images.store10,
-    thumbnail: images.store10
-  },
-  {
-    original: images.store11,
-    thumbnail: images.store11
-  },
+  // {
+  //   original: images.store10,
+  //   thumbnail: images.store10
+  // },
+  // {
+  //   original: images.store11,
+  //   thumbnail: images.store11
+  // },
   {
     original: images.store12,
     thumbnail: images.store12
@@ -80,6 +83,58 @@ const imagesPhoto = [
   {
     original: images.store16,
     thumbnail: images.store16
+  },
+  {
+    original: images.store17,
+    thumbnail: images.store17
+  },
+  {
+    original: images.store18,
+    thumbnail: images.store18
+  },
+  {
+    original: images.store19,
+    thumbnail: images.store19
+  },
+  {
+    original: images.store20,
+    thumbnail: images.store20
+  },
+  {
+    original: images.store21,
+    thumbnail: images.store21
+  },
+  {
+    original: images.store22,
+    thumbnail: images.store22
+  },
+  {
+    original: images.store23,
+    thumbnail: images.store23
+  },
+  {
+    original: images.store24,
+    thumbnail: images.store24
+  },
+  {
+    original: images.store25,
+    thumbnail: images.store15
+  },
+  {
+    original: images.store26,
+    thumbnail: images.store26
+  },
+  {
+    original: images.store27,
+    thumbnail: images.store27
+  },
+  {
+    original: images.store28,
+    thumbnail: images.store28
+  },
+  {
+    original: images.store29,
+    thumbnail: images.store29
   }
 ]
 
@@ -117,6 +172,18 @@ class AboutUsScreen extends React.PureComponent {
   render () {
     const { isShowSectionOne, isShowSectionTwo } = this.state
 
+    const defaultOptions1 = {
+      loop: false,
+      autoplay: false,
+      animationData: phoneJson
+    }
+
+    const defaultOptions2 = {
+      loop: false,
+      autoplay: false,
+      animationData: locationJson
+    }
+
     return (
       <div className='aboutUs-page-container'>
         <div className='home-page-wrapper'>
@@ -124,9 +191,7 @@ class AboutUsScreen extends React.PureComponent {
             <div className='wrapper'>
               <div className={'box-content-introduce' + (isShowSectionOne ? ' show' : '')}>
                 <h2 className='text text-center text-color-0 txt-big-intro MB30'>Give Away</h2>
-                <h2 className='text text-left text-color-10 txt-small-intro MB15'>{`Thời trang bền vững là một khái niệm vĩ mô trong những lần đầu bạn nghe đến, thế nhưng trong vai trò một khách hàng thông minh, chúng ta có rất nhiều cách đơn giản nhằm hưởng ứng tinh thần từ chủ nghĩa tái sử dụng.`}</h2>
-
-                <h2 className='text text-left text-color-10 txt-small-intro MB15'>{'Thời trang bền vững - thương hiệu sẽ tập trung vào việc mang đến các sản phẩm sử dụng chất liệu xanh, chất liệu hữu cơ hay tái chế, hoặc cắt giảm những chất thải phát sinh trong quá trình sản xuất và vận chuyển. Việc tái sử dụng thì khác - tập trung kéo dài tuổi thọ của vật chất, sản phẩm. Nhằm loại bỏ mọi tác động tiêu cực đến môi trường.'}</h2>
+                <h2 className='text text-left text-color-10 txt-small-intro MB15'>{`Thời trang bền vững là một khái niệm vĩ mô trong những lần đầu bạn nghe đến, thế nhưng trong vai trò một khách hàng thông minh, chúng ta có rất nhiều cách đơn giản nhằm hưởng ứng tinh thần từ chủ nghĩa tái sử dụng. Thời trang bền vững - thương hiệu sẽ tập trung vào việc mang đến các sản phẩm sử dụng chất liệu xanh, chất liệu hữu cơ hay tái chế, hoặc cắt giảm những chất thải phát sinh trong quá trình sản xuất và vận chuyển. Việc tái sử dụng thì khác - tập trung kéo dài tuổi thọ của vật chất, sản phẩm. Nhằm loại bỏ mọi tác động tiêu cực đến môi trường.`}</h2>
                 <h2 className='text text-left text-color-10 txt-small-intro MB15'>{`Đến thời điểm hiện tại, chuỗi Give Away đã có mặt tại Quận 1, Quận 3, Quận 10, Quận 7, Bình Thạnh, Gò Vấp, Tân Phú, Thủ Đức và các tỉnh thành khác như Biên Hoà, Bình Dương, Đà Nẵng.\n
                   Give Away có ba phân khúc chính:\n
                   - Give Away dành cho Học Sinh Sinh Viên\n
@@ -160,7 +225,7 @@ class AboutUsScreen extends React.PureComponent {
                   <Timeline.Item style={{ minHeight: '100px' }}>
                     <span className='text text-center text-color-0 text-year'>2014</span>
                     <br />
-                    <span className='text text-center text-color-0 text-timeline '>Cửa hàng GiveAway đầu tiên ra đời</span>
+                    <span className='text text-center text-color-0 text-timeline '>Cửa hàng Give Away đầu tiên ra đời</span>
                   </Timeline.Item>
                   <Timeline.Item style={{ minHeight: '100px' }}>
                     <span className='text text-center text-color-0 text-year'>2015</span>
@@ -199,6 +264,22 @@ class AboutUsScreen extends React.PureComponent {
                 <ImageGallery autoPlay style={{ maxWidth: '96vw' }} items={imagesPhoto} />
               </div>
             </div>
+          </div>
+
+          <div className='footer-aboutus'>
+            <div className='flex MB20'>
+              <img src={images.phoneIcon} className='icon-footer MR10' />
+              <span>0703334443</span>
+            </div>
+
+            <div className='flex MB10'>
+              <img src={images.markerIcon} className='icon-footer MR10' />
+              <span>
+                {`1 Phó Đức Chính, Phường Nguyễn Thái Bình, Quận 1, Hồ Chí Minh.`}
+              </span>
+            </div>
+
+            <div className='line-footer' />
           </div>
 
         </div>

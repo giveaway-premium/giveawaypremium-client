@@ -7,7 +7,8 @@ export const images = {
   aLogoWhite: '/static/Assets/Image/Icon/ALogoWhite.svg',
   instagramIcon: '/static/Assets/Image/Icon/instagramIcon.svg',
   facebookIcon: '/static/Assets/Image/Icon/facebookIcon.svg',
-
+  phoneIcon: '/static/Assets/Image/Icon/phone.png',
+  markerIcon: '/static/Assets/Image/Icon/marker.png',
   founderAvatar: '/static/Assets/Image/founder-avater.jpeg',
   timeLine: '/static/Assets/Image/homeScreen/timeLine.jpg',
 
@@ -32,6 +33,19 @@ export const images = {
   store14: '/static/Assets/Image/Store/store14.jpg',
   store15: '/static/Assets/Image/Store/store15.jpg',
   store16: '/static/Assets/Image/Store/store16.jpg',
+  store17: '/static/Assets/Image/Store/store17.jpg',
+  store18: '/static/Assets/Image/Store/store18.jpg',
+  store19: '/static/Assets/Image/Store/store19.jpg',
+  store20: '/static/Assets/Image/Store/store20.jpg',
+  store21: '/static/Assets/Image/Store/store21.jpg',
+  store22: '/static/Assets/Image/Store/store22.jpg',
+  store23: '/static/Assets/Image/Store/store23.jpg',
+  store24: '/static/Assets/Image/Store/store24.jpg',
+  store25: '/static/Assets/Image/Store/store25.jpg',
+  store26: '/static/Assets/Image/Store/store26.jpg',
+  store27: '/static/Assets/Image/Store/store27.jpg',
+  store28: '/static/Assets/Image/Store/store28.jpg',
+  store29: '/static/Assets/Image/Store/store29.jpg',
 
   flags: {
     'en': '/static/Assets/Image/Flags/en.png',
