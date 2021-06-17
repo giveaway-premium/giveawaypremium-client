@@ -125,6 +125,18 @@ export default class Gap {
     return this.fetchData('/classes/Consignment', REQUEST_TYPE.POST, null, body)
   }
 
+  static async getConsignmentWithPhone (page = 1, keyword = null, limit = 20) {
+    let skip = (20 * page) - 20
+
+    const queryBody = {
+      limit: limit,
+      skip: skip,
+      count: true
+    }
+    const customQuery = `where={"phoneNumber":{"$regex":"${keyword}"}}`
+    return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, queryBody, null, null, null, customQuery)
+  }
+
   static async getConsignment (page = 1, keyword = null, limit = 20, currentTagId) {
     let skip = (20 * page) - 20
 

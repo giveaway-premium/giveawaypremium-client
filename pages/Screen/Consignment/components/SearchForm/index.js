@@ -152,7 +152,7 @@ class SearchForm extends React.PureComponent {
     this.setState({
       isSearching: true
     }, async () => {
-      const res = await GapService.getConsignment(page, formData.phoneNumber, 20)
+      const res = await GapService.getConsignmentWithPhone(page, formData.phoneNumber, 20)
       console.log('res: ', res)
 
       if (res && res.results) {
@@ -219,6 +219,7 @@ class SearchForm extends React.PureComponent {
       <List.Item key={index}>
         <div className='note-box' style={item.isGetMoney ? { border: '1px solid #09e486', background: '#d2e8c9' } : {}}>
           <Descriptions>
+            <Descriptions.Item span={24} label='Mã ký gửi'>{item.consignmentId}</Descriptions.Item>
             <Descriptions.Item span={24} label='Tên Khách Hàng'>{item.consignerName}</Descriptions.Item>
             <Descriptions.Item span={24} label='Số điện thoại'>{item.phoneNumber}</Descriptions.Item>
             <Descriptions.Item span={24} label='Số lượng hàng hoá'>{item.numberOfProducts}</Descriptions.Item>

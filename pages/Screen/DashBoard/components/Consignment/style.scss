@@ -17,4 +17,19 @@
             justify-content: center !important;
         }
     }
+    .productListBox {
+        display: flex !important;
+        width: 90%;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+
+        .product-box {
+            display: flex !important;
+            width: 100%;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+        }
+    }
 }

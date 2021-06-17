@@ -5,7 +5,7 @@ import { Form, Row, Col, Input, Button, Descriptions, Divider, DatePicker, Selec
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
 import { showNotification } from 'common/function'
-import { LoadingOutlined, CheckCircleFilled } from '@ant-design/icons'
+import { LoadingOutlined, CheckCircleFilled, PlusCircleFilled, PlusOneTwoTone, PlusOutlined, CloseOutlined } from '@ant-design/icons'
 import { Router } from 'common/routes'
 import { isMobile } from 'react-device-detect'
 import './style.scss'
@@ -23,6 +23,12 @@ class Consignment extends React.PureComponent {
     super(props)
     this.state = {
       allInfoTag: [],
+      productList: [
+        {
+          price: '',
+          count: 1
+        }
+      ],
       formData: {
         consigneeName: this.props && this.props.userData && this.props.userData.name ? this.props.userData.name : '',
         consignerName: '',
@@ -322,11 +328,57 @@ class Consignment extends React.PureComponent {
     }
   }
 
+  changeDataProduct = (value, indexProduct) => {
+    const { productList } = this.state
+
+    let productListTemp = productList.slice()
+
+    if (value.target.id === 'priceProduct') {
+      productListTemp[indexProduct].price = value.target.value
+    } else if (value.target.id === 'numberOfProducts') {
+      productListTemp[indexProduct].count = value.target.value
+    }
+
+    console.log('changeDataProduct')
+    console.log(value.target.value)
+    console.log(indexProduct)
+
+    this.setState({
+      productList: productListTemp
+    })
+  }
+
+  onPlusProductList = () => {
+    const { productList } = this.state
+    this.setState({
+      productList: [
+        ...productList,
+        {
+          price: '',
+          count: 1
+        }
+      ]
+    })
+  }
+
+  onDeleteProductList = (index) => {
+    const { productList } = this.state
+    let productListTemp = productList.slice()
+    productListTemp.splice(index, 1)
+
+    console.log(index)
+    console.log(productListTemp)
+
+    this.setState({
+      productList: productListTemp
+    })
+  }
+
   render () {
     const { userData } = this.props
     const {
       formData, isConsigning, isShowConfirmForm,
-      birthday, isLoadingUser, isFoundUser, isLoadingTags, allInfoTag
+      birthday, isLoadingUser, isFoundUser, isLoadingTags, allInfoTag, productList
     } = this.state
 
     const layout = {
@@ -439,6 +491,25 @@ class Consignment extends React.PureComponent {
                       <DatePicker disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} id='birthday' key='birthday' defaultValue={moment()} value={moment(formData.birthday, dateFormat)} onChange={this.onChangeBirthday} format={dateFormat} placeholder={dateFormat} style={{ width: '100%' }} />
                     </Col>
                   </Form.Item>
+
+                  <Divider />
+
+                  <Row className='productListBox'>
+                    <Button onClick={this.onPlusProductList} type='secondary' className='MB20'><PlusOutlined /> Thêm sản phẩm</Button>
+
+                    {productList.map((item, indexItem) => {
+                      return (
+                        <div key={indexItem} className='product-box MB10'>
+                          <span style={{ marginRight: '10px' }}>{indexItem}</span>
+                          <Input style={{ width: '50%', marginRight: '10px' }} value={item.price} allowClear type={'number'} id='priceProduct' key='priceProduct' onChange={(value) => this.changeDataProduct(value, indexItem)} placeholder='Giá tiền' />
+                          <Input style={{ width: '50%' }} value={item.count} prefix={<span>SL</span>} defaultValue={1} type={'number'} id='numberOfProducts' key='numberOfProducts' onChange={(value) => this.changeDataProduct(value, indexItem)} allowClear placeholder='Số lượng' />
+                          <div disabled={indexItem === 0} onClick={() => this.onDeleteProductList(indexItem)} style={{ marginLeft: '10px', cursor: 'pointer', opacity: indexItem === 0 ? 0 : 1 }}>
+                            <CloseOutlined />
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </Row>
 
                   <Divider />
 

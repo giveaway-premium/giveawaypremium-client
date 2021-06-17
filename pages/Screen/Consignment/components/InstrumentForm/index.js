@@ -82,7 +82,7 @@ class ConsignmentScreen extends React.PureComponent {
           <div className='main-content radius-bottom'>
             <div className='wrapper'>
               <div className={'box-content-introduce' + (isShowSectionOne ? ' show' : '')}>
-                <h2 className='text text-center text-color-0 txt-big-intro MB30'>PHƯƠNG THỨC KÝ GỬI</h2>
+                <h2 className='text text-center text-color-0 txt-big-intro MB50'>PHƯƠNG THỨC KÝ GỬI</h2>
 
                 <div className='info-fee-box MB30'>
                   <div className='info-fee-box-left'>
