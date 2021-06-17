@@ -275,7 +275,7 @@ class AboutUsScreen extends React.PureComponent {
             <div className='flex MB10'>
               <img src={images.markerIcon} className='icon-footer MR10' />
               <span>
-                {`1 Phó Đức Chính, Phường Nguyễn Thái Bình, Quận 1, Hồ Chí Minh.`}
+                {`1 Phó Đức Chính, Phường Nguyễn Thái Bình, Quận 1, Hồ Chí Minh. \n( Ngoài ra chúng tôi còn có chi nhánh ở Phú Nhuận )`}
               </span>
             </div>
 
