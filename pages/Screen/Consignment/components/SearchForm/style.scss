@@ -64,6 +64,7 @@
 
         &.show {
             width: 90vw;
+            max-width: 1500px;
             position: relative;
             opacity: 1;
             transform: translate(0);
