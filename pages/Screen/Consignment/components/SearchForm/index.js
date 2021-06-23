@@ -121,6 +121,8 @@ class SearchForm extends React.PureComponent {
             consigneeName: item.consigneeName,
             timeGetMoney: item.timeGetMoney,
             phoneNumber: item.phoneNumber,
+            isTransferMoneyWithBank: item.isTransferMoneyWithBank,
+            timeConfirmGetMoney: item.timeConfirmGetMoney,
             numberOfProducts: `${Number(item.numberOfProducts)}`,
             numSoldConsignment: `${Number(item.numSoldConsignment || 0)}`,
             remainNumConsignment: `${Number(item.numberOfProducts) - Number(item.numSoldConsignment || 0)}`,
@@ -226,18 +228,17 @@ class SearchForm extends React.PureComponent {
             <Descriptions.Item span={24} label='Số lượng đã bán'>{item.numSoldConsignment}</Descriptions.Item>
             <Descriptions.Item span={24} label='Số lượng còn lại'>{item.remainNumConsignment}</Descriptions.Item>
             <Descriptions.Item span={24} label='Ngân hàng đăng ký'>{item.banks[0].type}</Descriptions.Item>
+            <Descriptions.Item span={24} label='Nhận tiền'>{item.isTransferMoneyWithBank ? 'Chuyển khoản' : 'Trực tiếp   '}</Descriptions.Item>
+
             <Descriptions.Item span={24} label='Số lượng còn lại'>{item.banks[0].accNumber}</Descriptions.Item>
-            <Descriptions.Item span={24} label='Tổng tiền'>{item.moneyBack}</Descriptions.Item>
+            <Descriptions.Item span={24} label='Tổng tiền'>{numberWithCommas(item.moneyBack)} vnd</Descriptions.Item>
+            <Descriptions.Item span={24} label='Ngày tổng kết'>{item.timeGetMoney}</Descriptions.Item>
 
             {
-              item.remainNumConsignment > 0
-                ? <>
-                  <Descriptions.Item span={24} label='Đã nhận tiền'>{item.isGetMoney ? 'Rồi' : 'Chưa'}</Descriptions.Item>
-                  <Descriptions.Item span={24} label='Thời gian nhận tiền'>{item.timeGetMoney}</Descriptions.Item>
-                </>
-                : <>
-                  <Descriptions.Item span={24} label='Đã chuyển tiền'>{item.isGetMoney ? 'Rồi' : 'Chưa'}</Descriptions.Item>
-              </>
+              !item.isGetMoney
+                ? <Descriptions.Item span={24} label='Đã nhận tiền'>{item.isGetMoney ? 'Rồi' : 'Chưa'}</Descriptions.Item>
+                : <Descriptions.Item span={24} label='Thời gian nhận tiền'>{item.timeConfirmGetMoney}</Descriptions.Item>
+
             }
 
           </Descriptions>
@@ -309,9 +310,9 @@ class SearchForm extends React.PureComponent {
                   renderItem={(item, index) => this.renderDrawItem(item, index)}
                 />
               </Col>
-                <div className='flex justify-around align-center back-button' style={isHideUserForm && step === 1 ? { width: '100%' } : { display: 'none' }}>
-                  <Button onClick={this.backProp} type='secondary'>Quay lại</Button>
-                </div>
+              <div className='flex justify-around align-center back-button' style={isHideUserForm && step === 1 ? { width: '100%' } : { display: 'none' }}>
+                <Button onClick={this.backProp} type='secondary'>Quay lại</Button>
+              </div>
             </Row>
           </div>
         </div>

@@ -1,10 +1,10 @@
 import React from 'react'
 import { withRouter } from 'next/router'
 import { connect } from 'react-redux'
-import { Form, Row, Col, Input, Button, Descriptions, Divider, DatePicker, Select } from 'antd'
+import { Form, Row, Col, Input, Button, Descriptions, Divider, DatePicker, Select, Checkbox } from 'antd'
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
-import { showNotification } from 'common/function'
+import { numberWithCommas, showNotification } from 'common/function'
 import { LoadingOutlined, CheckCircleFilled, PlusCircleFilled, PlusOneTwoTone, PlusOutlined, CloseOutlined } from '@ant-design/icons'
 import { Router } from 'common/routes'
 import { isMobile } from 'react-device-detect'
@@ -23,10 +23,14 @@ class Consignment extends React.PureComponent {
     super(props)
     this.state = {
       allInfoTag: [],
+      isTransferMoneyWithBank: 'false',
       productList: [
         {
           price: '',
-          count: 1
+          count: 1,
+          remainNumberProduct: 1,
+          priceAfterFee: '',
+          totalPriceAfterFee: ''
         }
       ],
       formData: {
@@ -44,6 +48,8 @@ class Consignment extends React.PureComponent {
         numberOfConsignmentTime: 0,
         numberOfConsignment: 0
       },
+      moneyBack: 0,
+      totalMoney: 0,
       isLoadingTags: false,
       objectIdFoundUser: '',
       birthday: moment(),
@@ -70,8 +76,9 @@ class Consignment extends React.PureComponent {
     }, async () => {
       const res = await GapService.getConsignmentID()
       if (res && res.results && res.results.length > 0) {
+        const reverseRes = res.results.reverse()
         this.setState({
-          allInfoTag: res.results.reverse(),
+          allInfoTag: reverseRes,
           isLoadingTags: false
         }, console.log(this.state))
       } else {
@@ -84,18 +91,39 @@ class Consignment extends React.PureComponent {
 
   onConsign = () => {
     const { userData } = this.props
-    const { isFoundUser, objectIdFoundUser, formData, timeGroupId } = this.state
+    const { isFoundUser, objectIdFoundUser, formData, timeGroupId, productList, moneyBack, totalMoney, isTransferMoneyWithBank } = this.state
+
+    // const productListTemp = productList.filter(item => {
+    //   return (Number(item.price) > 0 || item.price.length > 0) && Number(item.count) > 0
+    // })
+
+    let productListTemp = []
+
+    productList.map((item, indexItem) => {
+      if ((Number(item.price) > 0 || item.price.length > 0) && Number(item.count) > 0) {
+        productListTemp.push({
+          ...item,
+          key: indexItem
+        })
+      }
+    })
+
+    if (!productListTemp || productListTemp.length === 0) {
+      showNotification('Cần ít nhất 1 sản phẩm')
+      return
+    }
 
     console.log(userData)
     this.setState({
-      isConsigning: true
+      isConsigning: true,
+      productList: productListTemp
     }, async () => {
       console.log('onConsign')
       console.log(formData)
       console.log(this.state)
       if (isFoundUser && objectIdFoundUser) { // for already user
         console.log('for already user')
-        const result = await GapService.setConsignment(formData, userData.objectId, objectIdFoundUser, timeGroupId)
+        const result = await GapService.setConsignment(formData, userData.objectId, objectIdFoundUser, timeGroupId, productListTemp, moneyBack, totalMoney, isTransferMoneyWithBank)
         console.log(result)
         if (result && result.objectId) {
           this.setState({
@@ -145,7 +173,7 @@ class Consignment extends React.PureComponent {
 
         if (resCus && resCus.objectId) {
           showNotification('Thêm khách hàng thành công')
-          const result = await GapService.setConsignment(formData, userData.objectId, resCus.objectId, timeGroupId)
+          const result = await GapService.setConsignment(formData, userData.objectId, resCus.objectId, timeGroupId, productListTemp, moneyBack, totalMoney, isTransferMoneyWithBank)
           console.log(result)
 
           if (result && result.objectId) {
@@ -250,8 +278,18 @@ class Consignment extends React.PureComponent {
   }
 
   onRefeshAll = () => {
+    const { formData } = this.state
     this.setState({
+      isTransferMoneyWithBank: 'false',
+      productList: [
+        {
+          price: '',
+          count: 1,
+          priceAfterFee: 0
+        }
+      ],
       formData: {
+        ...formData,
         consigneeName: this.props && this.props.userData && this.props.userData.name ? this.props.userData.name : '',
         consignerName: '',
         phoneNumber: '',
@@ -262,10 +300,11 @@ class Consignment extends React.PureComponent {
         bankId: '',
         numberOfProducts: 1,
         consignmentId: '',
-        timeGetMoney: moment().format('MM-YYYY'),
         numberOfConsignmentTime: 0,
         numberOfConsignment: 0
       },
+      moneyBack: 0,
+      totalMoney: 0,
       isLoadingTags: false,
       objectIdFoundUser: '',
       birthday: moment(),
@@ -329,55 +368,130 @@ class Consignment extends React.PureComponent {
   }
 
   changeDataProduct = (value, indexProduct) => {
-    const { productList } = this.state
+    const { productList, formData } = this.state
 
     let productListTemp = productList.slice()
 
     if (value.target.id === 'priceProduct') {
-      productListTemp[indexProduct].price = value.target.value
-    } else if (value.target.id === 'numberOfProducts') {
-      productListTemp[indexProduct].count = value.target.value
+      productListTemp[indexProduct].price = Number(value.target.value)
+      productListTemp[indexProduct].priceAfterFee = Number(this.convertPriceAfterFee(Number(value.target.value)))
+      productListTemp[indexProduct].totalPriceAfterFee = Number(productListTemp[indexProduct].count * this.convertPriceAfterFee(Number(value.target.value)))
+
+      let moneyBack = 0
+      let totalMoney = 0
+      productListTemp.map(item => {
+        moneyBack += item.count * this.convertPriceAfterFee(Number(item.price)) * 1000
+        totalMoney += item.count * Number(item.price) * 1000
+      })
+
+      this.setState({
+        productList: productListTemp,
+        moneyBack: moneyBack,
+        totalMoney: totalMoney
+      })
+    } else if (value.target.id === 'numberOfProducts' && (Number(value.target.value > 0) || value.target.value.length === 0)) {
+      productListTemp[indexProduct].count = Number(value.target.value)
+      productListTemp[indexProduct].remainNumberProduct = Number(value.target.value)
+      productListTemp[indexProduct].priceAfterFee = Number(this.convertPriceAfterFee(Number(productListTemp[indexProduct].price)))
+      productListTemp[indexProduct].totalPriceAfterFee = Number(value.target.value * this.convertPriceAfterFee(Number(productListTemp[indexProduct].price)))
+
+      let numberOfProducts = 0
+      let moneyBack = 0
+      let totalMoney = 0
+      productListTemp.map(item => {
+        numberOfProducts += Number(item.count)
+        moneyBack += item.count * this.convertPriceAfterFee(Number(item.price)) * 1000
+        totalMoney += item.count * Number(item.price) * 1000
+      })
+
+      this.setState({
+        moneyBack: moneyBack,
+        totalMoney: totalMoney,
+        formData: {
+          ...formData,
+          numberOfProducts: numberOfProducts
+        },
+        productList: productListTemp
+      })
     }
-
-    console.log('changeDataProduct')
-    console.log(value.target.value)
-    console.log(indexProduct)
-
-    this.setState({
-      productList: productListTemp
-    })
   }
 
   onPlusProductList = () => {
-    const { productList } = this.state
+    const { productList, formData } = this.state
     this.setState({
       productList: [
         ...productList,
         {
           price: '',
-          count: 1
+          count: 1,
+          remainNumberProduct: 1,
+          priceAfterFee: ''
         }
-      ]
+      ],
+      formData: {
+        ...formData,
+        numberOfProducts: formData.numberOfProducts + 1
+      }
     })
   }
 
   onDeleteProductList = (index) => {
-    const { productList } = this.state
+    const { productList, formData, moneyBack, totalMoney } = this.state
     let productListTemp = productList.slice()
     productListTemp.splice(index, 1)
 
     console.log(index)
     console.log(productListTemp)
 
+    let moneyBackTemp = moneyBack - (this.convertPriceAfterFee(Number(productList[index].price)) * 1000 * Number(productList[index].count))
+    let totalMoneyTemp = totalMoney - Number(productList[index].price) * 1000 * Number(productList[index].count)
     this.setState({
-      productList: productListTemp
+      moneyBack: moneyBackTemp,
+      totalMoney: totalMoneyTemp,
+      productList: productListTemp,
+      formData: {
+        ...formData,
+        numberOfProducts: formData.numberOfProducts - 1
+      }
     })
+  }
+
+  convertPriceAfterFee = (productPrice = 0) => {
+    let moneyBack = productPrice
+
+    if (productPrice > 0) {
+      if (productPrice < 1000) {
+        moneyBack = productPrice * 74 / 100
+      } else if (productPrice >= 1000 && productPrice <= 10000) {
+        moneyBack = productPrice * 77 / 100
+      } else if (productPrice > 10000) {
+        moneyBack = productPrice * 80 / 100
+      }
+
+      return moneyBack
+    } else {
+      return 0
+    }
+  }
+
+  onChangeRadio = (value) => {
+    console.log(value)
+
+    if (value[0] === 'true') {
+      this.setState({
+        isTransferMoneyWithBank: 'true'
+      })
+    } else {
+      this.setState({
+        isTransferMoneyWithBank: 'false'
+      })
+    }
   }
 
   render () {
     const { userData } = this.props
     const {
-      formData, isConsigning, isShowConfirmForm,
+      formData, isConsigning, isShowConfirmForm, moneyBack, totalMoney, timeGroupId, isTransferMoneyWithBank,
       birthday, isLoadingUser, isFoundUser, isLoadingTags, allInfoTag, productList
     } = this.state
 
@@ -397,6 +511,11 @@ class Consignment extends React.PureComponent {
       autoplay: true,
       animationData: successJson
     }
+
+    const options = [
+      { label: 'Chuyển khoản', value: 'true' },
+      { label: 'Trực tiếp', value: 'false' }
+    ]
 
     return (
       <div className='consignment-container'>
@@ -422,12 +541,22 @@ class Consignment extends React.PureComponent {
                     <Descriptions.Item span={24} label='Email'>{formData.mail}</Descriptions.Item>
                     <Descriptions.Item span={24} label='Ngân hàng'>{formData.bankName}</Descriptions.Item>
                     <Descriptions.Item span={24} label='ID Ngân hàng'>{formData.bankId}</Descriptions.Item>
+                    <Descriptions.Item span={24} label='Hình thức nhận tiền'>{isTransferMoneyWithBank === 'true' ? 'Chuyển khoản' : 'Trực tiếp'}</Descriptions.Item>
                     <Descriptions.Item span={24} label='Chứng minh thư'>{formData.consignerIdCard}</Descriptions.Item>
                     <Descriptions.Item span={24} label='Sinh nhật'>{moment(formData.birthday).format('DD-MM-YYYY')}</Descriptions.Item>
                   </Descriptions>
+                  {productList.map((item, indexItem) => {
+                    return (
+                      <div key={indexItem} className='product-box MB10'>
+                        <span style={{ marginRight: '10px' }}>{indexItem}</span>
+                        <Input disabled style={{ width: '40%', marginRight: '10px' }} value={item.price} placeholder='Giá tiền' />
+                        <Input disabled style={{ width: '40%' }} value={item.count} prefix={<span>SL</span>} placeholder='Số lượng' />
+                      </div>
+                    )
+                  })}
                 </Col>
               </Row>
-              <Button className='MT20' onClick={this.onRefeshAll} >Quay lại</Button>
+              <Button className='MT20 MB20' onClick={this.onRefeshAll} >Quay lại</Button>
             </>
             : <>
               {/* <Lottie
@@ -513,20 +642,38 @@ class Consignment extends React.PureComponent {
 
                   <Divider />
 
+                  <Form.Item label='Tổng tiền sau thu phí'>
+                    <Col sm={24} md={12}>
+                      <Input suffix='vnđ' id='moneyBack' key='moneyBack' value={numberWithCommas(Math.round(moneyBack))} disabled placeholder={'...000 vnd'} />
+                    </Col>
+                  </Form.Item>
+
+                  <Form.Item label='Tổng tiền trước thu phí'>
+                    <Col sm={24} md={12}>
+                      <Input suffix='vnđ' id='totalMoney' key='totalMoney' value={numberWithCommas(Math.round(totalMoney))} disabled placeholder={'...000 vnd'} />
+                    </Col>
+                  </Form.Item>
+
                   <Form.Item name='consignmentId' rules={[{ required: true, message: 'Vui lòng nhập mã ký gửi' }]} label='Mã ký gửi'>
                     <Col sm={24} md={12}>
                       <Input allowClear id='consignmentId' key='consignmentId' onChange={this.changeData} placeholder='...' />
                     </Col>
                   </Form.Item>
-                  <Form.Item name='numberOfProducts' rules={[{ required: true, message: 'Vui lòng nhập số lượng' }]} label='Số lượng Hàng Hoá'>
+                  <Form.Item name='numberOfProducts' label='Số lượng Hàng Hoá'>
                     <Col sm={24} md={12}>
-                      <Input defaultValue={1} type={'number'} id='numberOfProducts' key='numberOfProducts' onChange={this.changeData} allowClear placeholder='...' />
+                      <Input disabled defaultValue={1} value={formData.numberOfProducts} type={'number'} id='numberOfProducts' key='numberOfProducts' allowClear placeholder='...' />
+                    </Col>
+                  </Form.Item>
+
+                  <Form.Item label='Hình thức nhận tiền'>
+                    <Col sm={24} md={24}>
+                      <Checkbox.Group options={options} value={this.state.isTransferMoneyWithBank} defaultValue={['false']} onChange={this.onChangeRadio} />
                     </Col>
                   </Form.Item>
 
                   <Form.Item label='Ngày trả tiền'>
                     <Input.Group compact>
-                      <Select onChange={this.onChangeTimeGetMoney} defaultValue={allInfoTag && allInfoTag[0] && allInfoTag[0].name} size='large' loading={isLoadingTags} id='timeGetMoney' key='timeGetMoney' placeholder='...'>
+                      <Select onChange={this.onChangeTimeGetMoney} defaultValue={allInfoTag && allInfoTag[0] && allInfoTag[0].code} size='large' loading={isLoadingTags} id='timeGetMoney' key='timeGetMoney' placeholder='...'>
                         {
                           isLoadingTags ? null
                             : allInfoTag.map(tag => {
