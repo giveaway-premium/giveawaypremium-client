@@ -64,7 +64,7 @@ export default class Gap {
         slot: slotID,
         date: formatedDay,
         dateTime: formatedTime,
-        agency: { '__type': 'Pointer', 'className': 'Agency', 'objectId': 'KcPHTActcd' }, // we need set more agency after
+        agency: { '__type': 'Pointer', 'className': 'Agency', 'objectId': 'HApHfw0saq' }, // we need set more agency after
         customerName: formData.customerName,
         phoneNumber: formData.phoneNumber,
         numberOfProduct: `${formData.numberOfProduct}`
