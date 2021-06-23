@@ -309,6 +309,7 @@ class TableConsignemntScreen extends React.PureComponent {
 
     item.productList[row.key] = {
       ...row,
+
       soldNumberProduct: Number(row.soldNumberProduct) || 0,
       remainNumberProduct: Number(row.count) - Number(row.soldNumberProduct || 0),
       moneyBackProduct: Math.round((Number(row.soldNumberProduct || 0) * Number(row.priceAfterFee)))
@@ -329,7 +330,7 @@ class TableConsignemntScreen extends React.PureComponent {
     console.log('handleSaveNestTable')
     console.log(newItem)
 
-    if (!isEqual(newItem, item)) {
+    // if (!isEqual(newItem, item)) {
       newData.splice(index, 1, newItem)
       console.log('row')
       this.setState({
@@ -344,7 +345,7 @@ class TableConsignemntScreen extends React.PureComponent {
           showNotification(`Cập nhật chưa được`)
         }
       })
-    }
+    // }
   };
 
   getColumnSearchProps = dataIndex => ({
