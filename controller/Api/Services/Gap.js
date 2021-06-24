@@ -186,11 +186,12 @@ export default class Gap {
   // Customer
   static async setCustomer (formData) {
     const body = {
+      role: 'customer',
       fullName: formData.consignerName,
       phoneNumber: formData.phoneNumber,
       identityNumber: formData.consignerIdCard,
       mail: formData.mail,
-      email: formData.mail || 'nothing@giveaway.com',
+      // email: formData.mail || 'nothing@giveaway.com',
       birthday: formData.birthday,
       username: formData.username,
       password: formData.password,

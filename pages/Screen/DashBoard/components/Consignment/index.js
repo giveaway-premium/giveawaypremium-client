@@ -144,7 +144,7 @@ class Consignment extends React.PureComponent {
             console.log(customerFormData)
             console.log(objectIdFoundUser)
 
-            GapService.sendMail(customerFormData, formData, EMAIL_TYPE.CONSIGNMENT, EMAIL_TITLE.CONSIGNMENT)
+            formData.mail && formData.mail.length > 0 && GapService.sendMail(customerFormData, formData, EMAIL_TYPE.CONSIGNMENT, EMAIL_TITLE.CONSIGNMENT)
             GapService.updateCustomer(customerFormData, objectIdFoundUser)
           })
         } else {
@@ -158,7 +158,7 @@ class Consignment extends React.PureComponent {
           phoneNumber: formData.phoneNumber,
           consignerIdCard: formData.consignerIdCard,
           mail: formData.mail,
-          email: formData.mail || 'nothing@giveaway.com',
+          // email: formData.mail || 'nothing@giveaway.com',
           username: formData.phoneNumber,
           password: formData.consignerIdCard,
           birthday: formData.birthday,
@@ -600,17 +600,17 @@ class Consignment extends React.PureComponent {
                       <Input disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} value={formData.consignerIdCard} id='consignerIdCard' key='consignerIdCard' onChange={this.changeData} allowClear placeholder='...' />
                     </Col>
                   </Form.Item>
-                  <Form.Item name='mail' rules={[{ required: !isFoundUser, type: 'email', message: 'Email không hợp lệ' }]} label='Email'>
+                  <Form.Item name='mail' rules={[{ type: 'email', message: 'Email không hợp lệ' }]} label='Email'>
                     <Col sm={24} md={24}>
                       <Input disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} value={formData.mail} id='mail' key='mail' onChange={this.changeData} allowClear placeholder='...' />
                     </Col>
                   </Form.Item>
-                  <Form.Item name='bankName' rules={[{ required: !isFoundUser, message: 'Vui lòng nhập tên ngân hàng' }]} label='Ngân hàng'>
+                  <Form.Item name='bankName' rules={[{ required: !isFoundUser && isTransferMoneyWithBank === 'true', message: 'Vui lòng nhập tên ngân hàng' }]} label='Ngân hàng'>
                     <Col sm={24} md={24}>
                       <Input disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} value={formData.bankName} id='bankName' key='bankName' onChange={this.changeData} allowClear placeholder='...' />
                     </Col>
                   </Form.Item>
-                  <Form.Item name='bankId' rules={[{ required: !isFoundUser, message: 'Vui lòng nhập id ngân hàng' }]} label='ID Ngân hàng'>
+                  <Form.Item name='bankId' rules={[{ required: !isFoundUser && isTransferMoneyWithBank === 'true', message: 'Vui lòng nhập id ngân hàng' }]} label='ID Ngân hàng'>
                     <Col sm={24} md={12}>
                       <Input disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} value={formData.bankId} id='bankId' key='bankId' onChange={this.changeData} type={'number'} allowClear placeholder='...' />
                     </Col>
