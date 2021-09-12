@@ -14,7 +14,7 @@ import GapService from 'controller/Api/Services/Gap'
 import TableConsignemntScreen from './components/TableConsignemntScreen'
 import TableCustomer from './components/TableCustomer'
 import TableAppointment from './components/TableAppointment'
-
+import TableProductScreen from './components/TableProduct'
 const { TabPane } = Tabs
 
 class ManageScreen extends React.PureComponent {
@@ -64,14 +64,21 @@ class ManageScreen extends React.PureComponent {
           <TabPane tab='Ký gửi' key='1'>
             <TableConsignemntScreen />
           </TabPane>
-          <TabPane tab='Khách hàng' key='2'>
+          <TabPane tab='Sản phẩm' key='2'>
+            <TableProductScreen />
+          </TabPane>
+          <TabPane tab='Chiến dịch' key='3' />
+          <TabPane tab='Đơn hàng' key='4' />
+
+          <TabPane tab='Khách hàng' key='5'>
             <TableCustomer />
             {/* Content of Tab Pane 2 */}
           </TabPane>
-          <TabPane tab='Lịch hẹn' key='3'>
+          <TabPane tab='Lịch hẹn' key='6'>
             <TableAppointment />
             {/* Content of Tab Pane 3 */}
           </TabPane>
+
         </Tabs>
         {/* {this.detectRenderTabContent()} */}
         <MyModal ref={this.myModal} />

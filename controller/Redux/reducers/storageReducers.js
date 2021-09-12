@@ -51,3 +51,9 @@ export const transferDataRedux = createReducer(initState.transferData, {
     return action.payload
   }
 })
+
+export const categoryRedux = createReducer(initState.category, {
+  [KEY_STORE.SET_CATEGORY] (state, action) {
+    return action.payload
+  }
+})

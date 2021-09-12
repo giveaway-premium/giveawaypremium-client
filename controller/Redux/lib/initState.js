@@ -2,6 +2,7 @@ var initState = {
   lang: 'en',
   userData: null,
   walletConnect: [],
+  category: [],
   internet: true,
   isloading: true,
   setting: {},
