@@ -101,85 +101,66 @@ const EditableCell = ({
   return <td {...restProps}>{childNode}</td>
 }
 
-class TableConsignemntScreen extends React.PureComponent {
+class TableProductScreen extends React.PureComponent {
   constructor (props) {
     super(props)
     this.columns = [
       {
-        title: 'Tên khách hàng',
-        dataIndex: 'consignerName',
-        key: 'name'
+        title: 'Code SP',
+        dataIndex: 'code',
+        key: 'code',
+        width: 150
       },
       {
-        title: 'Số điện thoại',
-        dataIndex: 'phoneNumber',
-        key: '1',
-        ...this.getColumnSearchProps('phoneNumber')
+        title: 'Tên SP',
+        dataIndex: 'name',
+        key: 'name',
+        width: 150
       },
       {
-        title: 'Mã ký gửi',
-        dataIndex: 'consignmentId',
-        key: '2',
-        editable: true
+        title: 'Giá',
+        dataIndex: 'price',
+        key: 'price',
+        // editable: true,
+        render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
       },
       {
-        title: 'SL ký gửi',
-        width: 80,
-        dataIndex: 'numberOfProducts',
-        key: '3'
-        // editable: true
+        title: 'Giá sau phí',
+        dataIndex: 'priceAfterFee',
+        key: 'priceAfterFee',
+        // editable: true,
+        render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
+      },
+      {
+        title: 'Số lượng',
+        dataIndex: 'count',
+        key: 'count',
+        width: 100
       },
       {
         title: 'Đã bán',
         width: 80,
-        dataIndex: 'numSoldConsignment',
-        key: '4'
+        dataIndex: 'soldNumberProduct',
+        key: 'soldNumberProduct',
         // editable: true
       },
       {
         title: 'Còn lại',
         width: 80,
-        dataIndex: 'remainNumConsignment',
-        key: '5'
+        dataIndex: 'remainNumberProduct',
+        key: 'remainNumberProduct'
       },
       {
-        title: 'Số tiền trả khách',
-        dataIndex: 'moneyBack',
-        key: '6',
-        // editable: true,
-        render: (value) => <span>{value ? numberWithCommas(value) : '0'} đ</span>
+        title: 'Tổng tiền sau phí',
+        dataIndex: 'moneyBackProduct',
+        key: 'moneyBackProduct',
+        render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
       },
       {
-        title: 'Tên ngân hàng',
-        dataIndex: 'bankName',
-        key: '7'
-      },
-      {
-        title: 'ID ngân hàng',
-        dataIndex: 'bankId',
-        key: '8'
-      },
-      {
-        title: 'Nhận tiền',
-        dataIndex: 'isTransferMoneyWithBank',
-        key: '9'
-      },
-      {
-        title: 'Thời gian nhận tiền',
-        dataIndex: 'timeConfirmGetMoney',
-        key: '10'
-      },
-      {
-        title: 'Nhận tiền',
-        key: '11',
-        width: 90,
-        fixed: 'right',
-        render: (value) =>
-          this.state.consignmentData.length >= 1 ? (
-            <Popconfirm title='Xác nhận' onConfirm={() => this.onChangeRadioIsGetMoney(value)}>
-              <Radio.Button className={value.isGetMoney ? 'radio-true-isGetMoney' : 'radio-false-isGetMoney'} value={value.isGetMoney}>{value.isGetMoney ? 'Rồi' : 'Chưa'}</Radio.Button>
-            </Popconfirm>
-          ) : null
+        title: 'Tình trạng',
+        dataIndex: 'status',
+        key: 'status',
+        render: (value) => <span>{this.convertStatusNumberToText(value || 0)}</span>
       }
     ]
     this.state = {
@@ -205,6 +186,23 @@ class TableConsignemntScreen extends React.PureComponent {
 
   }
 
+  convertStatusNumberToText = (statusNumber) => {
+    switch (statusNumber) {
+    case 0: {
+      return 'Chờ xử lý'
+    }
+    case 1: {
+      return 'Sẵn sàng'
+    }
+    case 2: {
+      return 'Bán Online'
+    }
+    case 3: {
+      return 'Bán Offline'
+    }
+    }
+  }
+
   expandedRowRender = (recordData) => {
     const components = {
       body: {
@@ -214,18 +212,6 @@ class TableConsignemntScreen extends React.PureComponent {
     }
 
     const columns = [
-      {
-        title: 'Mã SP',
-        dataIndex: 'code',
-        key: 'code',
-        width: 100
-      },
-      {
-        title: 'Tên SP',
-        dataIndex: 'name',
-        key: 'name',
-        width: 150
-      },
       {
         title: 'Giá',
         dataIndex: 'price',
@@ -275,9 +261,6 @@ class TableConsignemntScreen extends React.PureComponent {
     recordData && recordData.productList && recordData.productList.map((item, index) => {
       data.push({
         key: index,
-        name: item.name,
-        categoryId: item.categoryId,
-        code: item.code || '',
         price: Number(item.price) || 0,
         count: Number(item.count) || 0,
         priceAfterFee: Number(item.priceAfterFee) || 0,
@@ -305,7 +288,7 @@ class TableConsignemntScreen extends React.PureComponent {
     })
 
     return <Table
-      scroll={{ x: 1000, y: '55vh' }}
+      scroll={{ x: 800, y: '55vh' }}
       components={components}
       columns={formatedColumns}
       dataSource={data}
@@ -363,139 +346,6 @@ class TableConsignemntScreen extends React.PureComponent {
     // }
   };
 
-  getColumnSearchProps = dataIndex => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-      <div style={{ padding: 8 }}>
-        <Input
-          ref={node => {
-            this.searchInput = node
-          }}
-          placeholder={`Tìm số điện thoại`}
-          value={selectedKeys[0]}
-          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => this.handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{ width: 188, marginBottom: 8, display: 'block' }}
-        />
-        {/* <Space> */}
-        <Button
-          type='primary'
-          onClick={() => this.handleSearch(selectedKeys, confirm, dataIndex)}
-          icon={<SearchOutlined />}
-          size='small'
-          style={{ width: '100%' }}
-        >
-            Tìm kiếm
-        </Button>
-        {/* <Button
-          type='link'
-          size='small'
-          onClick={() => {
-            confirm({ closeDropdown: false })
-            this.setState({
-              searchText: selectedKeys[0],
-              searchedColumn: dataIndex
-            })
-          }}
-        >
-            Filter
-        </Button> */}
-        {/* </Space> */}
-      </div>
-    ),
-    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-    // onFilter: (value, record) =>
-    //   record[dataIndex]
-    //     ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
-    //     : '',
-    onFilterDropdownVisibleChange: visible => {
-      if (visible) {
-        setTimeout(() => this.searchInput.select(), 100)
-      }
-    },
-    render: text =>
-      this.state.searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-          searchWords={[this.state.searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ''}
-        />
-      ) : (
-        text
-      )
-  });
-
-  onChangeRadioIsGetMoney = async (row) => {
-    console.log('onChangeRadioIsGetMoney')
-    console.log(row)
-
-    const newData = [...this.state.consignmentData]
-    const index = newData.findIndex((item) => row.objectId === item.objectId)
-    const item = newData[index]
-    let newItem = { ...item, ...row, isGetMoney: !item.isGetMoney }
-
-    if (newItem && newItem.isGetMoney === true) {
-      newItem = { ...item, ...row, isGetMoney: !item.isGetMoney, timeConfirmGetMoney: moment().format('DD-MM-YYYY HH:mm') }
-    }
-
-    if (!isEqual(newItem, item)) {
-      newData.splice(index, 1, newItem)
-      console.log('row')
-      this.setState({
-        consignmentData: newData
-      }, async () => {
-        console.log(newItem)
-        const customerFormData = {
-          consignerName: row.consignerName,
-          phoneNumber: row.phoneNumber,
-          numberOfProducts: row.numberOfProducts,
-          consignerIdCard: row.consignerIdCard,
-          mail: row.email,
-          bankName: row.bankName,
-          bankId: row.bankId
-        }
-        // <p>Họ tên khách hàng: {{customerName}}</p>
-        // <p>Số điện thoại: {{phoneNumber}}</p>
-        // <p>CMND: {{identityId}}</p>
-        // <p>Mã ký gửi: {{consignmentId}}</p>
-        // <p>Số lượng: {{numberOfProduct}}</p>
-        // <p>Ngân hàng đăng ký: {{bankName}}</p>
-        // <p>ID Ngân hàng: {{bankId}}</p>
-        // <p>Số tiền chuyển khoản: {{moneyBack}}</p>
-        if (newItem && newItem.isGetMoney && newItem.mail && newItem.mail.length > 0) {
-          GapService.sendMail(customerFormData, row, EMAIL_TYPE.PAYMENT, EMAIL_TITLE.PAYMENT)
-        }
-
-        const res = await GapService.updateConsignment(newItem)
-        console.log(res)
-        if (res) {
-          showNotification(`Cập nhật thành công ${item.phoneNumber}`)
-        } else {
-          showNotification(`Cập nhật chưa được`)
-        }
-      })
-    }
-  }
-
-  handleSearch = (selectedKeys, confirm, dataIndex) => {
-    console.log('handleSearch')
-    console.log(selectedKeys)
-
-    // confirm()
-    // this.fetchTableData(1, selectedKeys[0])
-    this.setState({
-      searchText: selectedKeys[0],
-      searchedColumn: dataIndex
-    }, () => {
-      confirm()
-    })
-  };
-
-  handleReset = clearFilters => {
-    clearFilters()
-    this.setState({ searchText: '' })
-  };
-
   fetchAllTags = async () => {
     this.setState({
       searchText: '',
@@ -528,9 +378,9 @@ class TableConsignemntScreen extends React.PureComponent {
         console.log('fetchTableData 13213123123123')
         console.log(currentTag)
 
-        res = await GapService.getConsignment(page, null, null, currentTag)
+        res = await GapService.getProduct(page, null, null, currentTag)
       } else {
-        res = await GapService.getConsignment(page, searchText, null, currentTag)
+        res = await GapService.getProduct(page, searchText, null, currentTag)
       }
 
       console.log('res')
@@ -541,26 +391,14 @@ class TableConsignemntScreen extends React.PureComponent {
           console.log('indexItem')
           console.log(item)
           consignmentData.push({
-            key: indexItem,
-            objectId: item.objectId,
-            consignerName: item.consignerName,
-            consignmentId: item.consignmentId,
-            consignerIdCard: item.consignerIdCard,
-            consigneeName: item.consigneeName,
-            phoneNumber: item.phoneNumber,
-            numberOfProducts: `${Number(item.numberOfProducts)}`,
-            numSoldConsignment: `${Number(item.numSoldConsignment || 0)}`,
-            remainNumConsignment: `${Number(item.numberOfProducts) - Number(item.numSoldConsignment || 0)}`,
-            bankName: item.banks && item.banks[0] ? item.banks[0].type : '',
-            bankId: item.banks && item.banks[0] ? item.banks[0].accNumber : '',
-            moneyBack: item.moneyBack ? `${item.moneyBack}` : 0,
-            totalMoney: item.totalMoney ? `${item.totalMoney}` : 0,
-            timeConfirmGetMoney: item.timeConfirmGetMoney || 'Chưa',
-            isTransferMoneyWithBank: item.isTransferMoneyWithBank ? 'Chuyển khoản' : 'Trực tiếp',
-            email: item.mail,
-            birthday: item.birthday,
-            productList: item.productList,
-            isGetMoney: item.isGetMoney
+            ...item,
+            categoryId: item.category.objectId,
+            price: Number(item.price) || 0,
+            count: Number(item.count) || 0,
+            priceAfterFee: Number(item.priceAfterFee) || 0,
+            soldNumberProduct: Number(item.soldNumberProduct) || 0,
+            remainNumberProduct: Number(item.count) - Number(item.soldNumberProduct || 0),
+            moneyBackProduct: Math.round(Number(item.soldNumberProduct || 0) * item.priceAfterFee || 0)
           })
         })
         this.setState({
@@ -658,13 +496,13 @@ class TableConsignemntScreen extends React.PureComponent {
           columns={columns}
           dataSource={consignmentData}
           bordered
-          expandable={{ expandedRowRender: record => this.expandedRowRender(record) }}
+          // expandable={{ expandedRowRender: record => this.expandedRowRender(record) }}
           pagination={{
             total: total,
             pageSize: 20,
             onChange: this.paginationChange
           }}
-          scroll={{ x: 1600, y: '55vh' }}
+          scroll={{ x: 1500, y: '55vh' }}
         />
         <MyModal ref={this.myModal} />
       </div>
@@ -677,4 +515,4 @@ const mapStateToProps = (state) => ({
   userData: state.userData
 })
 
-export default withRouter(connect(mapStateToProps, null)(TableConsignemntScreen))
+export default withRouter(connect(mapStateToProps, null)(TableProductScreen))

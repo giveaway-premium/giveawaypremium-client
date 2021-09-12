@@ -59,13 +59,26 @@ class GiveAway extends App {
         { key: KEY_STORE.SET_CONNECTION_METHOD, action: storageActions.setConnectionMethod, init: init.connectionMethod },
         { key: KEY_STORE.SET_USER, action: storageActions.setUserData, init: init.userData },
         { key: KEY_STORE.SET_TRANSFER_DATA, action: storageActions.setTransferData, init: init.transferData },
-        { key: KEY_STORE.SET_SETTING, action: storageActions.setSetting, init: init.setting }
+        { key: KEY_STORE.SET_SETTING, action: storageActions.setSetting, init: init.setting },
+        { key: KEY_STORE.SET_CATEGORY, action: storageActions.setCategory, init: init.category }
       ]
 
       const promiseArr = storageRedux.map((item) => {
         checkLocalStoreToRedux(store, item.key, item.action, item.init)
       })
       await Promise.all(promiseArr)
+
+      const initDataPromiseArr = [
+        ReduxServices.getCategory()
+      ]
+
+      if (getDataLocal(KEY_STORE.SET_CATEGORY)) {
+        // data is already in local store, don't need to wait for get init data
+        Promise.all(initDataPromiseArr)
+      } else {
+        // if user access the fisrt time and don't have data in local store
+        await Promise.all(initDataPromiseArr)
+      }
 
       // in the case reload page: need to wait for detect connection method already in use before showing page
     } finally {

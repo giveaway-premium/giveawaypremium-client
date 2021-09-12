@@ -3,6 +3,8 @@ import storeRedux from 'controller/Redux/store/configureStore'
 import PageReduxAction from 'controller/Redux/actions/pageActions'
 import StorageActions from 'controller/Redux/actions/storageActions'
 import { showNotification, getCurrentBrowserLanguage } from './function'
+import GapService from 'controller/Api/Services/Gap'
+
 const window = require('global/window')
 
 export default class ReduxServices {
@@ -101,6 +103,28 @@ export default class ReduxServices {
 
   static deleteUserToken () {
     ReduxServices.callDispatchAction(StorageActions.setUserData({}))
+  }
+
+  static async getCategory () {
+    const res = await GapService.getCategory()
+
+    console.log('getCategory')
+    console.log(res)
+
+    if (res && res.results) {
+      ReduxServices.callDispatchAction(StorageActions.setCategory(res.results))
+    }
+  }
+
+  static async getCategoryNhanh () {
+    const res = await GapService.getCategoryNhanh()
+
+    console.log('getCategoryNhanh')
+    console.log(res)
+
+    if (res && res.results) {
+      ReduxServices.callDispatchAction(StorageActions.setCategory(res.results))
+    }
   }
 
   static async detectConnection (baseUrl) {

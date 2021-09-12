@@ -101,6 +101,27 @@ export default class Gap {
     }
   }
 
+  // Product
+
+  static async getProduct (page = 1, keyword = null, limit = 20, currentTagId) {
+    let skip = (20 * page) - 20
+
+    const queryBody = {
+      limit: limit,
+      skip: skip,
+      count: true
+    }
+
+    if (keyword) {
+      const customQuery = `where={"name":{"$regex":"${keyword}"},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      return this.fetchData('/classes/Product', REQUEST_TYPE.GET, queryBody, null, null, null, customQuery)
+    } else {
+      const customQuery = `where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+
+      return this.fetchData('/classes/Product', REQUEST_TYPE.GET, queryBody, null, null, null, customQuery)
+    }
+  }
+
   // Consignment
   static async setConsignment (formData, consigneeData, consignerData, timeGroupId, productList, moneyBack, totalMoney, isTransferMoneyWithBank = false) {
     const body = {
@@ -257,6 +278,14 @@ export default class Gap {
     const customQuery = `where={"phoneNumber":"${phoneNumber.toString()}"}`
 
     return this.fetchData('/classes/_User', REQUEST_TYPE.GET, null, null, null, null, customQuery)
+  }
+
+  static async getCategory () {
+    return this.fetchData('/classes/Category?include=subCategories', REQUEST_TYPE.GET, null, null, null, null)
+  }
+
+  static async getCategoryNhanh () {
+    return this.fetchData('functions/nhanh-category', REQUEST_TYPE.GET, null, null, null, null)
   }
 
   static async fetchData (apiUrl, method, queryBody, postData, hostLink, authKey = '', customQuery = null, isUseAuthKey = false) {

@@ -26,11 +26,25 @@ class Consignment extends React.PureComponent {
       isTransferMoneyWithBank: 'false',
       productList: [
         {
+          code: '',
+          productId: '',
           price: '',
           count: 1,
           remainNumberProduct: 1,
           priceAfterFee: '',
-          totalPriceAfterFee: ''
+          totalPriceAfterFee: '',
+          categoryId: '',
+          subCategoryId: '',
+          inventory: {
+            'remain': 1,
+            'shipping': 0,
+            'damaged': 0,
+            'holding': 1,
+            'available': 1,
+            'warranty': 0,
+            'warrantyHolding': 0,
+            'depots': []
+          }
         }
       ],
       formData: {
@@ -56,13 +70,32 @@ class Consignment extends React.PureComponent {
       isConsigning: false,
       isShowConfirmForm: false,
       isFoundUser: false,
-      isLoadingUser: false
+      isLoadingUser: false,
+      categoryList: []
     }
     this.formRef = React.createRef()
     this.myModal = React.createRef()
   }
 
   componentDidMount () {
+    const { categoryRedux } = this.props
+    console.log('categoryRedux')
+    console.log(categoryRedux)
+    let categoryList = []
+    if (categoryRedux) {
+      categoryRedux.map((item, indexItem) => {
+        if (item && item.subCategories && item.subCategories.length > 0) {
+          categoryList.push(...item.subCategories)
+        } else {
+          categoryList.push({ ...item, isParentSelf: true })
+        }
+      })
+    }
+
+    this.setState({
+      categoryList: categoryList
+    })
+
     this.fetchAllTags()
   }
 
@@ -70,6 +103,7 @@ class Consignment extends React.PureComponent {
 
   }
 
+  //
   fetchAllTags = async () => {
     this.setState({
       isLoadingTags: true
@@ -77,6 +111,7 @@ class Consignment extends React.PureComponent {
       const res = await GapService.getConsignmentID()
       if (res && res.results && res.results.length > 0) {
         const reverseRes = res.results.reverse()
+
         this.setState({
           allInfoTag: reverseRes,
           isLoadingTags: false
@@ -98,11 +133,13 @@ class Consignment extends React.PureComponent {
     // })
 
     let productListTemp = []
-
+    let productId = 0
     productList.map((item, indexItem) => {
       if ((Number(item.price) > 0 || item.price.length > 0) && Number(item.count) > 0) {
+        productId += 1
         productListTemp.push({
           ...item,
+          code: formData.consignmentId + '-' + productId,
           key: indexItem
         })
       }
@@ -148,6 +185,7 @@ class Consignment extends React.PureComponent {
             GapService.updateCustomer(customerFormData, objectIdFoundUser)
           })
         } else {
+          this.onRefeshAll()
           showNotification('Tạo Đơn Ký gửi thất bại')
         }
       } else { // for new user
@@ -182,8 +220,12 @@ class Consignment extends React.PureComponent {
               isConsigning: false
             })
             GapService.sendMail(customerFormData, formData, EMAIL_TYPE.CONSIGNMENT, EMAIL_TITLE.CONSIGNMENT)
+          } else {
+            this.onRefeshAll()
+            showNotification('Tạo khách hàng thất bại')
           }
         } else {
+          this.onRefeshAll()
           showNotification('Tạo khách hàng thất bại')
         }
       }
@@ -283,13 +325,28 @@ class Consignment extends React.PureComponent {
       isTransferMoneyWithBank: 'false',
       productList: [
         {
+          code: '',
+          productId: '',
           price: '',
           count: 1,
-          priceAfterFee: 0
+          remainNumberProduct: 1,
+          priceAfterFee: '',
+          totalPriceAfterFee: '',
+          categoryId: '',
+          subCategoryId: '',
+          inventory: {
+            'remain': 1,
+            'shipping': 0,
+            'damaged': 0,
+            'holding': 1,
+            'available': 1,
+            'warranty': 0,
+            'warrantyHolding': 0,
+            'depots': []
+          }
         }
       ],
       formData: {
-        ...formData,
         consigneeName: this.props && this.props.userData && this.props.userData.name ? this.props.userData.name : '',
         consignerName: '',
         phoneNumber: '',
@@ -300,6 +357,7 @@ class Consignment extends React.PureComponent {
         bankId: '',
         numberOfProducts: 1,
         consignmentId: '',
+        timeGetMoney: moment().format('DD-MM-YYYY'),
         numberOfConsignmentTime: 0,
         numberOfConsignment: 0
       },
@@ -358,7 +416,7 @@ class Consignment extends React.PureComponent {
       this.setState({
         formData: {
           ...formData,
-          timeGetMoney: findTag[0].timeGetMoney
+          timeGetMoney: moment(findTag[0].timeGetMoney).format('DD-MM-YYYY')
         },
         timeGroupId: findTag[0].objectId
       }, () => {
@@ -394,6 +452,16 @@ class Consignment extends React.PureComponent {
       productListTemp[indexProduct].remainNumberProduct = Number(value.target.value)
       productListTemp[indexProduct].priceAfterFee = Number(this.convertPriceAfterFee(Number(productListTemp[indexProduct].price)))
       productListTemp[indexProduct].totalPriceAfterFee = Number(value.target.value * this.convertPriceAfterFee(Number(productListTemp[indexProduct].price)))
+      productListTemp[indexProduct].inventory = {
+        'remain': Number(value.target.value),
+        'shipping': 0,
+        'damaged': 0,
+        'holding': Number(value.target.value),
+        'available': Number(value.target.value),
+        'warranty': 0,
+        'warrantyHolding': 0,
+        'depots': []
+      }
 
       let numberOfProducts = 0
       let moneyBack = 0
@@ -411,6 +479,13 @@ class Consignment extends React.PureComponent {
           ...formData,
           numberOfProducts: numberOfProducts
         },
+        productList: productListTemp
+      })
+    } else if (value.target.id === 'nameProduct') {
+      console.log(value.target.value)
+      productListTemp[indexProduct].name = value.target.value
+
+      this.setState({
         productList: productListTemp
       })
     }
@@ -488,226 +563,321 @@ class Consignment extends React.PureComponent {
     }
   }
 
-  render () {
-    const { userData } = this.props
-    const {
-      formData, isConsigning, isShowConfirmForm, moneyBack, totalMoney, timeGroupId, isTransferMoneyWithBank,
-      birthday, isLoadingUser, isFoundUser, isLoadingTags, allInfoTag, productList
-    } = this.state
+onChangeCategory = (value) => {
+  const { productList } = this.state
+  let productListTemp = productList.slice()
 
-    const layout = {
-      labelCol: { span: 9 },
-      wrapperCol: { span: 15 }
-    }
+  console.log(`selected ${value}`)
+  const categorySplitTxt = value.split('+')
+  let categoryId
+  let subCategoryId
+  let indexProduct
 
-    // const defaultOptions = {
-    //   loop: false,
-    //   autoplay: true,
-    //   animationData: images.consignmentForm
-    // }
+  if (categorySplitTxt.length === 3) {
+    categoryId = categorySplitTxt[0]
+    subCategoryId = categorySplitTxt[1]
+    indexProduct = categorySplitTxt[2]
+  } else if (categorySplitTxt.length === 2) {
+    // this is also parent category
+    categoryId = categorySplitTxt[0]
+    indexProduct = categorySplitTxt[1]
+    subCategoryId = null
+  }
 
-    const defaultOptionsSuccess = {
-      loop: false,
-      autoplay: true,
-      animationData: successJson
-    }
+  console.log('productListTemp')
+  console.log(productListTemp)
 
-    const options = [
-      { label: 'Chuyển khoản', value: 'true' },
-      { label: 'Trực tiếp', value: 'false' }
-    ]
+  productListTemp[indexProduct].categoryId = categoryId
+  productListTemp[indexProduct].subCategoryId = subCategoryId
 
-    return (
-      <div className='consignment-container'>
-        {
-          isShowConfirmForm
-            ? <>
-              <Lottie
-                options={defaultOptionsSuccess}
-                height={150}
-                width={150}
-                isStopped={false}
-                isPaused={false}
-              />
-              <Row justify='center'>
-                <Col span={20}>
-                  <Descriptions>
-                    <Descriptions.Item span={24} label='Mã Ký gửi'>{formData.consignmentId}</Descriptions.Item>
-                    <Descriptions.Item span={24} label='Số lượng Hàng Hoá'>{formData.numberOfProducts}</Descriptions.Item>
-                    <Descriptions.Item span={24} label='Ngày trả tiền'>{formData.timeGetMoney}</Descriptions.Item>
-                    <Descriptions.Item span={24} label='Tên Khách Hàng'>{formData.consignerName}</Descriptions.Item>
-                    <Descriptions.Item span={24} label='Tên Nhân Viên'>{formData.consigneeName}</Descriptions.Item>
-                    <Descriptions.Item span={24} label='Số điện thoại'>{formData.phoneNumber}</Descriptions.Item>
-                    <Descriptions.Item span={24} label='Email'>{formData.mail}</Descriptions.Item>
-                    <Descriptions.Item span={24} label='Ngân hàng'>{formData.bankName}</Descriptions.Item>
-                    <Descriptions.Item span={24} label='ID Ngân hàng'>{formData.bankId}</Descriptions.Item>
-                    <Descriptions.Item span={24} label='Hình thức nhận tiền'>{isTransferMoneyWithBank === 'true' ? 'Chuyển khoản' : 'Trực tiếp'}</Descriptions.Item>
-                    <Descriptions.Item span={24} label='Chứng minh thư'>{formData.consignerIdCard}</Descriptions.Item>
-                    <Descriptions.Item span={24} label='Sinh nhật'>{moment(formData.birthday).format('DD-MM-YYYY')}</Descriptions.Item>
-                  </Descriptions>
-                  {productList.map((item, indexItem) => {
-                    return (
-                      <div key={indexItem} className='product-box MB10'>
-                        <span style={{ marginRight: '10px' }}>{indexItem}</span>
-                        <Input disabled style={{ width: '40%', marginRight: '10px' }} value={item.price} placeholder='Giá tiền' />
-                        <Input disabled style={{ width: '40%' }} value={item.count} prefix={<span>SL</span>} placeholder='Số lượng' />
+  this.setState({
+    productList: productListTemp
+  })
+}
+
+onBlurCategory = () => {
+  console.log('blur')
+}
+
+onFocusCategory = () => {
+  console.log('focus')
+}
+
+onSearchCategory = (val) => {
+  console.log('search:', val)
+}
+
+render () {
+  const { userData, categoryRedux } = this.props
+  const {
+    formData, isConsigning, isShowConfirmForm, moneyBack, totalMoney, timeGroupId, isTransferMoneyWithBank,
+    birthday, isLoadingUser, isFoundUser, isLoadingTags, allInfoTag, productList, categoryList
+  } = this.state
+
+  const layout = {
+    labelCol: { span: 9 },
+    wrapperCol: { span: 15 }
+  }
+
+  // const defaultOptions = {
+  //   loop: false,
+  //   autoplay: true,
+  //   animationData: images.consignmentForm
+  // }
+
+  const defaultOptionsSuccess = {
+    loop: false,
+    autoplay: true,
+    animationData: successJson
+  }
+
+  const options = [
+    { label: 'Chuyển khoản', value: 'true' },
+    { label: 'Trực tiếp', value: 'false' }
+  ]
+
+  return (
+    <div className='consignment-container'>
+      {
+        isShowConfirmForm
+          ? <>
+            <Lottie
+              options={defaultOptionsSuccess}
+              height={150}
+              width={150}
+              isStopped={false}
+              isPaused={false}
+            />
+            <Row justify='center'>
+              <Col span={20}>
+                <Descriptions>
+                  <Descriptions.Item span={24} label='Mã Ký gửi'>{formData.consignmentId}</Descriptions.Item>
+                  <Descriptions.Item span={24} label='Số lượng Hàng Hoá'>{formData.numberOfProducts}</Descriptions.Item>
+                  <Descriptions.Item span={24} label='Ngày trả tiền'>{formData.timeGetMoney}</Descriptions.Item>
+                  <Descriptions.Item span={24} label='Tên Khách Hàng'>{formData.consignerName}</Descriptions.Item>
+                  <Descriptions.Item span={24} label='Tên Nhân Viên'>{formData.consigneeName}</Descriptions.Item>
+                  <Descriptions.Item span={24} label='Số điện thoại'>{formData.phoneNumber}</Descriptions.Item>
+                  <Descriptions.Item span={24} label='Email'>{formData.mail}</Descriptions.Item>
+                  <Descriptions.Item span={24} label='Ngân hàng'>{formData.bankName}</Descriptions.Item>
+                  <Descriptions.Item span={24} label='ID Ngân hàng'>{formData.bankId}</Descriptions.Item>
+                  <Descriptions.Item span={24} label='Hình thức nhận tiền'>{isTransferMoneyWithBank === 'true' ? 'Chuyển khoản' : 'Trực tiếp'}</Descriptions.Item>
+                  <Descriptions.Item span={24} label='Chứng minh thư'>{formData.consignerIdCard}</Descriptions.Item>
+                  <Descriptions.Item span={24} label='Sinh nhật'>{moment(formData.birthday).format('DD-MM-YYYY')}</Descriptions.Item>
+                </Descriptions>
+                {productList.map((item, indexItem) => {
+                  return (
+                    <div key={indexItem} className='product-box MB30'>
+                      <div className='close-box MB5'>
+                        <span>{indexItem}</span>
                       </div>
-                    )
-                  })}
-                </Col>
-              </Row>
-              <Button className='MT20 MB20' onClick={this.onRefeshAll} >Quay lại</Button>
+                      <div className='product-item-name'>
+                        <Input disabled style={{ width: '100%' }} value={item.name} type={'text'} id='nameProduct' key='nameProduct' placeholder='Tên sản phẩm' />
+                      </div>
+                      <div className='product-item-value'>
+                        <Input disabled style={{ marginRight: '10px' }} value={item.price} allowClear type={'number'} id='priceProduct' key='priceProduct' placeholder='Giá tiền' />
+                        <Input disabled value={item.count} prefix={<span>SL</span>} defaultValue={1} type={'number'} id='numberOfProducts' key='numberOfProducts' placeholder='Số lượng' />
+                      </div>
+                    </div>
+                  )
+                })}
+              </Col>
+            </Row>
+            <Button className='MT20 MB20' onClick={this.onRefeshAll} >Quay lại</Button>
             </>
-            : <>
-              {/* <Lottie
+          : <>
+            {/* <Lottie
                 options={defaultOptions}
                 height={100}
                 width={100}
                 isStopped={false}
                 isPaused={false}
               /> */}
-              <Form
-                ref={this.formRef}
-                {...layout}
-                name='consignment'
-                initialValues={formData}
-                // onFinish={this.onFinish}
-                onFinish={this.onConsign}
-                onValuesChange={(changedValues, allValues) => {
-                  console.log(changedValues)
-                  this.setState({
-                    formData: {
-                      ...formData,
-                      ...changedValues
-                    }
-                  }, () => console.log(this.state))
-                }}
-              >
-                <Row className='flex sell-card-form PT40 PB35' justify='center'>
-                  <Form.Item name='phoneNumber' rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]} label='Số điện thoại'>
-                    <Col sm={24} md={12}>
-                      {/* <Search placeholder="input search loading default" loading /> */}
-                      <Input value={formData.phoneNumber} maxLength={12} allowClear onChange={this.fetchUserByPhoneNumber} style={{ minWidth: 100 }} placeholder='...' suffix={isLoadingUser ? <LoadingOutlined /> : isFoundUser ? <CheckCircleFilled /> : null} />
-                    </Col>
-                  </Form.Item>
-                  <Form.Item name='consignerName' rules={[{ required: !isFoundUser, message: 'Vui lòng nhập tên khách hàng' }]} label='Tên Khách Hàng'>
-                    <Col sm={24} md={24}>
-                      <Input disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} value={formData.consignerName} id='consignerName' key='consignerName' allowClear onChange={this.changeData} placeholder='...' />
-                    </Col>
-                  </Form.Item>
-                  <Form.Item name='consignerIdCard' rules={[{ required: !isFoundUser, message: 'Vui lòng nhập chứng minh thư' }]} label='CMND'>
-                    <Col sm={24} md={12}>
-                      <Input disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} value={formData.consignerIdCard} id='consignerIdCard' key='consignerIdCard' onChange={this.changeData} allowClear placeholder='...' />
-                    </Col>
-                  </Form.Item>
-                  <Form.Item name='mail' rules={[{ type: 'email', message: 'Email không hợp lệ' }]} label='Email'>
-                    <Col sm={24} md={24}>
-                      <Input disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} value={formData.mail} id='mail' key='mail' onChange={this.changeData} allowClear placeholder='...' />
-                    </Col>
-                  </Form.Item>
-                  <Form.Item name='bankName' rules={[{ required: !isFoundUser && isTransferMoneyWithBank === 'true', message: 'Vui lòng nhập tên ngân hàng' }]} label='Ngân hàng'>
-                    <Col sm={24} md={24}>
-                      <Input disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} value={formData.bankName} id='bankName' key='bankName' onChange={this.changeData} allowClear placeholder='...' />
-                    </Col>
-                  </Form.Item>
-                  <Form.Item name='bankId' rules={[{ required: !isFoundUser && isTransferMoneyWithBank === 'true', message: 'Vui lòng nhập id ngân hàng' }]} label='ID Ngân hàng'>
-                    <Col sm={24} md={12}>
-                      <Input disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} value={formData.bankId} id='bankId' key='bankId' onChange={this.changeData} type={'number'} allowClear placeholder='...' />
-                    </Col>
-                  </Form.Item>
-                  <Form.Item name='birthday' label='Sinh nhật'>
-                    <Col sm={24} md={12}>
-                      <DatePicker disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} id='birthday' key='birthday' defaultValue={moment()} value={moment(formData.birthday, dateFormat)} onChange={this.onChangeBirthday} format={dateFormat} placeholder={dateFormat} style={{ width: '100%' }} />
-                    </Col>
-                  </Form.Item>
+            <Form
+              ref={this.formRef}
+              {...layout}
+              name='consignment'
+              initialValues={formData}
+              // onFinish={this.onFinish}
+              onFinish={this.onConsign}
+              onValuesChange={(changedValues, allValues) => {
+                console.log(changedValues)
+                this.setState({
+                  formData: {
+                    ...formData,
+                    ...changedValues
+                  }
+                }, () => console.log(this.state))
+              }}
+            >
+              <Row className='flex sell-card-form PT40 PB35' justify='center'>
+                <Form.Item name='phoneNumber' rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]} label='Số điện thoại'>
+                  <Col sm={24} md={12}>
+                    {/* <Search placeholder="input search loading default" loading /> */}
+                    <Input value={formData.phoneNumber} maxLength={12} allowClear onChange={this.fetchUserByPhoneNumber} style={{ minWidth: 100 }} placeholder='...' suffix={isLoadingUser ? <LoadingOutlined /> : isFoundUser ? <CheckCircleFilled /> : null} />
+                  </Col>
+                </Form.Item>
+                <Form.Item name='consignerName' rules={[{ required: !isFoundUser, message: 'Vui lòng nhập tên khách hàng' }]} label='Tên Khách Hàng'>
+                  <Col sm={24} md={24}>
+                    <Input disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} value={formData.consignerName} id='consignerName' key='consignerName' allowClear onChange={this.changeData} placeholder='...' />
+                  </Col>
+                </Form.Item>
+                <Form.Item name='consignerIdCard' rules={[{ required: !isFoundUser, message: 'Vui lòng nhập chứng minh thư' }]} label='CMND'>
+                  <Col sm={24} md={12}>
+                    <Input disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} value={formData.consignerIdCard} id='consignerIdCard' key='consignerIdCard' onChange={this.changeData} allowClear placeholder='...' />
+                  </Col>
+                </Form.Item>
+                <Form.Item name='mail' rules={[{ type: 'email', message: 'Email không hợp lệ' }]} label='Email'>
+                  <Col sm={24} md={24}>
+                    <Input disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} value={formData.mail} id='mail' key='mail' onChange={this.changeData} allowClear placeholder='...' />
+                  </Col>
+                </Form.Item>
+                <Form.Item name='bankName' rules={[{ required: !isFoundUser && isTransferMoneyWithBank === 'true', message: 'Vui lòng nhập tên ngân hàng' }]} label='Ngân hàng'>
+                  <Col sm={24} md={24}>
+                    <Input disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} value={formData.bankName} id='bankName' key='bankName' onChange={this.changeData} allowClear placeholder='...' />
+                  </Col>
+                </Form.Item>
+                <Form.Item name='bankId' rules={[{ required: !isFoundUser && isTransferMoneyWithBank === 'true', message: 'Vui lòng nhập id ngân hàng' }]} label='ID Ngân hàng'>
+                  <Col sm={24} md={12}>
+                    <Input disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} value={formData.bankId} id='bankId' key='bankId' onChange={this.changeData} type={'number'} allowClear placeholder='...' />
+                  </Col>
+                </Form.Item>
+                <Form.Item name='birthday' label='Sinh nhật'>
+                  <Col sm={24} md={12}>
+                    <DatePicker disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} id='birthday' key='birthday' defaultValue={moment()} value={moment(formData.birthday, dateFormat)} onChange={this.onChangeBirthday} format={dateFormat} placeholder={dateFormat} style={{ width: '100%' }} />
+                  </Col>
+                </Form.Item>
 
-                  <Divider />
+                <Divider />
 
-                  <Row className='productListBox'>
-                    <Button onClick={this.onPlusProductList} type='secondary' className='MB20'><PlusOutlined /> Thêm sản phẩm</Button>
+                <Row className='productListBox'>
+                  <Button onClick={this.onPlusProductList} type='secondary' className='MB20'><PlusOutlined /> Thêm sản phẩm</Button>
 
-                    {productList.map((item, indexItem) => {
-                      return (
-                        <div key={indexItem} className='product-box MB10'>
-                          <span style={{ marginRight: '10px' }}>{indexItem}</span>
-                          <Input style={{ width: '50%', marginRight: '10px' }} value={item.price} allowClear type={'number'} id='priceProduct' key='priceProduct' onChange={(value) => this.changeDataProduct(value, indexItem)} placeholder='Giá tiền' />
-                          <Input style={{ width: '50%' }} value={item.count} prefix={<span>SL</span>} defaultValue={1} type={'number'} id='numberOfProducts' key='numberOfProducts' onChange={(value) => this.changeDataProduct(value, indexItem)} allowClear placeholder='Số lượng' />
-                          <div disabled={indexItem === 0} onClick={() => this.onDeleteProductList(indexItem)} style={{ marginLeft: '10px', cursor: 'pointer', opacity: indexItem === 0 ? 0 : 1 }}>
+                  {productList.map((item, indexItem) => {
+                    return (
+                      <div key={indexItem} className='product-box MB30'>
+                        <div className='close-box MB5'>
+                          <span>{indexItem}</span>
+
+                          <div disabled={indexItem === 0} onClick={() => this.onDeleteProductList(indexItem)} style={{ cursor: 'pointer', opacity: indexItem === 0 ? 0 : 1 }}>
                             <CloseOutlined />
                           </div>
                         </div>
-                      )
-                    })}
-                  </Row>
+                        <div className='product-item-name'>
+                          <Input style={{ width: '50%', marginRight: '10px' }} value={item.name} allowClear type={'text'} id='nameProduct' key='nameProduct' onChange={(value) => this.changeDataProduct(value, indexItem)} placeholder='Tên sản phẩm' />
+                          <Select
+                            showSearch
+                            style={{ width: '50%' }}
+                            placeholder='Danh mục'
+                            optionFilterProp='children'
+                            onChange={this.onChangeCategory}
+                            onFocus={this.onFocusCategory}
+                            onBlur={this.onBlurCategory}
+                            onSearch={this.onSearchCategory}
+                            filterOption={(input, option) =>
+                              option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            {
+                              categoryRedux && categoryRedux.length > 0 && categoryList &&
+                              categoryList.map((categoryItem, categoryIndex) => {
+                                if (!categoryItem.isParentSelf) {
+                                  return (
+                                    <>
+                                      <Option key={categoryItem.objectId} style={{ width: '100%' }} value={`${categoryItem.category.objectId}+${categoryItem.objectId}+${indexItem}`}>{categoryItem.name}</Option>
+                                    </>
+                                  )
+                                } else {
+                                  return (
+                                    <>
+                                      <Option key={categoryItem.objectId} style={{ width: '100%' }} value={`${categoryItem.objectId}+${indexItem}`}>{categoryItem.name}</Option>
+                                    </>
+                                  )
+                                }
+                              })
+                            }
+                          </Select>
+                        </div>
+                        <div className='product-item-value'>
+                          <Input style={{ marginRight: '10px' }} value={item.price} allowClear type={'number'} id='priceProduct' key='priceProduct' onChange={(value) => this.changeDataProduct(value, indexItem)} placeholder='Giá tiền' />
+                          <Input value={item.count} prefix={<span>SL</span>} defaultValue={1} type={'number'} id='numberOfProducts' key='numberOfProducts' onChange={(value) => this.changeDataProduct(value, indexItem)} allowClear placeholder='Số lượng' />
+                        </div>
+                      </div>
+                    )
+                  })}
+                </Row>
 
-                  <Divider />
+                <Divider />
 
-                  <Form.Item label='Tổng tiền sau thu phí'>
-                    <Col sm={24} md={12}>
-                      <Input suffix='vnđ' id='moneyBack' key='moneyBack' value={numberWithCommas(Math.round(moneyBack))} disabled placeholder={'...000 vnd'} />
-                    </Col>
-                  </Form.Item>
+                <Form.Item label='Tổng tiền sau thu phí'>
+                  <Col sm={24} md={12}>
+                    <Input suffix='vnđ' id='moneyBack' key='moneyBack' value={numberWithCommas(Math.round(moneyBack))} disabled placeholder={'...000 vnd'} />
+                  </Col>
+                </Form.Item>
 
-                  <Form.Item label='Tổng tiền trước thu phí'>
-                    <Col sm={24} md={12}>
-                      <Input suffix='vnđ' id='totalMoney' key='totalMoney' value={numberWithCommas(Math.round(totalMoney))} disabled placeholder={'...000 vnd'} />
-                    </Col>
-                  </Form.Item>
+                <Form.Item label='Tổng tiền trước thu phí'>
+                  <Col sm={24} md={12}>
+                    <Input suffix='vnđ' id='totalMoney' key='totalMoney' value={numberWithCommas(Math.round(totalMoney))} disabled placeholder={'...000 vnd'} />
+                  </Col>
+                </Form.Item>
 
-                  <Form.Item name='consignmentId' rules={[{ required: true, message: 'Vui lòng nhập mã ký gửi' }]} label='Mã ký gửi'>
-                    <Col sm={24} md={12}>
-                      <Input allowClear id='consignmentId' key='consignmentId' onChange={this.changeData} placeholder='...' />
-                    </Col>
-                  </Form.Item>
-                  <Form.Item name='numberOfProducts' label='Số lượng Hàng Hoá'>
-                    <Col sm={24} md={12}>
-                      <Input disabled defaultValue={1} value={formData.numberOfProducts} type={'number'} id='numberOfProducts' key='numberOfProducts' allowClear placeholder='...' />
-                    </Col>
-                  </Form.Item>
+                <Form.Item name='consignmentId' rules={[{ required: true, message: 'Vui lòng nhập mã ký gửi' }]} label='Mã ký gửi'>
+                  <Col sm={24} md={12}>
+                    <Input allowClear id='consignmentId' key='consignmentId' onChange={this.changeData} placeholder='...' />
+                  </Col>
+                </Form.Item>
+                <Form.Item name='numberOfProducts' label='Số lượng Hàng Hoá'>
+                  <Col sm={24} md={12}>
+                    <Input disabled defaultValue={1} value={formData.numberOfProducts} type={'number'} id='numberOfProducts' key='numberOfProducts' allowClear placeholder='...' />
+                  </Col>
+                </Form.Item>
 
-                  <Form.Item label='Hình thức nhận tiền'>
-                    <Col sm={24} md={24}>
-                      <Checkbox.Group options={options} value={this.state.isTransferMoneyWithBank} defaultValue={['false']} onChange={this.onChangeRadio} />
-                    </Col>
-                  </Form.Item>
+                <Form.Item label='Hình thức nhận tiền'>
+                  <Col sm={24} md={24}>
+                    <Checkbox.Group options={options} value={this.state.isTransferMoneyWithBank} defaultValue={['false']} onChange={this.onChangeRadio} />
+                  </Col>
+                </Form.Item>
 
-                  <Form.Item label='Ngày trả tiền'>
-                    <Input.Group compact>
-                      <Select onChange={this.onChangeTimeGetMoney} defaultValue={allInfoTag && allInfoTag[0] && allInfoTag[0].code} size='large' loading={isLoadingTags} id='timeGetMoney' key='timeGetMoney' placeholder='...'>
-                        {
-                          isLoadingTags ? null
-                            : allInfoTag.map(tag => {
-                              return (
+                <Form.Item label='Ngày trả tiền'>
+                  <Input.Group compact>
+                    <Select onChange={this.onChangeTimeGetMoney} defaultValue={allInfoTag && allInfoTag[0] && allInfoTag[0].code} size='large' loading={isLoadingTags} id='timeGetMoney' key='timeGetMoney' placeholder='...'>
+                      {
+                        isLoadingTags ? null
+                          : allInfoTag.map(tag => {
+                            return (
                               <>
                                 <Option style={{ width: '100px' }} value={tag.code}>{tag.code}</Option>
                               </>
-                              )
-                            })
-                        }
-                      </Select>
-                      <Input disabled style={{ width: '50%' }} value={formData.timeGetMoney} defaultValue={moment().format('DD-MM-YYYY')} />
-                    </Input.Group>
-                  </Form.Item>
+                            )
+                          })
+                      }
+                    </Select>
+                    <Input disabled style={{ width: '50%' }} value={formData.timeGetMoney} defaultValue={moment().format('DD-MM-YYYY')} />
+                  </Input.Group>
+                </Form.Item>
 
-                  <Form.Item name='consigneeName' label='Tên Nhân Viên'>
+                <Form.Item name='consigneeName' label='Tên Nhân Viên'>
+                  <Col sm={24} md={12}>
                     <Input defaultValue={userData && userData.name ? userData.name : ''} id='consigneeName' key='consigneeName' value={userData && userData.name ? userData.name : ''} disabled placeholder={userData && userData.name ? userData.name : ''} />
-                  </Form.Item>
+                  </Col>
+                </Form.Item>
 
-                  <Form.Item className='button-confirm-box MT20 MB40'>
-                    <Button disabled={isLoadingTags || isLoadingUser || !formData.phoneNumber} loading={isConsigning} type='primary' htmlType='submit'>Xác nhận</Button>
-                  </Form.Item>
-                </Row>
-              </Form>
+                <Form.Item className='button-confirm-box MT20 MB40'>
+                  <Button className='MR20' onClick={this.onRefeshAll}>Khôi phục</Button>
+                  <Button disabled={isLoadingTags || isLoadingUser || !formData.phoneNumber} loading={isConsigning} type='primary' htmlType='submit'>Xác nhận</Button>
+                </Form.Item>
+              </Row>
+            </Form>
             </>
-        }
-        <MyModal ref={this.myModal} />
-      </div>
-    )
-  }
+      }
+      <MyModal ref={this.myModal} />
+    </div>
+  )
+}
 }
 
 const mapStateToProps = (state) => ({
   locale: state.locale,
+  categoryRedux: state.categoryRedux,
   userData: state.userData
 })
 

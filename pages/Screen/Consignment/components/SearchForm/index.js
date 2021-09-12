@@ -12,6 +12,7 @@ import GapService from 'controller/Api/Services/Gap'
 import './style.scss'
 import { numberWithCommas } from 'common/function'
 import { isEmpty } from 'lodash'
+import moment from 'moment'
 
 class SearchForm extends React.PureComponent {
   static async getInitialProps ({ query }) {
@@ -225,21 +226,22 @@ class SearchForm extends React.PureComponent {
             <Descriptions.Item span={24} label='Tên Khách Hàng'>{item.consignerName}</Descriptions.Item>
             <Descriptions.Item span={24} label='Số điện thoại'>{item.phoneNumber}</Descriptions.Item>
             <Descriptions.Item span={24} label='Số lượng hàng hoá'>{item.numberOfProducts}</Descriptions.Item>
-            <Descriptions.Item span={24} label='Số lượng đã bán'>{item.numSoldConsignment}</Descriptions.Item>
-            <Descriptions.Item span={24} label='Số lượng còn lại'>{item.remainNumConsignment}</Descriptions.Item>
+            <Descriptions.Item span={24} label='Số lượng đã bán'>{item.numSoldConsignment || 0}</Descriptions.Item>
+            <Descriptions.Item span={24} label='Số lượng còn lại'>{Number(item.numberOfProducts) - (Number(item.numSoldConsignment) || 0) || 0}</Descriptions.Item>
             <Descriptions.Item span={24} label='Ngân hàng đăng ký'>{item.banks[0].type}</Descriptions.Item>
             <Descriptions.Item span={24} label='ID ngân hàng'>{item.banks[0].accNumber}</Descriptions.Item>
             <Descriptions.Item span={24} label='Nhận tiền'>{item.isTransferMoneyWithBank ? 'Chuyển khoản' : 'Trực tiếp   '}</Descriptions.Item>
             <Descriptions.Item span={24} label='Tổng tiền'>{numberWithCommas(item.moneyBack)} vnd</Descriptions.Item>
-            <Descriptions.Item span={24} label='Ngày tổng kết'>{item.timeGetMoney}</Descriptions.Item>
+            <Descriptions.Item span={24} label='Ngày tổng kết'>{moment(item.timeGetMoney).format('DD-MM-YYYY')}</Descriptions.Item>
 
             {
               !item.isGetMoney
-                ? <Descriptions.Item span={24} label='Đã nhận tiền'>{item.isGetMoney ? 'Rồi' : 'Chưa'}</Descriptions.Item>
-                : <Descriptions.Item span={24} label='Thời gian nhận tiền'>{item.timeConfirmGetMoney}</Descriptions.Item>
+                ? <Descriptions.Item span={24} label='Đã nhận tiền'>Chưa</Descriptions.Item>
+                : <>
+                  <Descriptions.Item span={24} label='Ngày khách đã nhận tiền'>{item.timeConfirmGetMoney}</Descriptions.Item>
+                </>
 
             }
-
           </Descriptions>
         </div>
       </List.Item>

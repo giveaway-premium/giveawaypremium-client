@@ -10,6 +10,14 @@ export default class StorageActions {
     }
   }
 
+  static setCategory (payload) {
+    saveDataLocal(KEY_STORE.SET_CATEGORY, payload)
+    return {
+      type: KEY_STORE.SET_CATEGORY,
+      payload
+    }
+  }
+
   static setUserData (payload) {
     saveDataLocal(KEY_STORE.SET_USER, payload)
     return {
