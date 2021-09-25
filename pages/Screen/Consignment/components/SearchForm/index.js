@@ -231,8 +231,8 @@ class SearchForm extends React.PureComponent {
             <Descriptions.Item span={24} label='Ngân hàng đăng ký'>{item.banks[0].type}</Descriptions.Item>
             <Descriptions.Item span={24} label='ID ngân hàng'>{item.banks[0].accNumber}</Descriptions.Item>
             <Descriptions.Item span={24} label='Nhận tiền'>{item.isTransferMoneyWithBank ? 'Chuyển khoản' : 'Trực tiếp   '}</Descriptions.Item>
-            <Descriptions.Item span={24} label='Tổng tiền'>{numberWithCommas(item.moneyBack)} vnd</Descriptions.Item>
-            <Descriptions.Item span={24} label='Ngày tổng kết'>{moment(item.timeGetMoney).format('DD-MM-YYYY')}</Descriptions.Item>
+            <Descriptions.Item span={24} label='Tổng tiền'>{item.moneyBack ? numberWithCommas(item.moneyBack) : '---'} vnd</Descriptions.Item>
+            <Descriptions.Item span={24} label='Ngày tổng kết'>{item.timeGetMoney}</Descriptions.Item>
 
             {
               !item.isGetMoney

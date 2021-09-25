@@ -21,7 +21,7 @@ export default class Gap {
     if (type) {
       const body = {
         'mailTo': customerInfo.mail,
-        'title': (title + ' ' + consignmentInfo.consignmentId) || ('GAP' + consignmentInfo.consignmentId),
+        'title': (title + ' ' + consignmentInfo.consignmentId + '*' + consignmentInfo.timeGetMoney) || ('GAP' + consignmentInfo.consignmentId + '*' + consignmentInfo.timeGetMoney),
         'type': type,
         'data': {
           'moneyBack': consignmentInfo.moneyBack ? `${numberWithCommas(consignmentInfo.moneyBack)} vnd` : 'vnd',
@@ -123,9 +123,9 @@ export default class Gap {
   }
 
   // Consignment
-  static async setConsignment (formData, consigneeData, consignerData, timeGroupId, productList, moneyBack, totalMoney, isTransferMoneyWithBank = false) {
+  static async setConsignment (formData, consigneeData, consignerData, timeGroupId, timeGroupCode, productList, moneyBackForFullSold, totalMoney, isTransferMoneyWithBank = false) {
     const body = {
-      consignmentId: formData.consignmentId,
+      consignmentId: formData.consignmentId + '-' + timeGroupCode,
       consignerName: formData.consignerName,
       consignerIdCard: formData.consignerIdCard,
       mail: formData.mail,
@@ -136,7 +136,7 @@ export default class Gap {
       phoneNumber: formData.phoneNumber,
       numberOfProducts: Number(formData.numberOfProducts),
       timeGetMoney: formData.timeGetMoney || '',
-      moneyBack: moneyBack,
+      moneyBackForFullSold: Math.round(Number(moneyBackForFullSold)) || 0,
       totalMoney: totalMoney,
       banks: [{
         type: formData.bankName,
@@ -162,8 +162,8 @@ export default class Gap {
     return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, queryBody, null, null, null, customQuery)
   }
 
-  static async getConsignment (page = 1, keyword = null, limit = 20, currentTagId) {
-    let skip = (20 * page) - 20
+  static async getConsignment (page = 1, keyword = null, limit = 100, currentTagId) {
+    let skip = (100 * page) - 20
 
     const queryBody = {
       limit: limit,
@@ -175,9 +175,18 @@ export default class Gap {
       const customQuery = `where={"phoneNumber":{"$regex":"${keyword}"},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
       return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, queryBody, null, null, null, customQuery)
     } else {
-      const customQuery = `where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      const customQuery = `limit=${limit},skip=${skip},where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
 
       return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, queryBody, null, null, null, customQuery)
+    }
+  }
+
+  static async deleteConsignment (objectId) {
+    try {
+      return this.fetchData(`/classes/Consignment/${objectId}`, REQUEST_TYPE.DELETE, null)
+    } catch (e) {
+      console.log(e)
+      return false
     }
   }
 
@@ -189,6 +198,7 @@ export default class Gap {
         numSoldConsignment: Number(item.numSoldConsignment || 0),
         remainNumConsignment: Number(item.numberOfProducts) - Number(item.numSoldConsignment || 0),
         moneyBack: Number(item.moneyBack) || 0,
+        moneyBackForFullSold: Number(item.moneyBackForFullSold) || 0,
         isGetMoney: item.isGetMoney || false,
         productList: item.productList,
         timeConfirmGetMoney: item.timeConfirmGetMoney
