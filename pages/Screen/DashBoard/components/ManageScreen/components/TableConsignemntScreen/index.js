@@ -172,7 +172,7 @@ class TableConsignemntScreen extends React.PureComponent {
       {
         title: '',
         key: '11',
-        width: 100,
+        width: 120,
         // fixed: 'right',
         render: (value) => (<Button style={{ width: '100%' }} onClick={() => this.onDeleteButton(value)}>Xoá</Button>)
       },
@@ -692,7 +692,7 @@ class TableConsignemntScreen extends React.PureComponent {
             pageSize: 100,
             onChange: this.paginationChange
           }}
-          scroll={{ x: 1600, y: '55vh' }}
+          scroll={{ x: 1800, y: '55vh' }}
         />
         <MyModal ref={this.myModal} />
       </div>
