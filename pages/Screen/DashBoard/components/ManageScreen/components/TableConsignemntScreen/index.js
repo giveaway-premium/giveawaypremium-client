@@ -170,8 +170,15 @@ class TableConsignemntScreen extends React.PureComponent {
         key: '10'
       },
       {
-        title: 'Nhận tiền',
+        title: '',
         key: '11',
+        width: 100,
+        // fixed: 'right',
+        render: (value) => (<Button style={{ width: '100%' }} onClick={() => this.onDeleteButton(value)}>Xoá</Button>)
+      },
+      {
+        title: 'Nhận tiền',
+        key: '12',
         width: 90,
         fixed: 'right',
         render: (value) =>
@@ -425,6 +432,26 @@ class TableConsignemntScreen extends React.PureComponent {
       )
   });
 
+  onDeleteButton = async (row) => {
+    const newData = [...this.state.consignmentData]
+    const index = newData.findIndex((item) => row.objectId === item.objectId)
+    const item = newData[index]
+    console.log(item)
+
+    const res = await GapService.deleteConsignment(row.objectId)
+    console.log(res)
+    if (res) {
+      newData.splice(index, 1)
+      this.setState({
+        consignmentData: newData
+      })
+      showNotification(`Xoá thành công`)
+      // showNotification(`Xoá thành công ${item.consignment}`)
+    } else {
+      showNotification(`Xoá chưa được`)
+    }
+  }
+
   onChangeRadioIsGetMoney = async (row) => {
     console.log('onChangeRadioIsGetMoney')
     console.log(row)
@@ -553,6 +580,7 @@ class TableConsignemntScreen extends React.PureComponent {
             remainNumConsignment: `${Number(item.numberOfProducts) - Number(item.numSoldConsignment || 0)}`,
             bankName: item.banks && item.banks[0] ? item.banks[0].type : '',
             bankId: item.banks && item.banks[0] ? item.banks[0].accNumber : '',
+            moneyBackForFullSold: item.moneyBackForFullSold ? `${item.moneyBackForFullSold}` : 0,
             moneyBack: item.moneyBack ? `${item.moneyBack}` : 0,
             totalMoney: item.totalMoney ? `${item.totalMoney}` : 0,
             timeConfirmGetMoney: item.timeConfirmGetMoney || 'Chưa',
@@ -661,7 +689,7 @@ class TableConsignemntScreen extends React.PureComponent {
           expandable={{ expandedRowRender: record => this.expandedRowRender(record) }}
           pagination={{
             total: total,
-            pageSize: 20,
+            pageSize: 100,
             onChange: this.paginationChange
           }}
           scroll={{ x: 1600, y: '55vh' }}

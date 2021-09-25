@@ -151,7 +151,7 @@ class ConfigConsignmentId extends React.Component {
   }
 
   render () {
-    const { tags, inputVisible, inputValue, isLoadingTags } = this.state
+    const { tags, inputVisible, inputValue, isLoadingTags, timeGetMoney } = this.state
     const tagChild = tags.map(this.forMap)
     return (
       <div className='ConfigConsignmentId-container'>
@@ -179,9 +179,16 @@ class ConfigConsignmentId extends React.Component {
         <>
           <Input.Group compact>
             <Input onChange={this.handleInputChange} size='small' ref={this.saveInputRef} style={{ width: 150, height: 40, maxWidth: '50%' }} placeholder='...' />
+            <br />
+            <p className='MT10'>Từ ngày: </p>
+            <br />
             <DatePicker onChange={this.onChangeTimeGetMoney} placeholder='DD-MM-YYYY' format='DD-MM-YYYY' defaultValue={moment()} style={{ width: 200, height: 40, maxWidth: '50%' }} />
+            <br />
+            <p className='MT10'>Đến: </p>
+            <br />
+            <DatePicker disabled placeholder='DD-MM-YYYY' format='DD-MM-YYYY' value={moment(timeGetMoney, 'DD-MM-YYYY').add(10, 'days')} defaultValue={moment()} style={{ width: 200, height: 40, maxWidth: '50%' }} />
           </Input.Group>
-          <Button onClick={this.handleInputConfirm} className='MT10'>Thêm</Button>
+          <Button onClick={this.handleInputConfirm} className='MT20'>Thêm</Button>
         </>
         )}
         {!inputVisible && (
