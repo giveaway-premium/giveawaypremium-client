@@ -76,6 +76,7 @@ class DashBoard extends React.PureComponent {
       const password = values.password
 
       const result = await GapService.logInAdmin(username, password)
+      console.log(result)
       if (result && result.sessionToken) {
         console.log(result)
         ReduxServices.setUserToken(result)
