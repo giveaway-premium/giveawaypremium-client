@@ -141,7 +141,7 @@ class Consignment extends React.PureComponent {
         productId += 1
         productListTemp.push({
           ...item,
-          code: formData.consignmentId + '-' + productId,
+          code: formData.consignmentId + '-' + timeGroupCode + '-' + productId,
           key: indexItem
         })
       }
@@ -520,7 +520,7 @@ class Consignment extends React.PureComponent {
       ],
       formData: {
         ...formData,
-        numberOfProducts: formData.numberOfProducts + 1
+        numberOfProducts: formData.numberOfProducts + 3
       }
     })
   }
