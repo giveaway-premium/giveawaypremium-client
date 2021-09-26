@@ -102,23 +102,17 @@ export default class Gap {
   }
 
   // Product
-
   static async getProduct (page = 1, keyword = null, limit = 20, currentTagId) {
-    let skip = (20 * page) - 20
-
-    const queryBody = {
-      limit: limit,
-      skip: skip,
-      count: true
-    }
+    let limited = limit || 100
+    let skip = (limited * page) - limited
 
     if (keyword) {
-      const customQuery = `where={"name":{"$regex":"${keyword}"},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
-      return this.fetchData('/classes/Product', REQUEST_TYPE.GET, queryBody, null, null, null, customQuery)
+      const customQuery = `skip=${skip}&limit=${limited}&count=1where={"name":{"$regex":"${keyword}"},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      return this.fetchData('/classes/Product', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     } else {
-      const customQuery = `where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      const customQuery = `skip=${skip}&limit=${limited}&count=1where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
 
-      return this.fetchData('/classes/Product', REQUEST_TYPE.GET, queryBody, null, null, null, customQuery)
+      return this.fetchData('/classes/Product', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     }
   }
 
@@ -163,21 +157,24 @@ export default class Gap {
   }
 
   static async getConsignment (page = 1, keyword = null, limit = 100, currentTagId) {
-    let skip = (100 * page) - 20
-
-    const queryBody = {
-      limit: limit,
-      skip: skip,
-      count: true
-    }
+    console.log('getConsignment')
+    console.log(page)
+    let limited = limit || 100
+    let skip = (limited * page) - limited
+    // const queryBody = {
+    //   limit: limit,
+    //   skip: 400,
+    //   count: true
+    // }
 
     if (keyword) {
-      const customQuery = `where={"phoneNumber":{"$regex":"${keyword}"},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
-      return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, queryBody, null, null, null, customQuery)
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"phoneNumber":{"$regex":"${keyword}"},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     } else {
-      const customQuery = `limit=${limit},skip=${skip},where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      // const customQuery = `count=1,where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
 
-      return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, queryBody, null, null, null, customQuery)
+      return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     }
   }
 

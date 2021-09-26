@@ -583,21 +583,21 @@ class TableConsignemntScreen extends React.PureComponent {
       let res
 
       if (!searchText) {
-        console.log('fetchTableData 13213123123123')
-        console.log(currentTag)
+        // console.log('fetchTableData 13213123123123')
+        // console.log(currentTag)
 
         res = await GapService.getConsignment(page, null, null, currentTag)
       } else {
         res = await GapService.getConsignment(page, searchText, null, currentTag)
       }
 
-      console.log('res')
-      console.log(res)
+      // console.log('res')
+      // console.log(res)
       let consignmentData = []
       if (res && res.results) {
         res.results.map((item, indexItem) => {
-          console.log('indexItem')
-          console.log(item)
+          // console.log('indexItem')
+          // console.log(item)
           consignmentData.push({
             key: indexItem,
             objectId: item.objectId,
@@ -644,13 +644,13 @@ class TableConsignemntScreen extends React.PureComponent {
 
     if (!isEqual(newItem, item)) {
       newData.splice(index, 1, newItem)
-      console.log('row')
+      // console.log('row')
       this.setState({
         consignmentData: newData
       }, async () => {
-        console.log(newItem)
+        // console.log(newItem)
         const res = await GapService.updateConsignment(newItem)
-        console.log(res)
+        // console.log(res)
         if (res) {
           showNotification(`Cập nhật thành công ${item.phoneNumber}`)
         } else {
