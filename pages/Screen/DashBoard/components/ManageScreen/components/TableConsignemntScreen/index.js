@@ -292,7 +292,7 @@ class TableConsignemntScreen extends React.PureComponent {
         priceAfterFee: Number(item.priceAfterFee) || 0,
         soldNumberProduct: Number(item.soldNumberProduct) || 0,
         remainNumberProduct: Number(item.count) - Number(item.soldNumberProduct || 0),
-        moneyBackProduct: Math.round(Number(item.soldNumberProduct || 0) * item.priceAfterFee || 0)
+        moneyBackProduct: Number(item.soldNumberProduct || 0) * Number(item.priceAfterFee)
       })
     })
 
