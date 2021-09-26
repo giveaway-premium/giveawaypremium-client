@@ -231,26 +231,28 @@ class TableConsignemntScreen extends React.PureComponent {
         title: 'Tên SP',
         dataIndex: 'name',
         key: 'name',
+        editable: true,
         width: 150
       },
       {
         title: 'Giá',
         dataIndex: 'price',
         key: 'price',
-        // editable: true,
+        editable: true,
         render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
       },
       {
         title: 'Số lượng',
         dataIndex: 'count',
         key: 'count',
+        editable: true,
         width: 100
       },
       {
         title: 'Giá sau phí',
         dataIndex: 'priceAfterFee',
         key: 'priceAfterFee',
-        editable: true,
+        // editable: true,
         render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
       },
       {
@@ -290,7 +292,7 @@ class TableConsignemntScreen extends React.PureComponent {
         priceAfterFee: Number(item.priceAfterFee) || 0,
         soldNumberProduct: Number(item.soldNumberProduct) || 0,
         remainNumberProduct: Number(item.count) - Number(item.soldNumberProduct || 0),
-        moneyBackProduct: Math.round(Number(item.soldNumberProduct || 0) * item.priceAfterFee || 0)
+        moneyBackProduct: Number(item.soldNumberProduct || 0) * Number(item.priceAfterFee)
       })
     })
 
@@ -320,6 +322,24 @@ class TableConsignemntScreen extends React.PureComponent {
     />
   };
 
+  convertPriceAfterFee = (productPrice = 0) => {
+    let moneyBackForFullSold = productPrice
+
+    if (productPrice > 0) {
+      if (productPrice < 1000) {
+        moneyBackForFullSold = productPrice * 74 / 100
+      } else if (productPrice >= 1000 && productPrice <= 10000) {
+        moneyBackForFullSold = productPrice * 77 / 100
+      } else if (productPrice > 10000) {
+        moneyBackForFullSold = productPrice * 80 / 100
+      }
+
+      return moneyBackForFullSold
+    } else {
+      return 0
+    }
+  }
+
   handleSaveNestTable = (row, record) => {
     console.log('row - handleSaveNestTable')
     console.log(row)
@@ -331,23 +351,34 @@ class TableConsignemntScreen extends React.PureComponent {
 
     item.productList[row.key] = {
       ...row,
-
+      name: row.name,
+      price: Number(row.price),
+      priceAfterFee: this.convertPriceAfterFee(Number(row.price)) || 0,
+      count: Number(row.count),
       soldNumberProduct: Number(row.soldNumberProduct) || 0,
       remainNumberProduct: Number(row.count) - Number(row.soldNumberProduct || 0),
-      moneyBackProduct: Math.round((Number(row.soldNumberProduct || 0) * Number(row.priceAfterFee)))
+      moneyBackProduct: (Number(row.soldNumberProduct || 0) * Number(row.priceAfterFee))
     }
 
     let newRemainNumConsignment = 0
     let newmoneyBack = 0
     let newNumSoldConsignment = 0
+    let newNumberOfProducts = 0
 
     item.productList.map(productItem => {
+      newNumberOfProducts += Number(productItem.count) || 0
       newRemainNumConsignment += Number(productItem.remainNumberProduct) || 0
-      newmoneyBack += Number(productItem.moneyBackProduct) * 1000 || 0
+      newmoneyBack += Number(productItem.soldNumberProduct) * Number(productItem.priceAfterFee) * 1000 || 0
       newNumSoldConsignment += Number(productItem.soldNumberProduct) || 0
     })
 
-    const newItem = { ...item, remainNumConsignment: newRemainNumConsignment, moneyBack: Math.round(newmoneyBack), numSoldConsignment: newNumSoldConsignment }
+    const newItem = {
+      ...item,
+      numberOfProducts: newNumberOfProducts,
+      remainNumConsignment: newRemainNumConsignment,
+      moneyBack: Math.round(newmoneyBack),
+      numSoldConsignment: newNumSoldConsignment
+    }
 
     console.log('handleSaveNestTable')
     console.log(newItem)
