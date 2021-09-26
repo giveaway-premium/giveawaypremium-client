@@ -225,6 +225,7 @@ class TableConsignemntScreen extends React.PureComponent {
         title: 'Mã SP',
         dataIndex: 'code',
         key: 'code',
+        editable: true,
         width: 100
       },
       {
@@ -351,6 +352,7 @@ class TableConsignemntScreen extends React.PureComponent {
 
     item.productList[row.key] = {
       ...row,
+      code: row.code,
       name: row.name,
       price: Number(row.price),
       priceAfterFee: this.convertPriceAfterFee(Number(row.price)) || 0,
