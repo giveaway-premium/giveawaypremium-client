@@ -15,6 +15,7 @@ import moment from 'moment'
 import successJson from 'static/Assets/Image/Lottie/success.json'
 import { EMAIL_TITLE, EMAIL_TYPE } from 'common/constants'
 
+const { TextArea } = Input
 const { Option } = Select
 
 const dateFormat = 'DD-MM-YYYY'
@@ -44,7 +45,8 @@ class Consignment extends React.PureComponent {
             'warranty': 0,
             'warrantyHolding': 0,
             'depots': []
-          }
+          },
+          note: ''
         }
       ],
       formData: {
@@ -136,9 +138,12 @@ class Consignment extends React.PureComponent {
 
     let productListTemp = []
     let productId = 0
+    let productCount = 0
+
     productList.map((item, indexItem) => {
       if ((Number(item.price) > 0 || item.price.length > 0) && Number(item.count) > 0) {
         productId += 1
+        productCount += Number(item.count)
         productListTemp.push({
           ...item,
           code: formData.consignmentId + '-' + timeGroupCode + '-' + productId,
@@ -155,7 +160,11 @@ class Consignment extends React.PureComponent {
     console.log(userData)
     this.setState({
       isConsigning: true,
-      productList: productListTemp
+      productList: productListTemp,
+      formData: {
+        ...formData,
+        numberOfProducts: productCount
+      }
     }, async () => {
       console.log('onConsign')
       console.log(formData)
@@ -345,7 +354,8 @@ class Consignment extends React.PureComponent {
             'warranty': 0,
             'warrantyHolding': 0,
             'depots': []
-          }
+          },
+          note: ''
         }
       ],
       formData: {
@@ -487,6 +497,13 @@ class Consignment extends React.PureComponent {
     } else if (value.target.id === 'nameProduct') {
       console.log(value.target.value)
       productListTemp[indexProduct].name = value.target.value
+
+      this.setState({
+        productList: productListTemp
+      })
+    } else if (value.target.id === 'note') {
+      console.log(value.target.value)
+      productListTemp[indexProduct].note = value.target.value
 
       this.setState({
         productList: productListTemp
@@ -689,8 +706,11 @@ render () {
                         <Input disabled style={{ width: '100%' }} value={item.name} type={'text'} id='nameProduct' key='nameProduct' placeholder='Tên sản phẩm' />
                       </div>
                       <div className='product-item-value'>
-                        <Input disabled style={{ marginRight: '10px' }} value={item.price} allowClear type={'number'} id='priceProduct' key='priceProduct' placeholder='Giá tiền' />
+                        <Input disabled style={{ marginRight: '10px' }} value={item.price} type={'number'} id='priceProduct' key='priceProduct' placeholder='Giá tiền' />
                         <Input disabled value={item.count} prefix={<span>SL</span>} defaultValue={1} type={'number'} id='numberOfProducts' key='numberOfProducts' placeholder='Số lượng' />
+                      </div>
+                      <div className='product-item-note'>
+                        <TextArea disabled placeholder='Ghi Chú' value={item.note} type={'number'} id='note' key='note' />
                       </div>
                     </div>
                   )
@@ -769,7 +789,7 @@ render () {
                     return (
                       <div key={indexItem} className='product-box MB30'>
                         <div className='close-box MB5'>
-                          <span>{indexItem}</span>
+                          <span>{indexItem + 1}</span>
 
                           <div disabled={indexItem === 0} onClick={() => this.onDeleteProductList(indexItem)} style={{ cursor: 'pointer', opacity: indexItem === 0 ? 0 : 1 }}>
                             <CloseOutlined />
@@ -813,6 +833,10 @@ render () {
                         <div className='product-item-value'>
                           <Input style={{ marginRight: '10px' }} value={item.price} allowClear type={'number'} id='priceProduct' key='priceProduct' onChange={(value) => this.changeDataProduct(value, indexItem)} placeholder='Giá tiền' />
                           <Input value={item.count} prefix={<span>SL</span>} defaultValue={1} type={'number'} id='numberOfProducts' key='numberOfProducts' onChange={(value) => this.changeDataProduct(value, indexItem)} allowClear placeholder='Số lượng' />
+                        </div>
+
+                        <div className='product-item-note'>
+                          <TextArea placeholder='Ghi Chú' value={item.note} type={'number'} id='note' key='note' onChange={(value) => this.changeDataProduct(value, indexItem)} />
                         </div>
                       </div>
                     )
