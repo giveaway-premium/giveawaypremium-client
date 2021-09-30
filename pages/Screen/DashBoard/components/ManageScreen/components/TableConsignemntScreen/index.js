@@ -725,7 +725,7 @@ class TableConsignemntScreen extends React.PureComponent {
             pageSize: 100,
             onChange: this.paginationChange
           }}
-          scroll={{ x: 1800, y: '55vh' }}
+          scroll={{ x: 1900, y: '55vh' }}
         />
         <MyModal ref={this.myModal} />
       </div>

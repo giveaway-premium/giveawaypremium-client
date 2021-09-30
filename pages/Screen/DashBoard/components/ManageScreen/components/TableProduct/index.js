@@ -499,7 +499,7 @@ class TableProductScreen extends React.PureComponent {
           // expandable={{ expandedRowRender: record => this.expandedRowRender(record) }}
           pagination={{
             total: total,
-            pageSize: 20,
+            pageSize: 100,
             onChange: this.paginationChange
           }}
           scroll={{ x: 1500, y: '55vh' }}
