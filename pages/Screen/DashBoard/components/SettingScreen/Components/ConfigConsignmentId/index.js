@@ -119,10 +119,10 @@ class ConfigConsignmentId extends React.Component {
   forMap = tag => {
     const tagElem = (
       <Tag
-        closable
+        // closable
         onClose={e => {
           e.preventDefault()
-          this.handleClose(tag)
+          // this.handleClose(tag)
         }}
       >
         {tag}
@@ -137,7 +137,7 @@ class ConfigConsignmentId extends React.Component {
 
   onChangeTimeGetMoney = (value) => {
     try {
-      const formatTime = moment(value).format('DD-MM-YYYY')
+      const formatTime = moment(value).format()
 
       this.setState({
         timeGetMoney: formatTime
