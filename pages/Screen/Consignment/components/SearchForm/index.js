@@ -155,7 +155,7 @@ class SearchForm extends React.PureComponent {
     this.setState({
       isSearching: true
     }, async () => {
-      const res = await GapService.getConsignmentWithPhone(page, formData.phoneNumber, 20)
+      const res = await GapService.getConsignmentWithPhone(page, formData.phoneNumber, 50)
       console.log('res: ', res)
 
       if (res && res.results) {
@@ -228,19 +228,18 @@ class SearchForm extends React.PureComponent {
             <Descriptions.Item span={24} label='Số lượng hàng hoá'>{item.numberOfProducts}</Descriptions.Item>
             <Descriptions.Item span={24} label='Số lượng đã bán'>{item.numSoldConsignment || 0}</Descriptions.Item>
             <Descriptions.Item span={24} label='Số lượng còn lại'>{Number(item.numberOfProducts) - (Number(item.numSoldConsignment) || 0) || 0}</Descriptions.Item>
-            <Descriptions.Item span={24} label='Ngân hàng đăng ký'>{item.banks[0].type}</Descriptions.Item>
-            <Descriptions.Item span={24} label='ID ngân hàng'>{item.banks[0].accNumber}</Descriptions.Item>
+            <Descriptions.Item span={24} label='Ngân hàng đăng ký'>{item.banks[0].type || '---'}</Descriptions.Item>
+            <Descriptions.Item span={24} label='ID ngân hàng'>{item.banks[0].accNumber || '---'}</Descriptions.Item>
             <Descriptions.Item span={24} label='Nhận tiền'>{item.isTransferMoneyWithBank ? 'Chuyển khoản' : 'Trực tiếp   '}</Descriptions.Item>
             <Descriptions.Item span={24} label='Tổng tiền'>{item.moneyBack ? numberWithCommas(item.moneyBack) : '---'} vnd</Descriptions.Item>
-            <Descriptions.Item span={24} label='Ngày tổng kết'>{item.timeGetMoney}</Descriptions.Item>
+            <Descriptions.Item span={24} label='Ngày tổng kết'>{item.group ? moment(item.group.timeGetMoney).format('DD-MM-YYYY') : '---'}</Descriptions.Item>
 
             {
               !item.isGetMoney
                 ? <Descriptions.Item span={24} label='Đã nhận tiền'>Chưa</Descriptions.Item>
                 : <>
-                  <Descriptions.Item span={24} label='Ngày khách đã nhận tiền'>{item.timeConfirmGetMoney}</Descriptions.Item>
+                  <Descriptions.Item span={24} label='Ngày khách đã nhận tiền'>{item.timeConfirmGetMoney ? moment(item.group.timeConfirmGetMoney).format('DD-MM-YYYY') : '---'}</Descriptions.Item>
                 </>
-
             }
           </Descriptions>
         </div>
