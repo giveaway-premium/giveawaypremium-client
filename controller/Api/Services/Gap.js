@@ -6,6 +6,51 @@ import moment from 'moment'
 import { numberWithCommas } from 'common/function'
 
 export default class Gap {
+  static uploadSingleFileWithFormData = async (file) => {
+    // eslint-disable-next-line no-undef
+    const key = authKey || await ReduxService.getAuthKeyBearer()
+
+    // eslint-disable-next-line no-undef
+    var data = new FormData()
+    data.append('media', file)
+    return new Promise(resolve => {
+      const isOnline = () => resolve(true)
+      const isOffline = () => resolve(false)
+
+      // eslint-disable-next-line no-undef
+      const xhr = new XMLHttpRequest()
+
+      xhr.onerror = isOffline
+      xhr.ontimeout = isOffline
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === xhr.HEADERS_RECEIVED) {
+          if (xhr.status >= 200 && xhr.status < 400) {
+            isOnline()
+          } else {
+            isOffline()
+          }
+        }
+      }
+
+      xhr.withCredentials = true
+
+      xhr.addEventListener('readystatechange', function () {
+        if (this.readyState === 4) {
+          console.log(this.responseText)
+        }
+      })
+
+      xhr.open('POST', 'https://giveaway-premium.herokuapp.com/media/')
+      xhr.setRequestHeader('x-parse-application-id', process.env.APP_ID)
+      xhr.setRequestHeader('x-parse-rest-api-key', process.env.REST_API_KEY,)
+      xhr.setRequestHeader('x-parse-revocable-session', '1')
+      xhr.setRequestHeader('x-parse-session-token', key)
+      xhr.setRequestHeader('cache-control', 'no-cache')
+      xhr.setRequestHeader('postman-token', '82e228c6-3801-da57-94c8-f2e241fa8d0e')
+      xhr.send(data)
+    })
+  }
+
   static logInAdmin (username, password) {
     const queryBody = {
       username: username,
@@ -107,10 +152,10 @@ export default class Gap {
     let skip = (limited * page) - limited
 
     if (keyword) {
-      const customQuery = `skip=${skip}&limit=${limited}&count=1where={"name":{"$regex":"${keyword}"},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"name":{"$regex":"${keyword}"},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
       return this.fetchData('/classes/Product', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     } else {
-      const customQuery = `skip=${skip}&limit=${limited}&count=1where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
 
       return this.fetchData('/classes/Product', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     }
@@ -145,15 +190,11 @@ export default class Gap {
   }
 
   static async getConsignmentWithPhone (page = 1, keyword = null, limit = 20) {
-    let skip = (20 * page) - 20
+    let limited = limit || 100
+    let skip = (limited * page) - limited
 
-    const queryBody = {
-      limit: limit,
-      skip: skip,
-      count: true
-    }
-    const customQuery = `where={"phoneNumber":{"$regex":"${keyword}"}}`
-    return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, queryBody, null, null, null, customQuery)
+    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"phoneNumber":{"$regex":"${keyword}"}}`
+    return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
 
   static async getConsignment (page = 1, keyword = null, limit = 100, currentTagId) {
@@ -161,6 +202,7 @@ export default class Gap {
     console.log(page)
     let limited = limit || 100
     let skip = (limited * page) - limited
+
     // const queryBody = {
     //   limit: limit,
     //   skip: 400,
