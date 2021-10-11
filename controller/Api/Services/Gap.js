@@ -78,7 +78,7 @@ export default class Gap {
           'bankName': consignmentInfo.bankName,
           'bankId': consignmentInfo.bankId,
           'timeGetMoney': consignmentInfo.timeGetMoney,
-          'timeCheck': moment(consignmentInfo.timeGetMoney).subtract(3, 'day').format('DD-MM-YYYY')
+          'timeCheck': moment(consignmentInfo.timeGetMoney, 'DD-MM-YYYY').subtract(3, 'day').format('DD-MM-YYYY')
         }
       }
       return this.fetchData('/functions/email', REQUEST_TYPE.POST, null, body, null, null, null, true)
