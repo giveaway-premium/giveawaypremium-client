@@ -92,11 +92,21 @@ class SearchForm extends React.PureComponent {
   }
 
   componentDidMount () {
+    this.setState({
+      formData: {
+        phoneNumber: ''
+      }
+    })
   }
   componentDidUpdate () {
   }
 
   componentWillUnmount () {
+    this.setState({
+      formData: {
+        phoneNumber: ''
+      }
+    })
   }
 
   fetchTableData = async (page = 1, keyword) => {
@@ -106,7 +116,7 @@ class SearchForm extends React.PureComponent {
     }, async () => {
       let res
 
-      res = await GapService.getConsignment(page, formData.phoneNumber)
+      res = await GapService.getConsignmentWithPhone(page, formData.phoneNumber)
 
       console.log('res')
       console.log(res)
@@ -155,7 +165,7 @@ class SearchForm extends React.PureComponent {
     this.setState({
       isSearching: true
     }, async () => {
-      const res = await GapService.getConsignmentWithPhone(page, formData.phoneNumber, 50)
+      const res = await GapService.getConsignmentWithPhone(page, formData.phoneNumber, 20)
       console.log('res: ', res)
 
       if (res && res.results) {
@@ -163,7 +173,10 @@ class SearchForm extends React.PureComponent {
           total: res.results.length,
           consignmentData: res.results,
           isHideUserForm: true,
-          isSearching: false
+          isSearching: false,
+          formData: {
+            phoneNumber: ''
+          }
         }, () => {
           setTimeout(() => {
             this.setState({
@@ -173,7 +186,10 @@ class SearchForm extends React.PureComponent {
         })
       } else {
         this.setState({
-          isSearching: false
+          isSearching: false,
+          formData: {
+            phoneNumber: ''
+          }
         })
       }
     })
@@ -284,13 +300,13 @@ class SearchForm extends React.PureComponent {
 
               <Form.Item name='phoneNumber' rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]} label='Số điện thoại'>
                 <Col sm={24} md={22}>
-                  <Input size='small' type={'number'} id='phoneNumber' key='phoneNumber' onChange={this.changeData} allowClear placeholder='...' />
+                  <Input value={formData.phoneNumber} size='small' type={'number'} id='phoneNumber' key='phoneNumber' onChange={this.changeData} allowClear placeholder='...' />
                 </Col>
               </Form.Item>
 
               <div className='flex justify-around align-center' style={{ width: '100%' }}>
                 <Button onClick={this.backProp} type='secondary'>Quay lại</Button>
-                <Button loading={isSearching} type='secondary' htmlType='submit'>Tìm kiếm</Button>
+                <Button disabled={!formData.phoneNumber || formData.phoneNumber.length === 0} loading={isSearching} type='secondary' htmlType='submit'>Tìm kiếm</Button>
               </div>
             </Row>
           </Form>
