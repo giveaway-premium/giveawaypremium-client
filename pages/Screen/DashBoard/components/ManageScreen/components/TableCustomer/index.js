@@ -378,7 +378,7 @@ class TableConsignemntScreen extends React.PureComponent {
           bordered
           pagination={{
             total: total,
-            pageSize: 20,
+            pageSize: 100,
             onChange: this.paginationChange
           }}
           scroll={{ x: 1500, y: '65vh' }}

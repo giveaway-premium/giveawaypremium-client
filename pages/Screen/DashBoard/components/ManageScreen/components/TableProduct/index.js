@@ -2,11 +2,11 @@
 import React, { useContext, useState, useEffect, useRef } from 'react'
 import { withRouter } from 'next/router'
 import { connect } from 'react-redux'
-import { Form, Row, Col, Layout, Input, Button, Badge, Spin, Descriptions, Tabs, Table, Radio, Popconfirm } from 'antd'
+import { Form, Row, Col, Layout, Input, Button, Badge, Spin, Descriptions, Tabs, Table, Radio, Popconfirm, Upload } from 'antd'
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
 import { showNotification, numberWithCommas } from 'common/function'
-import { LoadingOutlined, SearchOutlined } from '@ant-design/icons'
+import { LoadingOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons'
 import { Router } from 'common/routes'
 import { isMobile } from 'react-device-detect'
 import './style.scss'
@@ -16,8 +16,14 @@ import { isEqual } from 'lodash'
 import Highlighter from 'react-highlight-words'
 import { EMAIL_TITLE, EMAIL_TYPE } from 'common/constants'
 import moment from 'moment'
+import { SortableContainer, SortableElement } from 'react-sortable-hoc'
+// import * as arrayMove from 'array-move'
+const { Dragger } = Upload
 
 const { TabPane } = Tabs
+let isJPG = false
+let isLt2M = false
+let isLt10M = false
 
 const EditableRow = ({ index, ...props }) => {
   const [form] = Form.useForm()
@@ -141,7 +147,7 @@ class TableProductScreen extends React.PureComponent {
         title: 'Đã bán',
         width: 80,
         dataIndex: 'soldNumberProduct',
-        key: 'soldNumberProduct',
+        key: 'soldNumberProduct'
         // editable: true
       },
       {
@@ -173,7 +179,10 @@ class TableProductScreen extends React.PureComponent {
       isLoadingTags: false,
       tags: [],
       allInfoTag: [],
-      currentTag: ''
+      currentTag: '',
+      mediaImage: [],
+      imageUrl: false,
+      isUploading: false
     }
     this.myModal = React.createRef()
   }
@@ -203,7 +212,98 @@ class TableProductScreen extends React.PureComponent {
     }
   }
 
+  onSortEnd = ({ oldIndex, newIndex }) => {
+    console.log('onSortEnd')
+    console.log(oldIndex)
+    console.log(newIndex)
+  };
+
+  removePhoto = (indexPhoto) => {
+    const { mediaImage } = this.state
+    const mediaImageTemp = mediaImage.slice()
+
+    console.log(indexPhoto)
+    try {
+      mediaImageTemp.splice(indexPhoto, 1)
+      this.setState({
+        mediaImage: mediaImageTemp
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  previewImageBase54 (img, callback) {
+    // eslint-disable-next-line no-undef
+    const reader = new FileReader()
+    try {
+      reader.onload = () => {
+        let imgUrl = URL.createObjectURL(img)
+        callback(imgUrl)
+      }
+      reader.readAsArrayBuffer(img)
+    } catch (error) {
+      console.log('error upload', error)
+    }
+  }
+
+  beforeUploadMedia = async (file, showError = true) => {
+    console.log('beforeUploadMedia running')
+    console.log(file)
+
+
+    this.setState({
+      isUploading: true
+    }, async () => {
+      const listImageTypes = 'SVG, JPEG, JPG, PNG, GIF'
+      let fileType = file.type.split('/')[1]
+        ? file.type.split('/')[1].toUpperCase()
+        : 'NOT_EXIST_FILE_TYPE'
+      isJPG = listImageTypes.includes(fileType)
+
+      if (!isJPG) {
+        // showError && message.error(this.props.locale.messages.form.notSupport)
+        this.setState({
+          isUploading: false
+        })
+      }
+      isLt2M = file.size / 1024 / 1024 < 2
+      if (isJPG && !isLt2M) {
+        // showError && message.error(this.props.locale.messages.form.smallerThan2MB)
+        this.setState({
+          isUploading: false
+        })
+      }
+      if (isJPG && isLt2M) {
+        this.previewImageBase54(file, async (mediaImageItem) => {
+          const mediaTemp = this.state.mediaImage.slice()
+          if (mediaTemp && mediaTemp.length < 50) {
+            mediaTemp.push({
+              image: mediaImageItem,
+              file: file
+            })
+
+            const res = await GapService.uploadSingleFileWithFormData(file)
+
+            console.log('res - beforeUploadMedia')
+            console.log(res)
+
+            this.setState({
+              mediaImage: mediaTemp,
+              isUploading: false
+            }, () => {
+              console.log('mediaImage')
+              console.log(this.state)
+            })
+          }
+        })
+      }
+      return false
+    })
+  }
+
   expandedRowRender = (recordData) => {
+    const { isUploading } = this.state
     const components = {
       body: {
         row: EditableRow,
@@ -211,45 +311,123 @@ class TableProductScreen extends React.PureComponent {
       }
     }
 
+    const SortableItem = SortableElement(({ item, indexItem }) => (
+      <div className='inner-item' key={indexItem}>
+        <div
+          className='photo-remove-icon'
+          onClick={() => this.removePhoto(indexItem)}
+        >
+          <img src={images.icClose} alt='remove' />
+        </div>
+        <img
+          src={item.data.secure_url}
+          style={{ maxWidth: '70px', height: '70px', objectFit: 'contain' }}
+        />
+      </div>
+    ))
+
+    const SortableList = SortableContainer(({ items }) => (
+      <div className='SortableList-container'>
+        {items && items.length > 0 && items.map((item, index) => (
+          <SortableItem
+            pressDelay={1000}
+            key={`${index}`}
+            indexItem={index}
+            index={index}
+            item={item}
+          />
+        ))}
+      </div>
+    ))
+
     const columns = [
       {
-        title: 'Giá',
-        dataIndex: 'price',
-        key: 'price',
+        title: 'Ảnh',
+        dataIndex: 'medias',
+        key: 'medias',
         // editable: true,
-        render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
+        width: 300,
+        render: (value) => {
+          console.log('value')
+          console.log(value)
+
+          return (
+            <div>
+              <div className='upload-Dragger-container'>
+                <SortableList
+                  items={value}
+                  onSortEnd={this.onSortEnd}
+                  pressDelay={250}
+                  axis='xy'
+                  helperClass='SortableHelper'
+                />
+
+                {
+                  value && value.length >= 5 ? null
+                    : <Dragger
+                      name='uploadFile'
+                      listType='picture-card'
+                      showUploadList={false}
+                      beforeUpload={this.beforeUploadMedia}
+                      // onChange={this.handleUpload}
+                      // customRequest={this.customRequest}
+                      multiple
+                      accept='.png,.jpg,.jpeg,.gif'
+                      className='upload-Dragger'
+                      style={value && value.length === 0 && { border: 'none', background: 'transparent' }}
+                    >
+                      {
+                        value && value.length === 0
+                          ? <Button>
+                            <UploadOutlined /> Thêm ảnh
+                          </Button> : <div>
+                            <p className='ant-upload-text'>
+                              {isUploading ? (
+                                <LoadingOutlined />
+                              ) : (
+                                <img src={images.increase} />
+                              )}
+                            </p>
+                          </div>
+                      }
+                    </Dragger>
+                }
+              </div>
+              <div className='nft-message-length'>
+                {value ? value.length : 0}/5
+              </div>
+            </div>
+          )
+        }
       },
       {
-        title: 'Số lượng',
-        dataIndex: 'count',
-        key: 'count',
-        width: 100
-      },
-      {
-        title: 'Giá sau phí',
-        dataIndex: 'priceAfterFee',
-        key: 'priceAfterFee',
-        editable: true,
-        render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
-      },
-      {
-        title: 'Đã bán',
+        title: 'Size',
+        dataIndex: 'sizeInfo',
+        key: 'sizeInfo',
         width: 80,
-        dataIndex: 'soldNumberProduct',
-        key: 'soldNumberProduct',
+        editable: true,
+        render: (value) => <span>{value}</span>
+      },
+      {
+        title: 'Độ mới',
+        dataIndex: 'rateNew',
+        key: 'rateNew',
+        editable: true,
+        width: 80,
+        render: (value) => <span>100%</span>
+      },
+      {
+        title: 'Chi tiết sản phẩm',
+        width: 150,
+        dataIndex: 'detailInfo',
+        key: 'detailInfo',
         editable: true
       },
       {
-        title: 'Còn lại',
-        width: 80,
-        dataIndex: 'remainNumberProduct',
-        key: 'remainNumberProduct'
-      },
-      {
-        title: 'Tổng tiền sau phí',
-        dataIndex: 'moneyBackProduct',
-        key: 'moneyBackProduct',
-        render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
+        title: 'Ghi chú',
+        width: 150,
+        dataIndex: 'note',
+        key: 'note'
       }
     ]
 
@@ -258,16 +436,13 @@ class TableProductScreen extends React.PureComponent {
     console.log('item')
     console.log(recordData)
 
-    recordData && recordData.productList && recordData.productList.map((item, index) => {
-      data.push({
-        key: index,
-        price: Number(item.price) || 0,
-        count: Number(item.count) || 0,
-        priceAfterFee: Number(item.priceAfterFee) || 0,
-        soldNumberProduct: Number(item.soldNumberProduct) || 0,
-        remainNumberProduct: Number(item.count) - Number(item.soldNumberProduct || 0),
-        moneyBackProduct: Math.round(Number(item.soldNumberProduct || 0) * item.priceAfterFee || 0)
-      })
+    data.push({
+      key: recordData.objectId,
+      medias: recordData.medias && recordData.medias.length > 0 ? recordData.medias : null,
+      size: recordData.sizeInfo,
+      item: recordData.rateNew,
+      detailInfo: recordData.detailInfo,
+      note: recordData.note
     })
 
     const formatedColumns = columns.map((col) => {
@@ -288,7 +463,7 @@ class TableProductScreen extends React.PureComponent {
     })
 
     return <Table
-      scroll={{ x: 800, y: '55vh' }}
+      scroll={{ x: 1500, y: '55vh' }}
       components={components}
       columns={formatedColumns}
       dataSource={data}
@@ -392,6 +567,7 @@ class TableProductScreen extends React.PureComponent {
           console.log(item)
           consignmentData.push({
             ...item,
+            key: indexItem,
             categoryId: item.category.objectId,
             price: Number(item.price) || 0,
             count: Number(item.count) || 0,
@@ -496,7 +672,7 @@ class TableProductScreen extends React.PureComponent {
           columns={columns}
           dataSource={consignmentData}
           bordered
-          // expandable={{ expandedRowRender: record => this.expandedRowRender(record) }}
+          expandable={{ expandedRowRender: (record) => this.expandedRowRender(record) }}
           pagination={{
             total: total,
             pageSize: 100,

@@ -8,7 +8,7 @@ import { numberWithCommas } from 'common/function'
 export default class Gap {
   static uploadSingleFileWithFormData = async (file) => {
     // eslint-disable-next-line no-undef
-    const key = authKey || await ReduxService.getAuthKeyBearer()
+    const key = await ReduxService.getAuthKeyBearer()
 
     // eslint-disable-next-line no-undef
     var data = new FormData()
@@ -22,33 +22,67 @@ export default class Gap {
 
       xhr.onerror = isOffline
       xhr.ontimeout = isOffline
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === xhr.HEADERS_RECEIVED) {
-          if (xhr.status >= 200 && xhr.status < 400) {
-            isOnline()
-          } else {
-            isOffline()
-          }
-        }
-      }
+      // xhr.onreadystatechange = () => {
+      //   if (xhr.readyState === xhr.HEADERS_RECEIVED) {
+      //     if (xhr.status >= 200 && xhr.status < 400) {
+      //       isOnline()
+      //     } else {
+      //       isOffline()
+      //     }
+      //   }
+      // }
 
-      xhr.withCredentials = true
+      // xhr.onreadystatechange = () => {
+      //   if (xhr.readyState === XMLHttpRequest.DONE) {
+      //     console.log(xhr.responseText)
+      //   }
+      // }
+
+      console.log('1')
 
       xhr.addEventListener('readystatechange', function () {
         if (this.readyState === 4) {
           console.log(this.responseText)
         }
       })
+      console.log('2')
+      console.log(key)
+      console.log(process.env.APP_ID)
+      console.log(process.env.REST_API_KEY)
 
-      xhr.open('POST', 'https://giveaway-premium.herokuapp.com/media/')
+      xhr.open('POST', 'https://giveaway-premium.herokuapp.com/media/', true)
+      xhr.withCredentials = true
       xhr.setRequestHeader('x-parse-application-id', process.env.APP_ID)
-      xhr.setRequestHeader('x-parse-rest-api-key', process.env.REST_API_KEY,)
+      xhr.setRequestHeader('x-parse-rest-api-key', process.env.REST_API_KEY)
       xhr.setRequestHeader('x-parse-revocable-session', '1')
       xhr.setRequestHeader('x-parse-session-token', key)
       xhr.setRequestHeader('cache-control', 'no-cache')
-      xhr.setRequestHeader('postman-token', '82e228c6-3801-da57-94c8-f2e241fa8d0e')
+      xhr.setRequestHeader('Content-Type', 'image/png')
       xhr.send(data)
+      console.log('3')
     })
+
+    //     var data = new FormData();
+    // data.append("media", "2.jpeg");
+
+    // var xhr = new XMLHttpRequest();
+    // xhr.withCredentials = true;
+
+    // xhr.addEventListener("readystatechange", function () {
+    //   if (this.readyState === 4) {
+    //     console.log(this.responseText);
+    //   }
+    // });
+
+    // xhr.open("POST", "https://giveaway-premium.herokuapp.com/media/");
+    // xhr.setRequestHeader("x-parse-application-id", "EJKfA5jFxiC98aMbvir0vSAuDHO4NQ7x");
+    // xhr.setRequestHeader("x-parse-rest-api-key", "6t7KSmWTkxxuvrF3a1jfqT6Vu0suWfEY");
+    // xhr.setRequestHeader("x-parse-revocable-session", "1");
+    // xhr.setRequestHeader("x-parse-session-token", "r:496cdae9b4fea7e028618b82250aa98c");
+    // xhr.setRequestHeader("cache-control", "no-cache");
+    // xhr.setRequestHeader("postman-token", "82e228c6-3801-da57-94c8-f2e241fa8d0e");
+
+    // xhr.send(data);
   }
 
   static logInAdmin (username, password) {
@@ -211,12 +245,6 @@ export default class Gap {
     let limited = limit || 100
     let skip = (limited * page) - limited
 
-    // const queryBody = {
-    //   limit: limit,
-    //   skip: 400,
-    //   count: true
-    // }
-
     if (keyword) {
       const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"phoneNumber":{"$regex":"${keyword}"},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
       return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
@@ -313,26 +341,23 @@ export default class Gap {
   }
 
   static async getCustomerTable (page = 1, keyword = null) {
-    let limit = 20
-    let skip = (20 * page) - 20
-
-    const queryBody = {
-      limit: limit,
-      skip: skip,
-      count: true
-    }
+    let limited = 100
+    let skip = (limited * page) - limited
 
     if (keyword) {
-      const customQuery = `where={"role":"customer","phoneNumber":{"$regex":"${keyword}"}}`
-      return this.fetchData('/classes/_User', REQUEST_TYPE.GET, queryBody, null, null, null, customQuery)
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"role":"customer","phoneNumber":"${keyword.toString()}"}`
+      return this.fetchData('/classes/_User', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     } else {
-      const customQuery = `where={"role":"customer"}`
-      return this.fetchData('/classes/_User', REQUEST_TYPE.GET, queryBody, null, null, null, customQuery)
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"role":"customer"}`
+      return this.fetchData('/classes/_User', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     }
   }
 
-  static async getCustomer (phoneNumber) {
-    const customQuery = `where={"phoneNumber":"${phoneNumber.toString()}"}`
+  static async getCustomer (phoneNumber, limit = 100) {
+    let limited = limit
+    let skip = (limited * 1) - limited
+
+    const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"phoneNumber":"${phoneNumber.toString()}"}`
 
     return this.fetchData('/classes/_User', REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
