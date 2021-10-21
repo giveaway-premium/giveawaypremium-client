@@ -247,9 +247,9 @@ class TableProductScreen extends React.PureComponent {
     }
   }
 
-  beforeUploadMedia = async (file, showError = true) => {
+  beforeUploadMedia = async (file, fileList, showError = true) => {
     console.log('beforeUploadMedia running')
-    console.log(file)
+    console.log(fileList)
 
 
     this.setState({
@@ -283,11 +283,6 @@ class TableProductScreen extends React.PureComponent {
               file: file
             })
 
-            const res = await GapService.uploadSingleFileWithFormData(file)
-
-            console.log('res - beforeUploadMedia')
-            console.log(res)
-
             this.setState({
               mediaImage: mediaTemp,
               isUploading: false
@@ -300,6 +295,26 @@ class TableProductScreen extends React.PureComponent {
       }
       return false
     })
+  }
+
+  handleUpload = async (info) => {
+    const status = info.file.status;
+    if (status !== "uploading") {
+      console.log("handleUpload uploading")
+      console.log(info.file, info.fileList);
+    }
+    if (status === "done") {
+      console.log(`handleUpload ${info.file.name} file uploaded successfully.`);
+      const res = await GapService.uploadSingleFileWithFormData(info.file.originFileObj);
+    } else if (status === "error") {
+      console.error(`handleUpload ${info.file.name} file upload failed.`);
+    }
+  }
+
+  data = async (file) => {
+    console.log("data file", file);
+    // const res = GapService.uploadSingleFileWithFormData(file);
+    return file;
   }
 
   expandedRowRender = (recordData) => {
@@ -369,7 +384,8 @@ class TableProductScreen extends React.PureComponent {
                       listType='picture-card'
                       showUploadList={false}
                       beforeUpload={this.beforeUploadMedia}
-                      // onChange={this.handleUpload}
+                      onChange={this.handleUpload}
+                      data={this.data}
                       // customRequest={this.customRequest}
                       multiple
                       accept='.png,.jpg,.jpeg,.gif'

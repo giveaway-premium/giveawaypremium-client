@@ -8,81 +8,35 @@ import { numberWithCommas } from 'common/function'
 export default class Gap {
   static uploadSingleFileWithFormData = async (file) => {
     // eslint-disable-next-line no-undef
+    console.log("file upload ======", file)
     const key = await ReduxService.getAuthKeyBearer()
 
     // eslint-disable-next-line no-undef
-    var data = new FormData()
-    data.append('media', file)
+    // console.log(file);
+    // const data = new FormData();
+    // data.append('media', file)
     return new Promise(resolve => {
       const isOnline = () => resolve(true)
       const isOffline = () => resolve(false)
 
-      // eslint-disable-next-line no-undef
-      const xhr = new XMLHttpRequest()
+      var data = new FormData();
+      data.append("media", file);
 
-      xhr.onerror = isOffline
-      xhr.ontimeout = isOffline
-      // xhr.onreadystatechange = () => {
-      //   if (xhr.readyState === xhr.HEADERS_RECEIVED) {
-      //     if (xhr.status >= 200 && xhr.status < 400) {
-      //       isOnline()
-      //     } else {
-      //       isOffline()
-      //     }
-      //   }
-      // }
-
-      // xhr.onreadystatechange = () => {
-      //   if (xhr.readyState === XMLHttpRequest.DONE) {
-      //     console.log(xhr.responseText)
-      //   }
-      // }
-
-      console.log('1')
-
-      xhr.addEventListener('readystatechange', function () {
-        if (this.readyState === 4) {
-          console.log(this.responseText)
+      return fetch("https://giveaway-premium.herokuapp.com/media",
+        {
+            body: data,
+            method: "POST",
+            headers: {
+              // "Content-Type": "multipart/form-data",
+              "x-parse-application-id": process.env.APP_ID,
+              "x-parse-rest-api-key": process.env.REST_API_KEY,
+              "x-parse-revocable-session": "1",
+              "x-parse-session-token": key,
+              'cache-control': 'no-cache'
+            },
         }
-      })
-      console.log('2')
-      console.log(key)
-      console.log(process.env.APP_ID)
-      console.log(process.env.REST_API_KEY)
-
-      xhr.open('POST', 'https://giveaway-premium.herokuapp.com/media/', true)
-      xhr.withCredentials = true
-      xhr.setRequestHeader('x-parse-application-id', process.env.APP_ID)
-      xhr.setRequestHeader('x-parse-rest-api-key', process.env.REST_API_KEY)
-      xhr.setRequestHeader('x-parse-revocable-session', '1')
-      xhr.setRequestHeader('x-parse-session-token', key)
-      xhr.setRequestHeader('cache-control', 'no-cache')
-      xhr.setRequestHeader('Content-Type', 'image/png')
-      xhr.send(data)
-      console.log('3')
+      ).then((result => resolve(result)));
     })
-
-    //     var data = new FormData();
-    // data.append("media", "2.jpeg");
-
-    // var xhr = new XMLHttpRequest();
-    // xhr.withCredentials = true;
-
-    // xhr.addEventListener("readystatechange", function () {
-    //   if (this.readyState === 4) {
-    //     console.log(this.responseText);
-    //   }
-    // });
-
-    // xhr.open("POST", "https://giveaway-premium.herokuapp.com/media/");
-    // xhr.setRequestHeader("x-parse-application-id", "EJKfA5jFxiC98aMbvir0vSAuDHO4NQ7x");
-    // xhr.setRequestHeader("x-parse-rest-api-key", "6t7KSmWTkxxuvrF3a1jfqT6Vu0suWfEY");
-    // xhr.setRequestHeader("x-parse-revocable-session", "1");
-    // xhr.setRequestHeader("x-parse-session-token", "r:496cdae9b4fea7e028618b82250aa98c");
-    // xhr.setRequestHeader("cache-control", "no-cache");
-    // xhr.setRequestHeader("postman-token", "82e228c6-3801-da57-94c8-f2e241fa8d0e");
-
-    // xhr.send(data);
   }
 
   static logInAdmin (username, password) {
@@ -375,6 +329,7 @@ export default class Gap {
       const key = authKey || await ReduxService.getAuthKeyBearer()
       const HOST = hostLink || process.env.SERVER_URL
 
+      console.log(HOST);
       let header = {
         'X-Parse-Application-Id': process.env.APP_ID,
         'X-Parse-REST-API-Key': process.env.REST_API_KEY
