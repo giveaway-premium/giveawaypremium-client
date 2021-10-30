@@ -38,7 +38,7 @@ class DashBoard extends React.PureComponent {
     this.state = {
       isLogin: false,
       isLoadingLogin: false,
-      numberPage: 4,
+      numberPage: 3,
       formData: {
         nameConsigner: '',
         nameConsignee: '',

@@ -116,7 +116,7 @@ class SearchForm extends React.PureComponent {
     }, async () => {
       let res
 
-      res = await GapService.getConsignmentWithPhone(page, formData.phoneNumber)
+      res = await GapService.getConsignmentWithPhoneOrID(page, formData.phoneNumber)
 
       console.log('res')
       console.log(res)
@@ -165,7 +165,7 @@ class SearchForm extends React.PureComponent {
     this.setState({
       isSearching: true
     }, async () => {
-      const res = await GapService.getConsignmentWithPhone(page, formData.phoneNumber, 20)
+      const res = await GapService.getConsignmentWithPhoneOrID(page, formData.phoneNumber, 20)
       console.log('res: ', res)
 
       if (res && res.results) {
@@ -296,9 +296,9 @@ class SearchForm extends React.PureComponent {
             }}
           >
             <Row className='flex sell-card-form' justify='center'>
-              <h1 className={'text text-searching-title'}>Tìm thông tin ký gửi qua số điện thoại</h1>
+              <h1 className={'text text-searching-title'}>Tìm thông tin ký gửi qua số điện thoại hoặc CMND</h1>
 
-              <Form.Item name='phoneNumber' rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]} label='Số điện thoại'>
+              <Form.Item name='phoneNumber' rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]} label='Số điện thoại/CMND'>
                 <Col sm={24} md={22}>
                   <Input value={formData.phoneNumber} size='small' type={'number'} id='phoneNumber' key='phoneNumber' onChange={this.changeData} allowClear placeholder='...' />
                 </Col>

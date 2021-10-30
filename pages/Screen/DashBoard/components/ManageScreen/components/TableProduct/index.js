@@ -2,11 +2,11 @@
 import React, { useContext, useState, useEffect, useRef } from 'react'
 import { withRouter } from 'next/router'
 import { connect } from 'react-redux'
-import { Form, Row, Col, Layout, Input, Button, Badge, Spin, Descriptions, Tabs, Table, Radio, Popconfirm } from 'antd'
+import { Form, Row, Col, Layout, Input, Button, Badge, Spin, Descriptions, Tabs, Table, Radio, Popconfirm, Upload } from 'antd'
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
 import { showNotification, numberWithCommas } from 'common/function'
-import { LoadingOutlined, SearchOutlined } from '@ant-design/icons'
+import { LeftCircleTwoTone, LoadingOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons'
 import { Router } from 'common/routes'
 import { isMobile } from 'react-device-detect'
 import './style.scss'
@@ -16,8 +16,14 @@ import { isEqual } from 'lodash'
 import Highlighter from 'react-highlight-words'
 import { EMAIL_TITLE, EMAIL_TYPE } from 'common/constants'
 import moment from 'moment'
+import { SortableContainer, SortableElement } from 'react-sortable-hoc'
+// import * as arrayMove from 'array-move'
+const { Dragger } = Upload
 
 const { TabPane } = Tabs
+let isJPG = false
+let isLt2M = false
+let isLt10M = false
 
 const EditableRow = ({ index, ...props }) => {
   const [form] = Form.useForm()
@@ -141,7 +147,7 @@ class TableProductScreen extends React.PureComponent {
         title: 'Đã bán',
         width: 80,
         dataIndex: 'soldNumberProduct',
-        key: 'soldNumberProduct',
+        key: 'soldNumberProduct'
         // editable: true
       },
       {
@@ -173,7 +179,10 @@ class TableProductScreen extends React.PureComponent {
       isLoadingTags: false,
       tags: [],
       allInfoTag: [],
-      currentTag: ''
+      currentTag: '',
+      mediaImage: [],
+      imageUrl: false,
+      isUploading: false
     }
     this.myModal = React.createRef()
   }
@@ -203,7 +212,224 @@ class TableProductScreen extends React.PureComponent {
     }
   }
 
+  onSortEnd = async ({ information, recordData }) => {
+    const { consignmentData } = this.state
+    const newData = [...consignmentData]
+    console.log(newData)
+    
+    this.setState({
+      isUploading: true
+    }, async () => {
+      const index = newData.findIndex((foundItem) => recordData.key === foundItem.key)
+      let newItem = newData[index]
+      let newItemForUploading
+      let originItem = { ...newItem }
+
+      console.log('onSortEnd')
+      console.log(information.oldIndex)
+      console.log(information.newIndex)
+
+      console.log(recordData)
+      console.log(newItem)
+
+      if (information.oldIndex !== information.newIndex) {
+        let newImageList = [...newItem.medias]
+        let imageTempOld = newImageList[information.oldIndex]
+        // let imageTempNew = newImageList[information.newIndex]
+        // newImageList[information.oldIndex] = imageTempNew
+        // newImageList[information.newIndex] = imageTempOld
+        newImageList.splice(information.oldIndex, 1)
+        // newImageList.splice(information.oldIndex, 0, imageTempNew)
+
+        // newImageList.splice(information.newIndex, 1)
+        newImageList.splice(information.newIndex, 0, imageTempOld)
+
+        newItemForUploading = {
+          ...newItem,
+          medias: newImageList
+        }
+        newItem.medias = newImageList
+      } else {
+        this.setState({
+          isUploading: false
+        })
+        return
+      }
+
+      newData[index] = newItem
+      this.setState({
+        consignmentData: newData
+      })
+
+      const resPro = await GapService.updateProduct(newItemForUploading)
+      if (resPro) {
+        this.setState({
+          isUploading: false
+        })
+        showNotification(`Thay đổi thành công ${newItem.objectId}`)
+      } else {
+        newData[index] = originItem
+        this.setState({
+          consignmentData: newData,
+          isUploading: false
+        })
+        showNotification(`Thay đổi chưa thành công ${newItem.objectId}`)
+      }
+    })
+  };
+
+  removePhoto = async (item, recordData, indexPhoto) => {
+    const { consignmentData } = this.state
+
+    console.log('removePhoto run')
+    console.log(recordData)
+    this.setState({
+      isUploading: true
+    }, async () => {
+      const newData = [...consignmentData]
+      console.log(newData)
+
+      const index = newData.findIndex((foundItem) => recordData.key === foundItem.key)
+      let newItem = newData[index]
+      console.log(index)
+
+      let newItemForUploading
+
+      console.log(newData)
+      console.log(newItem)
+
+      if (newItem.medias && newItem.medias.length > 1) {
+        let newImageList = [...newItem.medias]
+        newImageList = newImageList.filter((newItemRemain) => {
+          return newItemRemain.objectId !== item.objectId
+        })
+
+        newItemForUploading = {
+          ...newItem,
+          medias: newImageList
+        }
+        newItem.medias = newImageList
+      } else {
+        newItemForUploading = {
+          ...newItem,
+          medias: []
+        }
+        newItem.medias = []
+      }
+
+      const resPro = await GapService.updateProduct(newItemForUploading)
+      if (resPro) {
+        newData[index] = newItem
+        this.setState({
+          consignmentData: newData,
+          isUploading: false
+        })
+        showNotification(`Xoá thành công ${newItem.objectId}`)
+      } else {
+        this.setState({
+          isUploading: false
+        })
+        showNotification(`Xoá chưa thành công ${newItem.objectId}`)
+      }
+    })
+  }
+
+  handleUpload = async (info, recordData) => {
+    const { consignmentData, isUploading } = this.state
+    const status = info.file.status
+
+    if (status !== 'uploading') {
+      // console.log('handleUpload uploading')
+      // console.log(info.file, info.fileList)
+    }
+    if (status === 'done') {
+      this.setState({
+        isUploading: true
+      }, async () => {
+        console.log('handleUpload run')
+
+        console.log(info)
+        console.log(recordData)
+        console.log('handleUpload run 1111 ----')
+
+        const newData = [...consignmentData]
+        const index = newData.findIndex((item) => recordData.key === item.key)
+        let newItem = newData[index]
+        let newItemForUploading
+
+        console.log(newData)
+        console.log(newItem)
+        console.log('handleUpload run 2222 ----')
+
+        const res = await GapService.uploadSingleFileWithFormData(info.file.originFileObj)
+        console.log('handleUpload 3333 res')
+        console.log(res)
+        const newImage = { '__type': 'Pointer', 'className': 'Media', 'objectId': res.objectId }
+
+        if (newItem.medias && newItem.medias.length > 0) {
+          newItemForUploading = {
+            ...newItem,
+            medias: [
+              ...newItem.medias,
+              newImage
+            ]
+          }
+          newItem.medias = [
+            ...newItem.medias,
+            { ...newImage, data: res.data }
+          ]
+        } else {
+          newItemForUploading = {
+            ...newItem,
+            medias: [
+              newImage
+            ]
+          }
+          newItem.medias = [
+            { ...newImage, data: res.data }
+          ]
+        }
+
+        const resPro = await GapService.updateProduct(newItemForUploading)
+        if (resPro) {
+          newData[index] = newItem
+          this.setState({
+            consignmentData: newData,
+            isUploading: false
+          })
+          showNotification(`Cập nhật thành công ${newItem.objectId}`)
+        } else {
+          this.setState({
+            isUploading: false
+          })
+          showNotification(`Cập nhật chưa thành công ${newItem.objectId}`)
+        }
+        // console.log(`handleUpload ${info.file.name} file uploaded successfully.`)
+      })
+
+      // console.log(`handleUpload ${info.file.name} file uploaded successfully.`)
+      // const res = await GapService.uploadSingleFileWithFormData(info.file.originFileObj)
+      // console.log('handleUpload 123123')
+      // console.log(res)
+    } else if (status === 'error') {
+      this.setState({
+        isUploading: false
+      })
+      showNotification(`Cập nhật chưa thành công`)
+    }
+  }
+
+  // [{"__type":"Pointer","className":"Media","objectId":"vu0vN7mImh"},
+  // {"__type":"Pointer","className":"Media","objectId":"vu0vN7mImh"}]
+
+  data = async (file) => {
+    console.log('data file', file)
+    // const res = GapService.uploadSingleFileWithFormData(file);
+    return file
+  }
+
   expandedRowRender = (recordData) => {
+    const { isUploading } = this.state
     const components = {
       body: {
         row: EditableRow,
@@ -211,45 +437,126 @@ class TableProductScreen extends React.PureComponent {
       }
     }
 
+    const SortableItem = SortableElement(({ item, indexItem }) => (
+      <div className='inner-item' key={indexItem}>
+        <div
+          className='photo-remove-icon'
+          onClick={() => this.removePhoto(item, recordData, indexItem)}
+        >
+          <img src={images.icClose} alt='remove' />
+        </div>
+        <img
+          src={item.data.secure_url}
+          style={{ maxWidth: '70px', height: '70px', objectFit: 'contain' }}
+        />
+      </div>
+    ))
+
+    const SortableList = SortableContainer(({ items }) => (
+      <div className='SortableList-container'>
+        {items && items.length > 0 && items.map((item, index) => (
+          <SortableItem
+            pressDelay={0}
+            key={`${index}`}
+            indexItem={index}
+            index={index}
+            item={item}
+          />
+        ))}
+      </div>
+    ))
+
     const columns = [
       {
-        title: 'Giá',
-        dataIndex: 'price',
-        key: 'price',
+        title: 'Ảnh',
+        dataIndex: 'medias',
+        key: 'medias',
         // editable: true,
-        render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
+        width: 300,
+        render: (value) => {
+          console.log('value')
+          console.log(value)
+
+          return (
+            <div>
+              <div className='upload-Dragger-container'>
+                <SortableList
+                  items={value}
+                  onSortEnd={(information) => this.onSortEnd({ information, recordData })}
+                  pressDelay={250}
+                  axis='xy'
+                  helperClass='SortableHelper'
+                />
+
+                {
+                  value && value.length >= 5 ? null
+                    : <Dragger
+                      name='uploadFile'
+                      listType='picture-card'
+                      showUploadList={false}
+                      // beforeUpload={this.beforeUploadMedia}
+                      onChange={(info) => this.handleUpload(info, recordData)}
+                      // data={this.data}
+                      // customRequest={this.customRequest}
+                      multiple
+                      maxCount={5}
+                      maxLength={5}
+                      accept='.png,.jpg,.jpeg,.gif'
+                      className='upload-Dragger'
+                      style={value && value.length === 0 && { border: 'none', background: 'transparent' }}
+                    >
+                      {
+                        value && value.length === 0
+                          ? <Button>
+                            <UploadOutlined /> Thêm ảnh
+                          </Button> : <div>
+                            <p className='ant-upload-text'>
+                              {isUploading ? (
+                                <LoadingOutlined />
+                              ) : (
+                                <img src={images.increase} />
+                              )}
+                            </p>
+                          </div>
+                      }
+                    </Dragger>
+                }
+              </div>
+              <div className='nft-message-length'>
+                {value ? value.length : 0}/5
+              </div>
+            </div>
+          )
+        }
       },
       {
-        title: 'Số lượng',
-        dataIndex: 'count',
-        key: 'count',
-        width: 100
-      },
-      {
-        title: 'Giá sau phí',
-        dataIndex: 'priceAfterFee',
-        key: 'priceAfterFee',
-        editable: true,
-        render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
-      },
-      {
-        title: 'Đã bán',
+        title: 'Size',
+        dataIndex: 'sizeInfo',
+        key: 'sizeInfo',
         width: 80,
-        dataIndex: 'soldNumberProduct',
-        key: 'soldNumberProduct',
+        editable: true,
+        render: (value) => <span>{value}</span>
+      },
+      {
+        title: 'Độ mới',
+        dataIndex: 'rateNew',
+        key: 'rateNew',
+        editable: true,
+        width: 80,
+        render: (value) => <span>100%</span>
+      },
+      {
+        title: 'Chi tiết sản phẩm',
+        width: 150,
+        dataIndex: 'detailInfo',
+        key: 'detailInfo',
         editable: true
       },
       {
-        title: 'Còn lại',
-        width: 80,
-        dataIndex: 'remainNumberProduct',
-        key: 'remainNumberProduct'
-      },
-      {
-        title: 'Tổng tiền sau phí',
-        dataIndex: 'moneyBackProduct',
-        key: 'moneyBackProduct',
-        render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
+        title: 'Ghi chú',
+        width: 150,
+        dataIndex: 'note',
+        key: 'note'
       }
     ]
 
@@ -258,16 +565,13 @@ class TableProductScreen extends React.PureComponent {
     console.log('item')
     console.log(recordData)
 
-    recordData && recordData.productList && recordData.productList.map((item, index) => {
-      data.push({
-        key: index,
-        price: Number(item.price) || 0,
-        count: Number(item.count) || 0,
-        priceAfterFee: Number(item.priceAfterFee) || 0,
-        soldNumberProduct: Number(item.soldNumberProduct) || 0,
-        remainNumberProduct: Number(item.count) - Number(item.soldNumberProduct || 0),
-        moneyBackProduct: Math.round(Number(item.soldNumberProduct || 0) * item.priceAfterFee || 0)
-      })
+    data.push({
+      key: recordData.objectId,
+      medias: recordData.medias && recordData.medias.length > 0 ? recordData.medias : null,
+      size: recordData.sizeInfo,
+      item: recordData.rateNew,
+      detailInfo: recordData.detailInfo,
+      note: recordData.note
     })
 
     const formatedColumns = columns.map((col) => {
@@ -288,7 +592,7 @@ class TableProductScreen extends React.PureComponent {
     })
 
     return <Table
-      scroll={{ x: 800, y: '55vh' }}
+      scroll={{ x: 1500, y: '55vh' }}
       components={components}
       columns={formatedColumns}
       dataSource={data}
@@ -388,10 +692,9 @@ class TableProductScreen extends React.PureComponent {
       let consignmentData = []
       if (res && res.results) {
         res.results.map((item, indexItem) => {
-          console.log('indexItem')
-          console.log(item)
           consignmentData.push({
             ...item,
+            key: item.objectId,
             categoryId: item.category.objectId,
             price: Number(item.price) || 0,
             count: Number(item.count) || 0,
@@ -496,7 +799,7 @@ class TableProductScreen extends React.PureComponent {
           columns={columns}
           dataSource={consignmentData}
           bordered
-          // expandable={{ expandedRowRender: record => this.expandedRowRender(record) }}
+          expandable={{ expandedRowRender: (record) => this.expandedRowRender(record) }}
           pagination={{
             total: total,
             pageSize: 100,

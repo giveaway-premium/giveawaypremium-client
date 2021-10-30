@@ -8,46 +8,30 @@ import { numberWithCommas } from 'common/function'
 export default class Gap {
   static uploadSingleFileWithFormData = async (file) => {
     // eslint-disable-next-line no-undef
-    const key = authKey || await ReduxService.getAuthKeyBearer()
+    console.log('file uploading ======', file)
+    const key = await ReduxService.getAuthKeyBearer()
 
-    // eslint-disable-next-line no-undef
-    var data = new FormData()
-    data.append('media', file)
     return new Promise(resolve => {
       const isOnline = () => resolve(true)
       const isOffline = () => resolve(false)
 
-      // eslint-disable-next-line no-undef
-      const xhr = new XMLHttpRequest()
+      var data = new FormData()
+      data.append('media', file)
 
-      xhr.onerror = isOffline
-      xhr.ontimeout = isOffline
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === xhr.HEADERS_RECEIVED) {
-          if (xhr.status >= 200 && xhr.status < 400) {
-            isOnline()
-          } else {
-            isOffline()
+      fetch('https://giveaway-premium.herokuapp.com/media',
+        {
+          body: data,
+          method: 'POST',
+          headers: {
+            // "Content-Type": "multipart/form-data",
+            'x-parse-application-id': process.env.APP_ID,
+            'x-parse-rest-api-key': process.env.REST_API_KEY,
+            'x-parse-revocable-session': '1',
+            'x-parse-session-token': key,
+            'cache-control': 'no-cache'
           }
         }
-      }
-
-      xhr.withCredentials = true
-
-      xhr.addEventListener('readystatechange', function () {
-        if (this.readyState === 4) {
-          console.log(this.responseText)
-        }
-      })
-
-      xhr.open('POST', 'https://giveaway-premium.herokuapp.com/media/')
-      xhr.setRequestHeader('x-parse-application-id', process.env.APP_ID)
-      xhr.setRequestHeader('x-parse-rest-api-key', process.env.REST_API_KEY,)
-      xhr.setRequestHeader('x-parse-revocable-session', '1')
-      xhr.setRequestHeader('x-parse-session-token', key)
-      xhr.setRequestHeader('cache-control', 'no-cache')
-      xhr.setRequestHeader('postman-token', '82e228c6-3801-da57-94c8-f2e241fa8d0e')
-      xhr.send(data)
+      ).then(result => resolve(result.json()))
     })
   }
 
@@ -161,6 +145,22 @@ export default class Gap {
     }
   }
 
+  static async updateProduct (item) {
+    try {
+      const body = {
+        medias: item.medias
+      }
+
+      console.log('body update product', body)
+      console.log('item update product', item)
+
+      return this.fetchData(`/classes/Product/${item.objectId}`, REQUEST_TYPE.PUT, null, body)
+    } catch (e) {
+      console.log(e)
+      return false
+    }
+  }
+
   // Consignment
   static async setConsignment (formData, consigneeData, consignerData, timeGroupId, timeGroupCode, productList, moneyBackForFullSold, totalMoney, isTransferMoneyWithBank = false) {
     const body = {
@@ -189,11 +189,13 @@ export default class Gap {
     return this.fetchData('/classes/Consignment', REQUEST_TYPE.POST, null, body)
   }
 
-  static async getConsignmentWithPhone (page = 1, keyword = null, limit = 20) {
+  static async getConsignmentWithPhoneOrID (page = 1, keyword = null, limit = 20) {
     let limited = limit || 100
     let skip = (limited * page) - limited
+    
+    // const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"phoneNumber":"${keyword}"}`
+    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"$or":[{"phoneNumber":"${keyword}"},{"consignerIdCard":"${keyword}"]}`
 
-    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"phoneNumber":"${keyword}"}`
     return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
 
@@ -210,12 +212,6 @@ export default class Gap {
     console.log(page)
     let limited = limit || 100
     let skip = (limited * page) - limited
-
-    // const queryBody = {
-    //   limit: limit,
-    //   skip: 400,
-    //   count: true
-    // }
 
     if (keyword) {
       const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"phoneNumber":{"$regex":"${keyword}"},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
@@ -313,26 +309,23 @@ export default class Gap {
   }
 
   static async getCustomerTable (page = 1, keyword = null) {
-    let limit = 20
-    let skip = (20 * page) - 20
-
-    const queryBody = {
-      limit: limit,
-      skip: skip,
-      count: true
-    }
+    let limited = 100
+    let skip = (limited * page) - limited
 
     if (keyword) {
-      const customQuery = `where={"role":"customer","phoneNumber":{"$regex":"${keyword}"}}`
-      return this.fetchData('/classes/_User', REQUEST_TYPE.GET, queryBody, null, null, null, customQuery)
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"role":"customer","phoneNumber":"${keyword.toString()}"}`
+      return this.fetchData('/classes/_User', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     } else {
-      const customQuery = `where={"role":"customer"}`
-      return this.fetchData('/classes/_User', REQUEST_TYPE.GET, queryBody, null, null, null, customQuery)
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"role":"customer"}`
+      return this.fetchData('/classes/_User', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     }
   }
 
-  static async getCustomer (phoneNumber) {
-    const customQuery = `where={"phoneNumber":"${phoneNumber.toString()}"}`
+  static async getCustomer (phoneNumber, limit = 100) {
+    let limited = limit
+    let skip = (limited * 1) - limited
+
+    const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"phoneNumber":"${phoneNumber.toString()}"}`
 
     return this.fetchData('/classes/_User', REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
@@ -350,6 +343,7 @@ export default class Gap {
       const key = authKey || await ReduxService.getAuthKeyBearer()
       const HOST = hostLink || process.env.SERVER_URL
 
+      console.log(HOST)
       let header = {
         'X-Parse-Application-Id': process.env.APP_ID,
         'X-Parse-REST-API-Key': process.env.REST_API_KEY

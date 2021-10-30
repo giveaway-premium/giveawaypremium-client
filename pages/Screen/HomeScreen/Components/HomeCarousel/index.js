@@ -185,6 +185,11 @@ class HomeCarousel extends React.Component {
     )
   }
 
+  onNextBanner = () => {
+    console.log('onNextBanner')
+    this.Carousel.slideNext()
+  }
+
   renderBannerMobile = () => {
     const { locale } = this.props
     const { activeIndex } = this.state
@@ -278,7 +283,7 @@ class HomeCarousel extends React.Component {
             className='arrow-banner'
           /> */}
         </div>
-        <div className='banner-wrapper-desktop'>
+        <div onClick={this.onNextBanner} className='banner-wrapper-desktop'>
           <Lottie
             style={{ position: 'absolute', right: 0, zoom: 0.8 }}
             options={defaultOptionsRightArrow}
@@ -335,7 +340,7 @@ class HomeCarousel extends React.Component {
           className='arrow-banner'
         /> */}
         </div>
-        <div className='banner-wrapper-mobile'>
+        <div onClick={this.onNextBanner} className='banner-wrapper-mobile'>
           <Lottie
             style={{ position: 'absolute', right: 0, zoom: 0.5 }}
             options={defaultOptionsRightArrow}
