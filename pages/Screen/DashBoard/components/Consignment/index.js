@@ -155,6 +155,9 @@ class Consignment extends React.PureComponent {
     if (!productListTemp || productListTemp.length === 0) {
       showNotification('Cần ít nhất 1 sản phẩm')
       return
+    } else if (!timeGroupId || timeGroupId.length === 0) {
+      showNotification('Nhập thời gian tổng kết')
+      return
     }
 
     console.log(userData)

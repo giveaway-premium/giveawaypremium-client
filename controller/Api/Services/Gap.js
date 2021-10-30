@@ -8,34 +8,30 @@ import { numberWithCommas } from 'common/function'
 export default class Gap {
   static uploadSingleFileWithFormData = async (file) => {
     // eslint-disable-next-line no-undef
-    console.log("file upload ======", file)
+    console.log('file uploading ======', file)
     const key = await ReduxService.getAuthKeyBearer()
 
-    // eslint-disable-next-line no-undef
-    // console.log(file);
-    // const data = new FormData();
-    // data.append('media', file)
     return new Promise(resolve => {
       const isOnline = () => resolve(true)
       const isOffline = () => resolve(false)
 
-      var data = new FormData();
-      data.append("media", file);
+      var data = new FormData()
+      data.append('media', file)
 
-      return fetch("https://giveaway-premium.herokuapp.com/media",
+      fetch('https://giveaway-premium.herokuapp.com/media',
         {
-            body: data,
-            method: "POST",
-            headers: {
-              // "Content-Type": "multipart/form-data",
-              "x-parse-application-id": process.env.APP_ID,
-              "x-parse-rest-api-key": process.env.REST_API_KEY,
-              "x-parse-revocable-session": "1",
-              "x-parse-session-token": key,
-              'cache-control': 'no-cache'
-            },
+          body: data,
+          method: 'POST',
+          headers: {
+            // "Content-Type": "multipart/form-data",
+            'x-parse-application-id': process.env.APP_ID,
+            'x-parse-rest-api-key': process.env.REST_API_KEY,
+            'x-parse-revocable-session': '1',
+            'x-parse-session-token': key,
+            'cache-control': 'no-cache'
+          }
         }
-      ).then((result => resolve(result)));
+      ).then(result => resolve(result.json()))
     })
   }
 
@@ -149,6 +145,22 @@ export default class Gap {
     }
   }
 
+  static async updateProduct (item) {
+    try {
+      const body = {
+        medias: item.medias
+      }
+
+      console.log('body update product', body)
+      console.log('item update product', item)
+
+      return this.fetchData(`/classes/Product/${item.objectId}`, REQUEST_TYPE.PUT, null, body)
+    } catch (e) {
+      console.log(e)
+      return false
+    }
+  }
+
   // Consignment
   static async setConsignment (formData, consigneeData, consignerData, timeGroupId, timeGroupCode, productList, moneyBackForFullSold, totalMoney, isTransferMoneyWithBank = false) {
     const body = {
@@ -177,11 +189,13 @@ export default class Gap {
     return this.fetchData('/classes/Consignment', REQUEST_TYPE.POST, null, body)
   }
 
-  static async getConsignmentWithPhone (page = 1, keyword = null, limit = 20) {
+  static async getConsignmentWithPhoneOrID (page = 1, keyword = null, limit = 20) {
     let limited = limit || 100
     let skip = (limited * page) - limited
+    
+    // const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"phoneNumber":"${keyword}"}`
+    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"$or":[{"phoneNumber":"${keyword}"},{"consignerIdCard":"${keyword}"]}`
 
-    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"phoneNumber":"${keyword}"}`
     return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
 
@@ -329,7 +343,7 @@ export default class Gap {
       const key = authKey || await ReduxService.getAuthKeyBearer()
       const HOST = hostLink || process.env.SERVER_URL
 
-      console.log(HOST);
+      console.log(HOST)
       let header = {
         'X-Parse-Application-Id': process.env.APP_ID,
         'X-Parse-REST-API-Key': process.env.REST_API_KEY

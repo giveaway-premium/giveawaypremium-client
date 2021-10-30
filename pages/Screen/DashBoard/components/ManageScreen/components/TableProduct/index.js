@@ -6,7 +6,7 @@ import { Form, Row, Col, Layout, Input, Button, Badge, Spin, Descriptions, Tabs,
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
 import { showNotification, numberWithCommas } from 'common/function'
-import { LoadingOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons'
+import { LeftCircleTwoTone, LoadingOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons'
 import { Router } from 'common/routes'
 import { isMobile } from 'react-device-detect'
 import './style.scss'
@@ -212,109 +212,220 @@ class TableProductScreen extends React.PureComponent {
     }
   }
 
-  onSortEnd = ({ oldIndex, newIndex }) => {
-    console.log('onSortEnd')
-    console.log(oldIndex)
-    console.log(newIndex)
-  };
-
-  removePhoto = (indexPhoto) => {
-    const { mediaImage } = this.state
-    const mediaImageTemp = mediaImage.slice()
-
-    console.log(indexPhoto)
-    try {
-      mediaImageTemp.splice(indexPhoto, 1)
-      this.setState({
-        mediaImage: mediaImageTemp
-      })
-    } catch (e) {
-      console.log(e)
-    }
-  }
-
-  previewImageBase54 (img, callback) {
-    // eslint-disable-next-line no-undef
-    const reader = new FileReader()
-    try {
-      reader.onload = () => {
-        let imgUrl = URL.createObjectURL(img)
-        callback(imgUrl)
-      }
-      reader.readAsArrayBuffer(img)
-    } catch (error) {
-      console.log('error upload', error)
-    }
-  }
-
-  beforeUploadMedia = async (file, fileList, showError = true) => {
-    console.log('beforeUploadMedia running')
-    console.log(fileList)
-
-
+  onSortEnd = async ({ information, recordData }) => {
+    const { consignmentData } = this.state
+    const newData = [...consignmentData]
+    console.log(newData)
+    
     this.setState({
       isUploading: true
     }, async () => {
-      const listImageTypes = 'SVG, JPEG, JPG, PNG, GIF'
-      let fileType = file.type.split('/')[1]
-        ? file.type.split('/')[1].toUpperCase()
-        : 'NOT_EXIST_FILE_TYPE'
-      isJPG = listImageTypes.includes(fileType)
+      const index = newData.findIndex((foundItem) => recordData.key === foundItem.key)
+      let newItem = newData[index]
+      let newItemForUploading
+      let originItem = { ...newItem }
 
-      if (!isJPG) {
-        // showError && message.error(this.props.locale.messages.form.notSupport)
+      console.log('onSortEnd')
+      console.log(information.oldIndex)
+      console.log(information.newIndex)
+
+      console.log(recordData)
+      console.log(newItem)
+
+      if (information.oldIndex !== information.newIndex) {
+        let newImageList = [...newItem.medias]
+        let imageTempOld = newImageList[information.oldIndex]
+        // let imageTempNew = newImageList[information.newIndex]
+        // newImageList[information.oldIndex] = imageTempNew
+        // newImageList[information.newIndex] = imageTempOld
+        newImageList.splice(information.oldIndex, 1)
+        // newImageList.splice(information.oldIndex, 0, imageTempNew)
+
+        // newImageList.splice(information.newIndex, 1)
+        newImageList.splice(information.newIndex, 0, imageTempOld)
+
+        newItemForUploading = {
+          ...newItem,
+          medias: newImageList
+        }
+        newItem.medias = newImageList
+      } else {
         this.setState({
           isUploading: false
         })
+        return
       }
-      isLt2M = file.size / 1024 / 1024 < 2
-      if (isJPG && !isLt2M) {
-        // showError && message.error(this.props.locale.messages.form.smallerThan2MB)
+
+      newData[index] = newItem
+      this.setState({
+        consignmentData: newData
+      })
+
+      const resPro = await GapService.updateProduct(newItemForUploading)
+      if (resPro) {
         this.setState({
           isUploading: false
         })
-      }
-      if (isJPG && isLt2M) {
-        this.previewImageBase54(file, async (mediaImageItem) => {
-          const mediaTemp = this.state.mediaImage.slice()
-          if (mediaTemp && mediaTemp.length < 50) {
-            mediaTemp.push({
-              image: mediaImageItem,
-              file: file
-            })
-
-            this.setState({
-              mediaImage: mediaTemp,
-              isUploading: false
-            }, () => {
-              console.log('mediaImage')
-              console.log(this.state)
-            })
-          }
+        showNotification(`Thay đổi thành công ${newItem.objectId}`)
+      } else {
+        newData[index] = originItem
+        this.setState({
+          consignmentData: newData,
+          isUploading: false
         })
+        showNotification(`Thay đổi chưa thành công ${newItem.objectId}`)
       }
-      return false
+    })
+  };
+
+  removePhoto = async (item, recordData, indexPhoto) => {
+    const { consignmentData } = this.state
+
+    console.log('removePhoto run')
+    console.log(recordData)
+    this.setState({
+      isUploading: true
+    }, async () => {
+      const newData = [...consignmentData]
+      console.log(newData)
+
+      const index = newData.findIndex((foundItem) => recordData.key === foundItem.key)
+      let newItem = newData[index]
+      console.log(index)
+
+      let newItemForUploading
+
+      console.log(newData)
+      console.log(newItem)
+
+      if (newItem.medias && newItem.medias.length > 1) {
+        let newImageList = [...newItem.medias]
+        newImageList = newImageList.filter((newItemRemain) => {
+          return newItemRemain.objectId !== item.objectId
+        })
+
+        newItemForUploading = {
+          ...newItem,
+          medias: newImageList
+        }
+        newItem.medias = newImageList
+      } else {
+        newItemForUploading = {
+          ...newItem,
+          medias: []
+        }
+        newItem.medias = []
+      }
+
+      const resPro = await GapService.updateProduct(newItemForUploading)
+      if (resPro) {
+        newData[index] = newItem
+        this.setState({
+          consignmentData: newData,
+          isUploading: false
+        })
+        showNotification(`Xoá thành công ${newItem.objectId}`)
+      } else {
+        this.setState({
+          isUploading: false
+        })
+        showNotification(`Xoá chưa thành công ${newItem.objectId}`)
+      }
     })
   }
 
-  handleUpload = async (info) => {
-    const status = info.file.status;
-    if (status !== "uploading") {
-      console.log("handleUpload uploading")
-      console.log(info.file, info.fileList);
+  handleUpload = async (info, recordData) => {
+    const { consignmentData, isUploading } = this.state
+    const status = info.file.status
+
+    if (status !== 'uploading') {
+      // console.log('handleUpload uploading')
+      // console.log(info.file, info.fileList)
     }
-    if (status === "done") {
-      console.log(`handleUpload ${info.file.name} file uploaded successfully.`);
-      const res = await GapService.uploadSingleFileWithFormData(info.file.originFileObj);
-    } else if (status === "error") {
-      console.error(`handleUpload ${info.file.name} file upload failed.`);
+    if (status === 'done') {
+      this.setState({
+        isUploading: true
+      }, async () => {
+        console.log('handleUpload run')
+
+        console.log(info)
+        console.log(recordData)
+        console.log('handleUpload run 1111 ----')
+
+        const newData = [...consignmentData]
+        const index = newData.findIndex((item) => recordData.key === item.key)
+        let newItem = newData[index]
+        let newItemForUploading
+
+        console.log(newData)
+        console.log(newItem)
+        console.log('handleUpload run 2222 ----')
+
+        const res = await GapService.uploadSingleFileWithFormData(info.file.originFileObj)
+        console.log('handleUpload 3333 res')
+        console.log(res)
+        const newImage = { '__type': 'Pointer', 'className': 'Media', 'objectId': res.objectId }
+
+        if (newItem.medias && newItem.medias.length > 0) {
+          newItemForUploading = {
+            ...newItem,
+            medias: [
+              ...newItem.medias,
+              newImage
+            ]
+          }
+          newItem.medias = [
+            ...newItem.medias,
+            { ...newImage, data: res.data }
+          ]
+        } else {
+          newItemForUploading = {
+            ...newItem,
+            medias: [
+              newImage
+            ]
+          }
+          newItem.medias = [
+            { ...newImage, data: res.data }
+          ]
+        }
+
+        const resPro = await GapService.updateProduct(newItemForUploading)
+        if (resPro) {
+          newData[index] = newItem
+          this.setState({
+            consignmentData: newData,
+            isUploading: false
+          })
+          showNotification(`Cập nhật thành công ${newItem.objectId}`)
+        } else {
+          this.setState({
+            isUploading: false
+          })
+          showNotification(`Cập nhật chưa thành công ${newItem.objectId}`)
+        }
+        // console.log(`handleUpload ${info.file.name} file uploaded successfully.`)
+      })
+
+      // console.log(`handleUpload ${info.file.name} file uploaded successfully.`)
+      // const res = await GapService.uploadSingleFileWithFormData(info.file.originFileObj)
+      // console.log('handleUpload 123123')
+      // console.log(res)
+    } else if (status === 'error') {
+      this.setState({
+        isUploading: false
+      })
+      showNotification(`Cập nhật chưa thành công`)
     }
   }
 
+  // [{"__type":"Pointer","className":"Media","objectId":"vu0vN7mImh"},
+  // {"__type":"Pointer","className":"Media","objectId":"vu0vN7mImh"}]
+
   data = async (file) => {
-    console.log("data file", file);
+    console.log('data file', file)
     // const res = GapService.uploadSingleFileWithFormData(file);
-    return file;
+    return file
   }
 
   expandedRowRender = (recordData) => {
@@ -330,7 +441,7 @@ class TableProductScreen extends React.PureComponent {
       <div className='inner-item' key={indexItem}>
         <div
           className='photo-remove-icon'
-          onClick={() => this.removePhoto(indexItem)}
+          onClick={() => this.removePhoto(item, recordData, indexItem)}
         >
           <img src={images.icClose} alt='remove' />
         </div>
@@ -345,7 +456,7 @@ class TableProductScreen extends React.PureComponent {
       <div className='SortableList-container'>
         {items && items.length > 0 && items.map((item, index) => (
           <SortableItem
-            pressDelay={1000}
+            pressDelay={0}
             key={`${index}`}
             indexItem={index}
             index={index}
@@ -371,7 +482,7 @@ class TableProductScreen extends React.PureComponent {
               <div className='upload-Dragger-container'>
                 <SortableList
                   items={value}
-                  onSortEnd={this.onSortEnd}
+                  onSortEnd={(information) => this.onSortEnd({ information, recordData })}
                   pressDelay={250}
                   axis='xy'
                   helperClass='SortableHelper'
@@ -383,11 +494,13 @@ class TableProductScreen extends React.PureComponent {
                       name='uploadFile'
                       listType='picture-card'
                       showUploadList={false}
-                      beforeUpload={this.beforeUploadMedia}
-                      onChange={this.handleUpload}
-                      data={this.data}
+                      // beforeUpload={this.beforeUploadMedia}
+                      onChange={(info) => this.handleUpload(info, recordData)}
+                      // data={this.data}
                       // customRequest={this.customRequest}
                       multiple
+                      maxCount={5}
+                      maxLength={5}
                       accept='.png,.jpg,.jpeg,.gif'
                       className='upload-Dragger'
                       style={value && value.length === 0 && { border: 'none', background: 'transparent' }}
@@ -579,11 +692,9 @@ class TableProductScreen extends React.PureComponent {
       let consignmentData = []
       if (res && res.results) {
         res.results.map((item, indexItem) => {
-          console.log('indexItem')
-          console.log(item)
           consignmentData.push({
             ...item,
-            key: indexItem,
+            key: item.objectId,
             categoryId: item.category.objectId,
             price: Number(item.price) || 0,
             count: Number(item.count) || 0,

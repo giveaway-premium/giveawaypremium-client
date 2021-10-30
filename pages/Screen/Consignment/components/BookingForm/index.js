@@ -340,7 +340,7 @@ class ConsignmentScreen extends React.PureComponent {
 
     return (
       <div className='bookingform-home-container'>
-        <div style={{ display: 'flex', flexDirection: 'column', width: '60%', marginTop: '40px' }}>
+        {/* <div style={{ display: 'flex', flexDirection: 'column', width: '60%', marginTop: '40px' }}>
           <p className='text day-txt'>
             Hiện tại tính năng đặt lịch ký gửi trên website đang tạm khoá.
           </p>
@@ -352,9 +352,9 @@ class ConsignmentScreen extends React.PureComponent {
           </p>
           <Button style={{ maxWidth: '150px' }} className='MT20' onClick={this.resetAndBackProps} >Quay lại</Button>
 
-        </div>
+        </div> */}
 
-        {/* <div className='bookingform'>
+        <div className='bookingform'>
           <div className={'dayBooking-box' + (!isHideDayColumn ? ' show' : '')}>
 
             {dayBooking.map((dayItem, dayIndex) => {
@@ -471,7 +471,7 @@ class ConsignmentScreen extends React.PureComponent {
             </div>
           </div>
         </div>
-        <MyModal ref={this.myModal} /> */}
+        <MyModal ref={this.myModal} />
       </div>
     )
   }
