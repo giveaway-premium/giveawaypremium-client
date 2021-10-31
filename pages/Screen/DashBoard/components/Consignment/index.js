@@ -46,7 +46,7 @@ class Consignment extends React.PureComponent {
             'warrantyHolding': 0,
             'depots': []
           },
-          note: ''
+          note: '---'
         }
       ],
       formData: {
@@ -358,7 +358,7 @@ class Consignment extends React.PureComponent {
             'warrantyHolding': 0,
             'depots': []
           },
-          note: ''
+          note: '---'
         }
       ],
       formData: {
@@ -506,7 +506,7 @@ class Consignment extends React.PureComponent {
       })
     } else if (value.target.id === 'note') {
       console.log(value.target.value)
-      productListTemp[indexProduct].note = value.target.value
+      productListTemp[indexProduct].note = value.target.value || '---'
 
       this.setState({
         productList: productListTemp
@@ -523,19 +523,22 @@ class Consignment extends React.PureComponent {
           price: '',
           count: 1,
           remainNumberProduct: 1,
-          priceAfterFee: ''
+          priceAfterFee: '',
+          note: '---'
         },
         {
           price: '',
           count: 1,
           remainNumberProduct: 1,
-          priceAfterFee: ''
+          priceAfterFee: '',
+          note: '---'
         },
         {
           price: '',
           count: 1,
           remainNumberProduct: 1,
-          priceAfterFee: ''
+          priceAfterFee: '',
+          note: '---'
         }
       ],
       formData: {
@@ -713,7 +716,7 @@ render () {
                         <Input disabled value={item.count} prefix={<span>SL</span>} defaultValue={1} type={'number'} id='numberOfProducts' key='numberOfProducts' placeholder='Số lượng' />
                       </div>
                       <div className='product-item-note'>
-                        <TextArea disabled placeholder='Ghi Chú' value={item.note} type={'number'} id='note' key='note' />
+                        <TextArea disabled placeholder='Ghi Chú' value={item.note ? item.note : '---'} type={'number'} id='note' key='note' />
                       </div>
                     </div>
                   )
@@ -839,7 +842,7 @@ render () {
                         </div>
 
                         <div className='product-item-note'>
-                          <TextArea placeholder='Ghi Chú' value={item.note} type={'number'} id='note' key='note' onChange={(value) => this.changeDataProduct(value, indexItem)} />
+                          <TextArea placeholder='Ghi Chú' value={item.note || '---'} type={'number'} id='note' key='note' onChange={(value) => this.changeDataProduct(value, indexItem)} />
                         </div>
                       </div>
                     )
