@@ -199,7 +199,7 @@ class Consignment extends React.PureComponent {
             GapService.updateCustomer(customerFormData, objectIdFoundUser)
           })
         } else {
-          this.onRefeshAll()
+          // this.onRefeshAll()
           showNotification('Tạo Đơn Ký gửi thất bại')
         }
       } else { // for new user
@@ -235,11 +235,11 @@ class Consignment extends React.PureComponent {
             })
             GapService.sendMail(customerFormData, formData, EMAIL_TYPE.CONSIGNMENT, EMAIL_TITLE.CONSIGNMENT)
           } else {
-            this.onRefeshAll()
+            // this.onRefeshAll()
             showNotification('Tạo khách hàng thất bại')
           }
         } else {
-          this.onRefeshAll()
+          // this.onRefeshAll()
           showNotification('Tạo khách hàng thất bại')
         }
       }
