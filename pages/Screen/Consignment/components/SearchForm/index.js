@@ -78,7 +78,8 @@ class SearchForm extends React.PureComponent {
     this.state = {
       step: 0,
       formData: {
-        phoneNumber: ''
+        phoneNumber: '',
+        consignerIdCard: ''
       },
       consignmentData: [],
       total: 0,
@@ -94,7 +95,8 @@ class SearchForm extends React.PureComponent {
   componentDidMount () {
     this.setState({
       formData: {
-        phoneNumber: ''
+        phoneNumber: '',
+        consignerIdCard: ''
       }
     })
   }
@@ -104,19 +106,29 @@ class SearchForm extends React.PureComponent {
   componentWillUnmount () {
     this.setState({
       formData: {
-        phoneNumber: ''
+        phoneNumber: '',
+        consignerIdCard: ''
       }
     })
   }
 
-  fetchTableData = async (page = 1, keyword) => {
+  fetchTableData = (page = 1, keyword) => {
     const { formData } = this.state
     this.setState({
       isLoadingData: true
     }, async () => {
       let res
 
-      res = await GapService.getConsignmentWithPhoneOrID(page, formData.phoneNumber)
+      console.log('fetchTableData')
+      console.log(formData)
+
+      if (formData.phoneNumber && formData.phoneNumber.length > 0) {
+        res = await GapService.getConsignmentWithPhone(page, formData.phoneNumber)
+      } else if (formData.consignerIdCard && formData.consignerIdCard.length > 0) {
+        res = await GapService.getConsignmentWithID(page, formData.consignerIdCard)
+      } else {
+        return
+      }
 
       console.log('res')
       console.log(res)
@@ -165,7 +177,19 @@ class SearchForm extends React.PureComponent {
     this.setState({
       isSearching: true
     }, async () => {
-      const res = await GapService.getConsignmentWithPhoneOrID(page, formData.phoneNumber, 20)
+      let res
+      console.log('fetchTableData')
+      console.log(formData)
+
+      if (formData.phoneNumber && formData.phoneNumber.length > 0) {
+        res = await GapService.getConsignmentWithPhone(page, formData.phoneNumber)
+      } else if (formData.consignerIdCard && formData.consignerIdCard.length > 0) {
+        res = await GapService.getConsignmentWithID(page, formData.consignerIdCard)
+      } else {
+        return
+      }
+
+      // const res = await GapService.getConsignmentWithPhoneOrID(page, formData.phoneNumber, 20)
       console.log('res: ', res)
 
       if (res && res.results) {
@@ -175,7 +199,8 @@ class SearchForm extends React.PureComponent {
           isHideUserForm: true,
           isSearching: false,
           formData: {
-            phoneNumber: ''
+            phoneNumber: '',
+            consignerIdCard: ''
           }
         }, () => {
           setTimeout(() => {
@@ -188,17 +213,18 @@ class SearchForm extends React.PureComponent {
         this.setState({
           isSearching: false,
           formData: {
-            phoneNumber: ''
+            phoneNumber: '',
+            consignerIdCard: ''
           }
         })
       }
     })
   }
 
-  paginationChange = (page) => {
-    console.log(page)
-    this.fetchTableData(page)
-  }
+  // paginationChange = (page) => {
+  //   console.log(page)
+  //   this.fetchTableData(page)
+  // }
 
   backPropStepOne = () => {
     this.setState({
@@ -212,11 +238,31 @@ class SearchForm extends React.PureComponent {
     })
   }
 
+  changeData = (value) => {
+    console.log(value)
+    if (value.formData && value.formData.phoneNumber && value.formData.phoneNumber.length > 0) {
+      this.setState({
+        formData: {
+          phoneNumber: value.formData.phoneNumber.trim(),
+          consignerIdCard: ''
+        }
+      })
+    } else if (value.formData && value.formData.consignerIdCard && value.formData.consignerIdCard.length > 0) {
+      this.setState({
+        formData: {
+          consignerIdCard: value.formData.consignerIdCard.trim(),
+          phoneNumber: ''
+        }
+      })
+    }
+  }
+
   backProp = () => {
     this.setState({
       step: 0,
       formData: {
-        phoneNumber: ''
+        phoneNumber: '',
+        consignerIdCard: ''
       },
       consignmentData: [],
       total: 0,
@@ -248,7 +294,7 @@ class SearchForm extends React.PureComponent {
             <Descriptions.Item span={24} label='ID ngân hàng'>{item.banks[0].accNumber || '---'}</Descriptions.Item>
             <Descriptions.Item span={24} label='Nhận tiền'>{item.isTransferMoneyWithBank ? 'Chuyển khoản' : 'Trực tiếp   '}</Descriptions.Item>
             <Descriptions.Item span={24} label='Tổng tiền'>{item.moneyBack ? numberWithCommas(item.moneyBack) : '---'} vnd</Descriptions.Item>
-            <Descriptions.Item span={24} label='Ngày tổng kết'>{item.group ? moment(item.group.timeGetMoney).format('DD-MM-YYYY') : '---'}</Descriptions.Item>
+            <Descriptions.Item span={24} label='Ngày tổng kết'>{item.group ? `${moment(item.group.timeGetMoney).format('DD-MM-YYYY')} -> ${moment(item.group.timeGetMoney).add(10, 'day').format('DD-MM-YYYY')}` : '---'}</Descriptions.Item>
 
             {
               !item.isGetMoney
@@ -298,15 +344,21 @@ class SearchForm extends React.PureComponent {
             <Row className='flex sell-card-form' justify='center'>
               <h1 className={'text text-searching-title'}>Tìm thông tin ký gửi qua số điện thoại hoặc CMND</h1>
 
-              <Form.Item name='phoneNumber' rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]} label='Số điện thoại/CMND'>
+              <Form.Item name='phoneNumber' rules={[{ required: formData.consignerIdCard.length === 0, message: 'Vui lòng nhập số điện thoại' }]} label='Số điện thoại'>
                 <Col sm={24} md={22}>
-                  <Input value={formData.phoneNumber} size='small' type={'number'} id='phoneNumber' key='phoneNumber' onChange={this.changeData} allowClear placeholder='...' />
+                  <Input disabled={formData.consignerIdCard && formData.consignerIdCard.length > 0} value={formData.phoneNumber} size='small' type={'number'} id='phoneNumber' key='phoneNumber' onChange={() => this.changeData} allowClear placeholder='...' />
+                </Col>
+              </Form.Item>
+
+              <Form.Item name='consignerIdCard' rules={[{ required: formData.phoneNumber.length === 0, message: 'Vui lòng nhập CMND' }]} label='CMND'>
+                <Col sm={24} md={22}>
+                  <Input disabled={formData.phoneNumber && formData.phoneNumber.length > 0} value={formData.consignerIdCard} size='small' type={'text'} id='consignerIdCard' key='consignerIdCard' onChange={() => this.changeData} allowClear placeholder='...' />
                 </Col>
               </Form.Item>
 
               <div className='flex justify-around align-center' style={{ width: '100%' }}>
                 <Button onClick={this.backProp} type='secondary'>Quay lại</Button>
-                <Button disabled={!formData.phoneNumber || formData.phoneNumber.length === 0} loading={isSearching} type='secondary' htmlType='submit'>Tìm kiếm</Button>
+                <Button disabled={(!formData.phoneNumber && !formData.consignerIdCard) || (formData.phoneNumber.length === 0 && formData.consignerIdCard.length === 0)} loading={isSearching} type='secondary' htmlType='submit'>Tìm kiếm</Button>
               </div>
             </Row>
           </Form>

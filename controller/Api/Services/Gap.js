@@ -189,12 +189,20 @@ export default class Gap {
     return this.fetchData('/classes/Consignment', REQUEST_TYPE.POST, null, body)
   }
 
-  static async getConsignmentWithPhoneOrID (page = 1, keyword = null, limit = 20) {
+  static async getConsignmentWithPhone (page = 1, keyword = null, limit = 20) {
     let limited = limit || 100
     let skip = (limited * page) - limited
-    
-    // const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"phoneNumber":"${keyword}"}`
-    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"$or":[{"phoneNumber":"${keyword}"},{"consignerIdCard":"${keyword}"]}`
+    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"phoneNumber":"${keyword}"}`
+    // const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"$or":[{"phoneNumber":"${keyword}"},{"consignerIdCard":"${keyword}"]}`
+
+    return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
+  }
+
+  static async getConsignmentWithID (page = 1, keyword = null, limit = 20) {
+    let limited = limit || 100
+    let skip = (limited * page) - limited
+    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"consignerIdCard":"${keyword}"}`
+    // const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"$or":[{"phoneNumber":"${keyword}"},{"consignerIdCard":"${keyword}"]}`
 
     return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
