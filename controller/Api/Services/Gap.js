@@ -47,17 +47,23 @@ export default class Gap {
   // Mail
 
   static async sendMail (customerInfo, consignmentInfo, type, title, timeGroupCode) {
+    console.log(customerInfo)
+    console.log(consignmentInfo)
+    console.log(type)
+    console.log(title)
+    console.log(timeGroupCode)
+
     if (type) {
       const body = {
         'mailTo': customerInfo.mail,
-        'title': (title + ' ' + consignmentInfo.consignmentId + '*' + consignmentInfo.timeGetMoney) || ('GAP' + consignmentInfo.consignmentId + '*' + consignmentInfo.timeGetMoney),
+        'title': customerInfo.timeConfirmGetMoney && customerInfo.timeConfirmGetMoney.length > 0 ? ((title || 'GAP') + ' ' + consignmentInfo.consignmentId + '*' + (consignmentInfo.timeConfirmGetMoney)) : ((title || 'GAP') + ' ' + consignmentInfo.consignmentId + '*' + (consignmentInfo.timeGetMoney)),
         'type': type,
         'data': {
-          'moneyBack': consignmentInfo.moneyBack ? `${numberWithCommas(consignmentInfo.moneyBack)} vnd` : 'vnd',
+          'moneyBack': consignmentInfo.moneyBack ? `${numberWithCommas(consignmentInfo.moneyBack)} vnd` : '0 vnd',
           'customerName': customerInfo.consignerName,
           'phoneNumber': customerInfo.phoneNumber,
           'identityId': customerInfo.consignerIdCard,
-          'consignmentId': consignmentInfo.consignmentId + '-' + timeGroupCode,
+          'consignmentId': timeGroupCode ? consignmentInfo.consignmentId + '-' + timeGroupCode : consignmentInfo.consignmentId,
           'numberOfProduct': consignmentInfo.numberOfProducts.toString(),
           'bankName': consignmentInfo.bankName,
           'bankId': consignmentInfo.bankId,
@@ -66,6 +72,9 @@ export default class Gap {
           'timeCheck': moment(consignmentInfo.timeGetMoney, 'DD-MM-YYYY').subtract(3, 'day').format('DD-MM-YYYY')
         }
       }
+      console.log('body')
+      console.log(body)
+
       return this.fetchData('/functions/email', REQUEST_TYPE.POST, null, body, null, null, null, true)
     }
   }

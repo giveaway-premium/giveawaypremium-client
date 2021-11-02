@@ -286,6 +286,7 @@ class TableConsignemntScreen extends React.PureComponent {
       data.push({
         key: index,
         name: item.name,
+        note: item.note,
         categoryId: item.categoryId,
         code: item.code || '',
         price: Number(item.price) || 0,
@@ -512,7 +513,8 @@ class TableConsignemntScreen extends React.PureComponent {
           consignerIdCard: row.consignerIdCard,
           mail: row.email,
           bankName: row.bankName,
-          bankId: row.bankId
+          bankId: row.bankId,
+          timeConfirmGetMoney: row.timeConfirmGetMoney
         }
         // <p>Họ tên khách hàng: {{customerName}}</p>
         // <p>Số điện thoại: {{phoneNumber}}</p>
@@ -522,7 +524,8 @@ class TableConsignemntScreen extends React.PureComponent {
         // <p>Ngân hàng đăng ký: {{bankName}}</p>
         // <p>ID Ngân hàng: {{bankId}}</p>
         // <p>Số tiền chuyển khoản: {{moneyBack}}</p>
-        if (newItem && newItem.isGetMoney && newItem.mail && newItem.mail.length > 0) {
+
+        if (newItem && newItem.isGetMoney && newItem.email && newItem.email.length > 0) {
           GapService.sendMail(customerFormData, row, EMAIL_TYPE.PAYMENT, EMAIL_TITLE.PAYMENT)
         }
 
