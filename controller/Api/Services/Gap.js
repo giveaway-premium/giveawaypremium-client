@@ -46,7 +46,7 @@ export default class Gap {
 
   // Mail
 
-  static async sendMail (customerInfo, consignmentInfo, type, title) {
+  static async sendMail (customerInfo, consignmentInfo, type, title, timeGroupCode) {
     if (type) {
       const body = {
         'mailTo': customerInfo.mail,
@@ -57,11 +57,12 @@ export default class Gap {
           'customerName': customerInfo.consignerName,
           'phoneNumber': customerInfo.phoneNumber,
           'identityId': customerInfo.consignerIdCard,
-          'consignmentId': consignmentInfo.consignmentId,
+          'consignmentId': consignmentInfo.consignmentId + '-' + timeGroupCode,
           'numberOfProduct': consignmentInfo.numberOfProducts.toString(),
           'bankName': consignmentInfo.bankName,
           'bankId': consignmentInfo.bankId,
-          'timeGetMoney': consignmentInfo.timeGetMoney,
+          // 'timeGetMoney': consignmentInfo.timeGetMoney,
+          'timeGetMoney': `${moment(consignmentInfo.timeGetMoney).format('DD-MM-YYYY')} -> ${moment(consignmentInfo.timeGetMoney).add(10, 'day').format('DD-MM-YYYY')}`,
           'timeCheck': moment(consignmentInfo.timeGetMoney, 'DD-MM-YYYY').subtract(3, 'day').format('DD-MM-YYYY')
         }
       }

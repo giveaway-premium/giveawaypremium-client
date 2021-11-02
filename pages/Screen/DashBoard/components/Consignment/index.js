@@ -130,7 +130,11 @@ class Consignment extends React.PureComponent {
 
   onConsign = () => {
     const { userData } = this.props
-    const { isFoundUser, objectIdFoundUser, formData, timeGroupId, productList, moneyBackForFullSold, totalMoney, isTransferMoneyWithBank, timeGroupCode } = this.state
+    const {
+      isFoundUser, objectIdFoundUser, formData,
+      timeGroupId, productList, moneyBackForFullSold, totalMoney,
+      isTransferMoneyWithBank, timeGroupCode
+    } = this.state
 
     // const productListTemp = productList.filter(item => {
     //   return (Number(item.price) > 0 || item.price.length > 0) && Number(item.count) > 0
@@ -141,7 +145,7 @@ class Consignment extends React.PureComponent {
     let productCount = 0
 
     productList.map((item, indexItem) => {
-      if ((Number(item.price) > 0 || item.price.length > 0) && Number(item.count) > 0) {
+      if ((Number(item.price) > 0 || item.price.length > 0) && Number(item.count) > 0 && (item.categoryId || item.subCategoryId)) {
         productId += 1
         productCount += Number(item.count)
         productListTemp.push({
@@ -195,11 +199,14 @@ class Consignment extends React.PureComponent {
             console.log(customerFormData)
             console.log(objectIdFoundUser)
 
-            formData.mail && formData.mail.length > 0 && GapService.sendMail(customerFormData, formData, EMAIL_TYPE.CONSIGNMENT, EMAIL_TITLE.CONSIGNMENT)
+            formData.mail && formData.mail.length > 0 && GapService.sendMail(customerFormData, formData, EMAIL_TYPE.CONSIGNMENT, EMAIL_TITLE.CONSIGNMENT, timeGroupCode)
             GapService.updateCustomer(customerFormData, objectIdFoundUser)
           })
         } else {
           // this.onRefeshAll()
+          this.setState({
+            isConsigning: false
+          })
           showNotification('Tạo Đơn Ký gửi thất bại')
         }
       } else { // for new user
@@ -233,13 +240,19 @@ class Consignment extends React.PureComponent {
               isShowConfirmForm: true,
               isConsigning: false
             })
-            GapService.sendMail(customerFormData, formData, EMAIL_TYPE.CONSIGNMENT, EMAIL_TITLE.CONSIGNMENT)
+            GapService.sendMail(customerFormData, formData, EMAIL_TYPE.CONSIGNMENT, EMAIL_TITLE.CONSIGNMENT, timeGroupCode)
           } else {
             // this.onRefeshAll()
+            this.setState({
+              isConsigning: false
+            })
             showNotification('Tạo khách hàng thất bại')
           }
         } else {
           // this.onRefeshAll()
+          this.setState({
+            isConsigning: false
+          })
           showNotification('Tạo khách hàng thất bại')
         }
       }
