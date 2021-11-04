@@ -68,7 +68,7 @@ export default class Gap {
           'bankName': consignmentInfo.bankName,
           'bankId': consignmentInfo.bankId,
           // 'timeGetMoney': consignmentInfo.timeGetMoney,
-          'timeGetMoney': `${moment(consignmentInfo.timeGetMoney).format('DD-MM-YYYY')} -> ${moment(consignmentInfo.timeGetMoney).add(10, 'day').format('DD-MM-YYYY')}`,
+          'timeGetMoney': `${moment(consignmentInfo.timeGetMoney, 'DD-MM-YYYY')} -> ${moment(consignmentInfo.timeGetMoney, 'DD-MM-YYYY').add(10, 'day').format('DD-MM-YYYY')}`,
           'timeCheck': moment(consignmentInfo.timeGetMoney, 'DD-MM-YYYY').subtract(3, 'day').format('DD-MM-YYYY')
         }
       }
