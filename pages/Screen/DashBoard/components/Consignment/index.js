@@ -143,9 +143,28 @@ class Consignment extends React.PureComponent {
     let productListTemp = []
     let productId = 0
     let productCount = 0
+    let isError = false
 
     productList.map((item, indexItem) => {
-      if ((Number(item.price) > 0 || item.price.length > 0) && Number(item.count) > 0 && (item.categoryId || item.subCategoryId)) {
+      console.log('item')
+      console.log(indexItem)
+      console.log(item)
+
+      if (Number(item.price) === 0 || item.price.length === 0) {
+        isError = true
+        showNotification(`Chưa nhập giá sản phẩm số ${indexItem + 1}`)
+      } else if (Number(item.count) === 0) {
+        isError = true
+        showNotification(`SL sản phẩm số ${indexItem + 1} phải lớn hơn 0`)
+      } else if (!item.categoryId || item.categoryId.length === 0) {
+        isError = true
+        showNotification(`Chưa nhập loại sản phẩm số  ${indexItem + 1}`)
+      } else if (!item.name || item.name.length === 0) {
+        isError = true
+        showNotification(`Chưa nhập tên sản phẩm số  ${indexItem + 1}`)
+      }
+
+      if ((Number(item.price) > 0 || item.price.length > 0) && Number(item.count) > 0) {
         productId += 1
         productCount += Number(item.count)
         productListTemp.push({
@@ -155,6 +174,11 @@ class Consignment extends React.PureComponent {
         })
       }
     })
+
+    if (isError) {
+      //
+      return
+    }
 
     if (!productListTemp || productListTemp.length === 0) {
       showNotification('Cần ít nhất 1 sản phẩm')
