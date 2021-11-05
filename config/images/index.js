@@ -9,7 +9,7 @@ export const images = {
   facebookIcon: '/static/Assets/Image/Icon/facebookIcon.svg',
   phoneIcon: '/static/Assets/Image/Icon/phone.png',
   markerIcon: '/static/Assets/Image/Icon/marker.png',
-  founderAvatar: '/static/Assets/Image/founder-avater.jpeg',
+  founderAvatar: '/static/Assets/Image/founder-avater.jpg',
   timeLine: '/static/Assets/Image/homeScreen/timeLine.jpg',
   icClose: '/static/Assets/Image/Icon/close.svg',
 
