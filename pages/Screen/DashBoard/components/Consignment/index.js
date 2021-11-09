@@ -147,8 +147,11 @@ class Consignment extends React.PureComponent {
     let productId = 0
     let productCount = 0
     let isError = false
+    let productListAfterDelete = productList.filter(item => {
+      return !item.isDeleted
+    })
 
-    productList.map((item, indexItem) => {
+    productListAfterDelete.map((item, indexItem) => {
       console.log('item')
       console.log(indexItem)
       console.log(item)
@@ -166,8 +169,8 @@ class Consignment extends React.PureComponent {
           isError = true
           showNotification(`Chưa nhập tên sản phẩm số  ${indexItem + 1}`)
         }
-
-        if ((Number(item.price) > 0 || item.price.length > 0) && Number(item.count) > 0) {
+  
+        if ((Number(item.price) > 0 || item.price.length > 0) && Number(item.count) > 0 && !item.isDeleted) {
           productId += 1
           productCount += Number(item.count)
           productListTemp.push({
@@ -742,77 +745,6 @@ render () {
     { label: 'Trực tiếp', value: 'false' }
   ]
 
-  const SelectCustom = () => {
-    let indexAfterDelete = 0
-    return (
-      productList.map((item, indexItem) => {
-        if (!item.isDeleted) {
-          indexAfterDelete += 1
-          return (
-            <div key={indexItem} className='product-box MB30'>
-              <div className='close-box MB5'>
-                <span>{indexAfterDelete}</span>
-
-                <div disabled={indexAfterDelete === 0} onClick={() => this.onDeleteProductList(item.hashCode)} style={{ cursor: 'pointer', opacity: indexAfterDelete === 0 ? 0 : 1 }}>
-                  <CloseOutlined />
-                </div>
-              </div>
-              <div className='product-item-name'>
-                <Input style={{ width: '50%', marginRight: '10px' }} value={item.name} allowClear type={'text'} id='nameProduct' key='nameProduct' onChange={(value) => this.changeDataProduct(value, indexItem)} placeholder='Tên sản phẩm' />
-                <Select
-                  labelInValue
-                  showSearch
-                  // value={`${item.categoryId}+${item.subCategoryId}+${item.hashCode}`}
-                  style={{ width: '50%' }}
-                  placeholder='Danh mục'
-                  // optionFilterProp='children'
-                  onChange={this.onChangeCategory}
-                  autoFocus={false}
-                  // onFocus={this.onFocusCategory}
-                  // onBlur={this.onBlurCategory}
-                  onSearch={this.onSearchCategory}
-                  filterOption={(input, option) =>
-                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                  }
-                >
-                  {
-                    categoryRedux && categoryRedux.length > 0 && categoryList &&
-                    categoryList.map((categoryItem, categoryIndex) => {
-                      // console.log(categoryItem)
-                      if (!categoryItem.isParentSelf) {
-                        return (
-                          <>
-                            <Option key={categoryIndex} style={{ width: '100%' }} value={`${categoryItem.category.objectId}+${categoryItem.objectId}+${item.hashCode}`}>{categoryItem.name}</Option>
-                          </>
-                        )
-                      } else {
-                        return (
-                          <>
-                            <Option key={categoryIndex} style={{ width: '100%' }} value={`${categoryItem.objectId}+${item.hashCode}`}>{categoryItem.name}</Option>
-                          </>
-                        )
-                      }
-                    })
-                  }
-                </Select>
-              </div>
-              <div className='product-item-value'>
-                <Input style={{ marginRight: '10px' }} value={item.price} allowClear type={'number'} id='priceProduct' key='priceProduct' onChange={(value) => this.changeDataProduct(value, indexItem)} placeholder='Giá tiền' />
-                <Input value={item.count} prefix={<span>SL</span>} defaultValue={1} type={'number'} id='numberOfProducts' key='numberOfProducts' onChange={(value) => this.changeDataProduct(value, indexItem)} allowClear placeholder='Số lượng' />
-              </div>
-
-              <div className='product-item-note'>
-                <TextArea placeholder='Ghi Chú' value={item.note || '---'} type={'number'} id='note' key='note' onChange={(value) => this.changeDataProduct(value, indexItem)} />
-              </div>
-            </div>
-          )
-        } else {
-          return null
-        }
-      })
-    )
-  }
-
   return (
     <div className='consignment-container'>
       {
@@ -923,7 +855,70 @@ render () {
                 <Divider />
 
                 <Row className='productListBox'>
-                  <SelectCustom />
+                  {productList.map((item, indexItem) => {
+                    if (!item.isDeleted) {
+                      return (
+                        <div key={indexItem} className='product-box MB30'>
+                          <div className='close-box MB5'>
+                            <span style={{ opacity: 0 }}>{indexItem + 1}</span>
+  
+                            <div disabled={indexItem === 0} onClick={() => this.onDeleteProductList(item.hashCode)} style={{ cursor: 'pointer', opacity: indexItem === 0 ? 0 : 1 }}>
+                              <CloseOutlined />
+                            </div>
+                          </div>
+                          <div className='product-item-name'>
+                            <Input style={{ width: '50%', marginRight: '10px' }} value={item.name} allowClear type={'text'} id='nameProduct' key='nameProduct' onChange={(value) => this.changeDataProduct(value, indexItem)} placeholder='Tên sản phẩm' />
+                            <Select
+                              labelInValue
+                              showSearch
+                              // value={`${item.categoryId}+${item.subCategoryId}+${item.hashCode}`}
+                              style={{ width: '50%' }}
+                              placeholder='Danh mục'
+                              // optionFilterProp='children'
+                              onChange={this.onChangeCategory}
+                              autoFocus={false}
+                              // onFocus={this.onFocusCategory}
+                              // onBlur={this.onBlurCategory}
+                              onSearch={this.onSearchCategory}
+                              filterOption={(input, option) =>
+                                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                              }
+                            >
+                              {
+                                categoryRedux && categoryRedux.length > 0 && categoryList &&
+                                categoryList.map((categoryItem, categoryIndex) => {
+                                  // console.log(categoryItem)
+                                  if (!categoryItem.isParentSelf) {
+                                    return (
+                                      <>
+                                        <Option key={categoryIndex} style={{ width: '100%' }} value={`${categoryItem.category.objectId}+${categoryItem.objectId}+${item.hashCode}`}>{categoryItem.name}</Option>
+                                      </>
+                                    )
+                                  } else {
+                                    return (
+                                      <>
+                                        <Option key={categoryIndex} style={{ width: '100%' }} value={`${categoryItem.objectId}+${item.hashCode}`}>{categoryItem.name}</Option>
+                                      </>
+                                    )
+                                  }
+                                })
+                              }
+                            </Select>
+                          </div>
+                          <div className='product-item-value'>
+                            <Input style={{ marginRight: '10px' }} value={item.price} allowClear type={'number'} id='priceProduct' key='priceProduct' onChange={(value) => this.changeDataProduct(value, indexItem)} placeholder='Giá tiền' />
+                            <Input value={item.count} prefix={<span>SL</span>} defaultValue={1} type={'number'} id='numberOfProducts' key='numberOfProducts' onChange={(value) => this.changeDataProduct(value, indexItem)} allowClear placeholder='Số lượng' />
+                          </div>
+  
+                          <div className='product-item-note'>
+                            <TextArea placeholder='Ghi Chú' value={item.note || '---'} type={'number'} id='note' key='note' onChange={(value) => this.changeDataProduct(value, indexItem)} />
+                          </div>
+                        </div>
+                      )
+                    } else {
+                      return null
+                    }
+                  })}
 
                   <Button onClick={this.onPlusProductList} type='secondary' className=' MT20 MB10'><PlusOutlined /> Thêm sản phẩm</Button>
                 </Row>
