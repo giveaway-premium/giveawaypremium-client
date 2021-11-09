@@ -20,6 +20,15 @@ export const removeDataLocal = (key) => {
   localStorage.removeItem(key)
 }
 
+export const generateIdMix = () => {
+  let text = ''
+  const possible = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789'
+  for (let i = 0; i < 16; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length))
+  }
+  return text
+}
+
 /**
  *
  * @param {string} description

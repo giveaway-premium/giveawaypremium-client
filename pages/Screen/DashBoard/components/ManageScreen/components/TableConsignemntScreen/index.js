@@ -516,14 +516,6 @@ class TableConsignemntScreen extends React.PureComponent {
           bankId: row.bankId,
           timeConfirmGetMoney: row.timeConfirmGetMoney
         }
-        // <p>Họ tên khách hàng: {{customerName}}</p>
-        // <p>Số điện thoại: {{phoneNumber}}</p>
-        // <p>CMND: {{identityId}}</p>
-        // <p>Mã ký gửi: {{consignmentId}}</p>
-        // <p>Số lượng: {{numberOfProduct}}</p>
-        // <p>Ngân hàng đăng ký: {{bankName}}</p>
-        // <p>ID Ngân hàng: {{bankId}}</p>
-        // <p>Số tiền chuyển khoản: {{moneyBack}}</p>
 
         if (newItem && newItem.isGetMoney && newItem.email && newItem.email.length > 0) {
           GapService.sendMail(customerFormData, row, EMAIL_TYPE.PAYMENT, EMAIL_TITLE.PAYMENT)
