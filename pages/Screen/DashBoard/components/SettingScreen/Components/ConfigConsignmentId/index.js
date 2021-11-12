@@ -119,10 +119,10 @@ class ConfigConsignmentId extends React.Component {
   forMap = tag => {
     const tagElem = (
       <Tag
-        // closable
+        closable
         onClose={e => {
           e.preventDefault()
-          // this.handleClose(tag)
+          this.handleClose(tag)
         }}
       >
         {tag}

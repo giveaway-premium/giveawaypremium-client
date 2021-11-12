@@ -82,7 +82,10 @@ export default class Gap {
   // Appointment
 
   static async getAppointmentWithDate (dateArray) {
-    const customQuery = `where={"date":{"$in":[${[...dateArray]}]}}`
+    let limited = 300
+    let skip = (limited * 1) - limited
+
+    const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"deleteAt":${null},"date":{"$in":[${[...dateArray]}]}}`
     return this.fetchData('/classes/AppointmentSchedule', REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
 
@@ -92,7 +95,18 @@ export default class Gap {
   }
 
   static async deleteAppointmentWithSlotId (objectId) {
-    return this.fetchData(`/classes/AppointmentSchedule/${objectId}`, REQUEST_TYPE.DELETE)
+    // return this.fetchData(`/classes/AppointmentSchedule/${objectId}`, REQUEST_TYPE.DELETE)
+
+    try {
+      const body = {
+        deleteAt: moment()
+      }
+
+      return this.fetchData(`/classes/AppointmentSchedule/${objectId}`, REQUEST_TYPE.PUT, null, body)
+    } catch (e) {
+      console.log(e)
+      return false
+    }
   }
 
   static async setAppointment (formData, slotID, formatedTime, formatedDay) {
@@ -117,10 +131,8 @@ export default class Gap {
   // Consignment Group
 
   static async getConsignmentID () {
-    const queryBody = {
-      count: true
-    }
-    return this.fetchData('/classes/ConsignmentGroup', REQUEST_TYPE.GET, queryBody)
+    const customQuery = `where={"deleteAt":${null}}`
+    return this.fetchData('/classes/ConsignmentGroup', REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
 
   static async setConsignmentID (tag) {
@@ -133,7 +145,11 @@ export default class Gap {
 
   static async deleteConsignmentID (objectId) {
     try {
-      return this.fetchData(`/classes/ConsignmentGroup/${objectId}`, REQUEST_TYPE.DELETE, null)
+      const body = {
+        deleteAt: moment()
+      }
+
+      return this.fetchData(`/classes/ConsignmentGroup/${objectId}`, REQUEST_TYPE.PUT, null, body)
     } catch (e) {
       console.log(e)
       return false
@@ -202,7 +218,7 @@ export default class Gap {
   static async getConsignmentWithPhone (page = 1, keyword = null, limit = 20) {
     let limited = limit || 100
     let skip = (limited * page) - limited
-    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"phoneNumber":"${keyword}"}`
+    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"deleteAt":${null},"phoneNumber":"${keyword}"}`
     // const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"$or":[{"phoneNumber":"${keyword}"},{"consignerIdCard":"${keyword}"]}`
 
     return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
@@ -211,7 +227,7 @@ export default class Gap {
   static async getConsignmentWithID (page = 1, keyword = null, limit = 20) {
     let limited = limit || 100
     let skip = (limited * page) - limited
-    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"consignerIdCard":"${keyword}"}`
+    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"deleteAt":${null},"consignerIdCard":"${keyword}"}`
     // const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"$or":[{"phoneNumber":"${keyword}"},{"consignerIdCard":"${keyword}"]}`
 
     return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
@@ -221,7 +237,7 @@ export default class Gap {
     let limited = limit || 100
     let skip = (limited * page) - limited
 
-    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"phoneNumber":{"$regex":"${keyword}"}}`
+    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"deleteAt":${null},"phoneNumber":{"$regex":"${keyword}"}}`
     return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
 
@@ -232,11 +248,11 @@ export default class Gap {
     let skip = (limited * page) - limited
 
     if (keyword) {
-      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"phoneNumber":{"$regex":"${keyword}"},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"deleteAt":${null},"phoneNumber":{"$regex":"${keyword}"},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
       return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     } else {
       // const customQuery = `count=1,where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
-      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"deleteAt":${null},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
 
       return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     }
@@ -244,7 +260,11 @@ export default class Gap {
 
   static async deleteConsignment (objectId) {
     try {
-      return this.fetchData(`/classes/Consignment/${objectId}`, REQUEST_TYPE.DELETE, null)
+      const body = {
+        deleteAt: moment()
+      }
+
+      return this.fetchData(`/classes/Consignment/${objectId}`, REQUEST_TYPE.PUT, null, body)
     } catch (e) {
       console.log(e)
       return false
@@ -323,6 +343,10 @@ export default class Gap {
         accNumber: formData.bankId
       }]
     }
+
+    console.log('updateCustomer')
+    console.log(body)
+
     return this.fetchData(`/classes/_User/${objectId}`, REQUEST_TYPE.PUT, null, body, null, null, null, true)
   }
 

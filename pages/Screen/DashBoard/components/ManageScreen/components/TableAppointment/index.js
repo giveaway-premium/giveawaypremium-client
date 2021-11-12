@@ -150,6 +150,10 @@ class TableAppointment extends React.Component {
 
       const res = await GapService.getAppointmentWithDate(arrayDate)
 
+      console.log('res')
+      console.log(res)
+      console.log(res)
+
       if (res && res.results) {
         res.results.map((itemData, indexItem) => {
           if (itemData && itemData.slot) {
