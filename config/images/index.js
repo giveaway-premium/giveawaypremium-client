@@ -60,6 +60,8 @@ export const images = {
   store28: '/static/Assets/Image/Store/store28.jpg',
   store29: '/static/Assets/Image/Store/store29.jpg',
 
+  tagCate: '/static/Assets/Image/Online/tag.png',
+  chanelBag: '/static/Assets/Image/Online/chanel-bag.png',
   flags: {
     'en': '/static/Assets/Image/Flags/en.png',
     'ja': '/static/Assets/Image/Flags/ja.png',

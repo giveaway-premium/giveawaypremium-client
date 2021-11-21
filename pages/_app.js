@@ -22,6 +22,8 @@ import { Spin } from 'antd'
 import './Style/override.less'
 import './Style/global.scss'
 import '../static/jank-empty.css'
+import 'animate.css'
+
 import Lottie from 'react-lottie'
 import { images } from 'config/images'
 import { Router } from 'common/routes'
@@ -40,7 +42,7 @@ class GiveAway extends App {
     super(props)
 
     this.state = {
-      isLoading: true,
+      isLoading: false,
       seoData: props.seoData
     }
     this.currentInterval = null

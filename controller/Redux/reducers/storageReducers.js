@@ -34,6 +34,12 @@ export const locale = createReducer(localeEN, {
   }
 })
 
+export const connectionMethod = createReducer(initState.connectionMethod, {
+  [KEY_STORE.SET_CONNECTION_METHOD] (state, action) {
+    return action.payload
+  }
+})
+
 export const userData = createReducer(initState.userData, {
   [KEY_STORE.SET_USER] (state, action) {
     return action.payload
