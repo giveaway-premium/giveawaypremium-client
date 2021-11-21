@@ -13,6 +13,8 @@ import TweenOneGroup from 'rc-tween-one'
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons'
 import moment from 'moment'
 import './style.scss'
+import rightArrowJson from 'static/Assets/Image/Lottie/rightArrow.json'
+import Lottie from 'react-lottie'
 
 class TableAppointment extends React.Component {
   static async getInitialProps ({ query }) {
@@ -113,7 +115,7 @@ class TableAppointment extends React.Component {
   }
 
   componentDidMount () {
-    let dayBookingCount = ['', '', '', '', '', '', '']
+    let dayBookingCount = ['', '', '', '', '', '', '', '', '', '', '', '', '', '']
     let dayBookingTemp = []
 
     console.log('componentDidMount')
@@ -294,10 +296,16 @@ class TableAppointment extends React.Component {
       step, dayBooking, choosenDayCode, timeBooking, bookingDataCode, isErrorMax,
       choosenTimeCode, formData, isHideUserForm, isConsigning, isHideDayColumn, isLoadingBooking
     } = this.state
+
+    const defaultOptionsRightArrow = {
+      loop: true,
+      autoplay: true,
+      animationData: rightArrowJson
+    }
     return (
       <div className='TableAppointment-home-container'>
         <div className='bookingform'>
-          <div className={'dayBooking-box show'}>
+          <div style={{ overflow: 'scroll', position: 'relative' }} className={'dayBooking-box show'}>
 
             {dayBooking.map((dayItem, dayIndex) => {
               return (
@@ -312,6 +320,16 @@ class TableAppointment extends React.Component {
                 </div>
               )
             })}
+
+            <Lottie
+              style={{ transform: `rotate(90deg)`, position: 'absolute', bottom: 0, right: '-30px', zoom: 0.8 }}
+              options={defaultOptionsRightArrow}
+              height={90}
+              width={90}
+              speed={1}
+              isStopped={false}
+              isPaused={false}
+            />
           </div>
 
           <div className='timeBooking-box'>
