@@ -407,6 +407,17 @@ class ConsignmentScreen extends React.PureComponent {
               })}
             </div>
 
+            <div className={'explain-box' + (step === 1 && isHideUserForm ? ' show' : '')}>
+              <div className='explain-box-left'>
+                <div className='box-full' />
+                <span className='box-text'>Đã Đặt Chổ</span>
+              </div>
+              <div className='explain-box-right'>
+                <div className='box-empty' />
+                <span className='box-text'>Còn Trống</span>
+              </div>
+            </div>
+
             <div className={'timeBooking-footer' + (step === 1 && isHideUserForm ? ' show' : '')}>
               <span onClick={this.resetAndBackProps} className='text'>{`< Quay lại`}</span>
               <span onClick={this.onHandleStepTwo} className='text' style={choosenTimeCode ? { color: 'black' } : { opacity: 0.5, pointerEvents: 'none' }}>{`Tiếp tục >`}</span>
