@@ -11,6 +11,7 @@ import GapService from 'controller/Api/Services/Gap'
 import { Form, Row, Col, Input, Button, Descriptions, Divider, DatePicker, Select } from 'antd'
 import Lottie from 'react-lottie'
 import successJson from 'static/Assets/Image/Lottie/success.json'
+import rightArrowJson from 'static/Assets/Image/Lottie/rightArrow.json'
 
 import './style.scss'
 import { showNotification } from 'common/function'
@@ -114,7 +115,7 @@ class ConsignmentScreen extends React.PureComponent {
   }
 
   async componentDidMount () {
-    let dayBookingCount = ['', '', '', '', '', '', '']
+    let dayBookingCount = ['', '', '', '', '', '', '', '', '', '', '', '', '', '']
     let dayBookingTemp = []
 
     console.log('componentDidMount')
@@ -338,6 +339,12 @@ class ConsignmentScreen extends React.PureComponent {
       animationData: successJson
     }
 
+    const defaultOptionsRightArrow = {
+      loop: true,
+      autoplay: true,
+      animationData: rightArrowJson
+    }
+
     return (
       <div className='bookingform-home-container'>
         {/* <div style={{ display: 'flex', flexDirection: 'column', width: '60%', marginTop: '40px' }}>
@@ -355,7 +362,7 @@ class ConsignmentScreen extends React.PureComponent {
         </div> */}
 
         <div className='bookingform'>
-          <div className={'dayBooking-box' + (!isHideDayColumn ? ' show' : '')}>
+          <div style={{ maxHeight: '80vh', overflowY: 'scroll' }} className={'dayBooking-box' + (!isHideDayColumn ? ' show' : '')}>
 
             {dayBooking.map((dayItem, dayIndex) => {
               return (
@@ -370,6 +377,16 @@ class ConsignmentScreen extends React.PureComponent {
                 </div>
               )
             })}
+
+            <Lottie
+              style={{ transform: `rotate(90deg)`, position: 'absolute', bottom: 0, right: '-30px', zoom: 0.8 }}
+              options={defaultOptionsRightArrow}
+              height={100}
+              width={100}
+              speed={1}
+              isStopped={false}
+              isPaused={false}
+            />
           </div>
 
           <div className='timeBooking-box'>
