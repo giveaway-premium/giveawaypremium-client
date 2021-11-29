@@ -3,7 +3,7 @@ import { REQUEST_TYPE } from 'common/constants'
 import ReduxService from 'common/redux'
 import QueryString from 'query-string'
 import moment from 'moment'
-import { numberWithCommas } from 'common/function'
+import { convertMediaArrayToPointerArray, numberWithCommas } from 'common/function'
 
 export default class Gap {
   static uploadSingleFileWithFormData = async (file) => {
@@ -18,7 +18,7 @@ export default class Gap {
       var data = new FormData()
       data.append('media', file)
 
-      fetch('https://giveaway-premium.herokuapp.com/media',
+      fetch('https://giveaway-premium-api-sbows.ondigitalocean.app/media',
         {
           body: data,
           method: 'POST',
@@ -174,7 +174,15 @@ export default class Gap {
   static async updateProduct (item) {
     try {
       const body = {
-        medias: item.medias
+        medias: convertMediaArrayToPointerArray(item.medias),
+        rateNew: Number(item.rateNew) || 0,
+        note: item.note || '---',
+        sizeInfo: item.sizeInfo || '---',
+        detailInfo: item.detailInfo || '---'
+      }
+
+      if (item && item.status) {
+        body.status = item.status
       }
 
       console.log('body update product', body)

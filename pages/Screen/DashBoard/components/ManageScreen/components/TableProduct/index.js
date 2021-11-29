@@ -2,7 +2,7 @@
 import React, { useContext, useState, useEffect, useRef } from 'react'
 import { withRouter } from 'next/router'
 import { connect } from 'react-redux'
-import { Form, Row, Col, Layout, Input, Button, Badge, Spin, Descriptions, Tabs, Table, Radio, Popconfirm, Upload } from 'antd'
+import { Form, Row, Col, Layout, Input, Button, Badge, Spin, Descriptions, Tabs, Table, Radio, Popconfirm, Upload, Switch } from 'antd'
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
 import { showNotification, numberWithCommas } from 'common/function'
@@ -120,13 +120,13 @@ class TableProductScreen extends React.PureComponent {
       {
         title: 'Tên SP',
         dataIndex: 'name',
-        key: 'name',
-        width: 150
+        key: 'name'
       },
       {
         title: 'Giá',
         dataIndex: 'price',
         key: 'price',
+        width: 150,
         // editable: true,
         render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
       },
@@ -134,6 +134,7 @@ class TableProductScreen extends React.PureComponent {
         title: 'Giá sau phí',
         dataIndex: 'priceAfterFee',
         key: 'priceAfterFee',
+        width: 150,
         // editable: true,
         render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
       },
@@ -145,32 +146,35 @@ class TableProductScreen extends React.PureComponent {
       },
       {
         title: 'Đã bán',
-        width: 80,
+        width: 100,
         dataIndex: 'soldNumberProduct',
         key: 'soldNumberProduct'
         // editable: true
       },
       {
         title: 'Còn lại',
-        width: 80,
+        width: 100,
         dataIndex: 'remainNumberProduct',
         key: 'remainNumberProduct'
       },
       {
         title: 'Tổng tiền sau phí',
         dataIndex: 'moneyBackProduct',
+        width: 150,
         key: 'moneyBackProduct',
         render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
       },
       {
         title: 'Tình trạng',
         dataIndex: 'status',
+        width: 95,
+        fixed: 'right',
         key: 'status',
-        render: (value) => <span>{this.convertStatusNumberToText(value || 0)}</span>
+        render: (value, item) => <Switch onClick={() => this.onChangeStatusItem(item)} checkedChildren='ONLINE' unCheckedChildren='OFFLINE' checked={value === 'ACTIVE'} />
       }
     ]
     this.state = {
-      consignmentData: [],
+      productData: [],
       total: 0,
       page: 1,
       searchText: '',
@@ -197,26 +201,66 @@ class TableProductScreen extends React.PureComponent {
 
   convertStatusNumberToText = (statusNumber) => {
     switch (statusNumber) {
-    case 0: {
-      return 'Chờ xử lý'
+    case 'NEW': {
+      return 'OFFLINE'
     }
-    case 1: {
-      return 'Sẵn sàng'
-    }
-    case 2: {
-      return 'Bán Online'
-    }
-    case 3: {
-      return 'Bán Offline'
+    case 'ACTIVE': {
+      return 'ONLINE'
     }
     }
   }
 
-  onSortEnd = async ({ information, recordData }) => {
-    const { consignmentData } = this.state
-    const newData = [...consignmentData]
+  onChangeStatusItem = (record) => {
+    console.log('onChangeStatusItem')
+    console.log(record)
+
+    let newStatus
+    if (record.status === 'NEW') {
+      newStatus = 'ACTIVE'
+    } else if (record.status === 'ACTIVE') {
+      newStatus = 'NEW'
+    }
+
+    const newData = [...this.state.productData]
+    console.log('productData')
+    console.log(this.state.productData)
+    const index = newData.findIndex((item) => record.key === item.key)
+    let item = newData[index]
+
+    item = {
+      ...record,
+      status: newStatus
+    }
+
+    const newItem = { ...item, status: newStatus }
+
+    console.log('handleSaveNestTable')
+    console.log(newItem)
+
+    // if (!isEqual(newItem, item)) {
+    newData.splice(index, 1, newItem)
     console.log(newData)
-    
+    console.log('newData')
+
+    this.setState({
+      productData: newData
+    }, async () => {
+      console.log(newItem)
+      const res = await GapService.updateProduct(newItem)
+      console.log(res)
+      if (res) {
+        showNotification(`Cập nhật thành công ${item.key}`)
+      } else {
+        showNotification(`Cập nhật chưa được`)
+      }
+    })
+  }
+
+  onSortEnd = async ({ information, recordData }) => {
+    const { productData } = this.state
+    const newData = [...productData]
+    console.log(newData)
+
     this.setState({
       isUploading: true
     }, async () => {
@@ -235,13 +279,7 @@ class TableProductScreen extends React.PureComponent {
       if (information.oldIndex !== information.newIndex) {
         let newImageList = [...newItem.medias]
         let imageTempOld = newImageList[information.oldIndex]
-        // let imageTempNew = newImageList[information.newIndex]
-        // newImageList[information.oldIndex] = imageTempNew
-        // newImageList[information.newIndex] = imageTempOld
         newImageList.splice(information.oldIndex, 1)
-        // newImageList.splice(information.oldIndex, 0, imageTempNew)
-
-        // newImageList.splice(information.newIndex, 1)
         newImageList.splice(information.newIndex, 0, imageTempOld)
 
         newItemForUploading = {
@@ -258,7 +296,7 @@ class TableProductScreen extends React.PureComponent {
 
       newData[index] = newItem
       this.setState({
-        consignmentData: newData
+        productData: newData
       })
 
       const resPro = await GapService.updateProduct(newItemForUploading)
@@ -270,7 +308,7 @@ class TableProductScreen extends React.PureComponent {
       } else {
         newData[index] = originItem
         this.setState({
-          consignmentData: newData,
+          productData: newData,
           isUploading: false
         })
         showNotification(`Thay đổi chưa thành công ${newItem.objectId}`)
@@ -279,14 +317,14 @@ class TableProductScreen extends React.PureComponent {
   };
 
   removePhoto = async (item, recordData, indexPhoto) => {
-    const { consignmentData } = this.state
+    const { productData } = this.state
 
     console.log('removePhoto run')
     console.log(recordData)
     this.setState({
       isUploading: true
     }, async () => {
-      const newData = [...consignmentData]
+      const newData = [...productData]
       console.log(newData)
 
       const index = newData.findIndex((foundItem) => recordData.key === foundItem.key)
@@ -321,7 +359,7 @@ class TableProductScreen extends React.PureComponent {
       if (resPro) {
         newData[index] = newItem
         this.setState({
-          consignmentData: newData,
+          productData: newData,
           isUploading: false
         })
         showNotification(`Xoá thành công ${newItem.objectId}`)
@@ -335,7 +373,7 @@ class TableProductScreen extends React.PureComponent {
   }
 
   handleUpload = async (info, recordData) => {
-    const { consignmentData, isUploading } = this.state
+    const { productData, isUploading } = this.state
     const status = info.file.status
 
     if (status !== 'uploading') {
@@ -352,7 +390,7 @@ class TableProductScreen extends React.PureComponent {
         console.log(recordData)
         console.log('handleUpload run 1111 ----')
 
-        const newData = [...consignmentData]
+        const newData = [...productData]
         const index = newData.findIndex((item) => recordData.key === item.key)
         let newItem = newData[index]
         let newItemForUploading
@@ -394,7 +432,7 @@ class TableProductScreen extends React.PureComponent {
         if (resPro) {
           newData[index] = newItem
           this.setState({
-            consignmentData: newData,
+            productData: newData,
             isUploading: false
           })
           showNotification(`Cập nhật thành công ${newItem.objectId}`)
@@ -404,13 +442,7 @@ class TableProductScreen extends React.PureComponent {
           })
           showNotification(`Cập nhật chưa thành công ${newItem.objectId}`)
         }
-        // console.log(`handleUpload ${info.file.name} file uploaded successfully.`)
       })
-
-      // console.log(`handleUpload ${info.file.name} file uploaded successfully.`)
-      // const res = await GapService.uploadSingleFileWithFormData(info.file.originFileObj)
-      // console.log('handleUpload 123123')
-      // console.log(res)
     } else if (status === 'error') {
       this.setState({
         isUploading: false
@@ -420,11 +452,9 @@ class TableProductScreen extends React.PureComponent {
   }
 
   // [{"__type":"Pointer","className":"Media","objectId":"vu0vN7mImh"},
-  // {"__type":"Pointer","className":"Media","objectId":"vu0vN7mImh"}]
 
   data = async (file) => {
     console.log('data file', file)
-    // const res = GapService.uploadSingleFileWithFormData(file);
     return file
   }
 
@@ -474,9 +504,6 @@ class TableProductScreen extends React.PureComponent {
         // editable: true,
         width: 300,
         render: (value) => {
-          console.log('value')
-          console.log(value)
-
           return (
             <div>
               <div className='upload-Dragger-container'>
@@ -494,10 +521,7 @@ class TableProductScreen extends React.PureComponent {
                       name='uploadFile'
                       listType='picture-card'
                       showUploadList={false}
-                      // beforeUpload={this.beforeUploadMedia}
                       onChange={(info) => this.handleUpload(info, recordData)}
-                      // data={this.data}
-                      // customRequest={this.customRequest}
                       multiple
                       maxCount={5}
                       maxLength={5}
@@ -556,7 +580,8 @@ class TableProductScreen extends React.PureComponent {
         title: 'Ghi chú',
         width: 150,
         dataIndex: 'note',
-        key: 'note'
+        key: 'note',
+        editable: true
       }
     ]
 
@@ -568,10 +593,10 @@ class TableProductScreen extends React.PureComponent {
     data.push({
       key: recordData.objectId,
       medias: recordData.medias && recordData.medias.length > 0 ? recordData.medias : null,
-      size: recordData.sizeInfo,
-      item: recordData.rateNew,
-      detailInfo: recordData.detailInfo,
-      note: recordData.note
+      sizeInfo: recordData.sizeInfo || '-',
+      rateNew: Number(recordData.rateNew) || 0,
+      detailInfo: recordData.detailInfo || '-',
+      note: recordData.note || '-'
     })
 
     const formatedColumns = columns.map((col) => {
@@ -603,51 +628,45 @@ class TableProductScreen extends React.PureComponent {
   handleSaveNestTable = (row, record) => {
     console.log('row - handleSaveNestTable')
     console.log(row)
-    // console.log(record)
+    console.log(record)
 
-    const newData = [...this.state.consignmentData]
+    const newData = [...this.state.productData]
+    console.log('productData')
+    console.log(this.state.productData)
     const index = newData.findIndex((item) => record.key === item.key)
     let item = newData[index]
 
-    item.productList[row.key] = {
+    item = {
+      ...record,
       ...row,
-
-      soldNumberProduct: Number(row.soldNumberProduct) || 0,
-      remainNumberProduct: Number(row.count) - Number(row.soldNumberProduct || 0),
-      moneyBackProduct: Math.round((Number(row.soldNumberProduct || 0) * Number(row.priceAfterFee)))
+      sizeInfo: row.sizeInfo || '--',
+      note: row.note || '--',
+      rateNew: row.rateNew || 0,
+      detailInfo: row.detailInfo || '--'
     }
 
-    let newRemainNumConsignment = 0
-    let newmoneyBack = 0
-    let newNumSoldConsignment = 0
-
-    item.productList.map(productItem => {
-      newRemainNumConsignment += Number(productItem.remainNumberProduct) || 0
-      newmoneyBack += Number(productItem.moneyBackProduct) * 1000 || 0
-      newNumSoldConsignment += Number(productItem.soldNumberProduct) || 0
-    })
-
-    const newItem = { ...item, remainNumConsignment: newRemainNumConsignment, moneyBack: Math.round(newmoneyBack), numSoldConsignment: newNumSoldConsignment }
+    const newItem = { ...item, objectId: record.objectId }
 
     console.log('handleSaveNestTable')
     console.log(newItem)
 
     // if (!isEqual(newItem, item)) {
     newData.splice(index, 1, newItem)
-    console.log('row')
+    console.log(newData)
+    console.log('newData')
+
     this.setState({
-      consignmentData: newData
+      productData: newData
     }, async () => {
       console.log(newItem)
-      const res = await GapService.updateConsignment(newItem)
+      const res = await GapService.updateProduct(newItem)
       console.log(res)
       if (res) {
-        showNotification(`Cập nhật thành công ${item.phoneNumber}`)
+        showNotification(`Cập nhật thành công ${item.key}`)
       } else {
         showNotification(`Cập nhật chưa được`)
       }
     })
-    // }
   };
 
   fetchAllTags = async () => {
@@ -679,9 +698,6 @@ class TableProductScreen extends React.PureComponent {
       let res
 
       if (!searchText) {
-        console.log('fetchTableData 13213123123123')
-        console.log(currentTag)
-
         res = await GapService.getProduct(page, null, null, currentTag)
       } else {
         res = await GapService.getProduct(page, searchText, null, currentTag)
@@ -689,10 +705,10 @@ class TableProductScreen extends React.PureComponent {
 
       console.log('res')
       console.log(res)
-      let consignmentData = []
+      let productData = []
       if (res && res.results) {
         res.results.map((item, indexItem) => {
-          consignmentData.push({
+          productData.push({
             ...item,
             key: item.objectId,
             categoryId: item.category.objectId,
@@ -706,7 +722,7 @@ class TableProductScreen extends React.PureComponent {
         })
         this.setState({
           total: res.count,
-          consignmentData: consignmentData,
+          productData: productData,
           isLoadingData: false
         })
       } else {
@@ -718,7 +734,7 @@ class TableProductScreen extends React.PureComponent {
   }
 
   handleSave = (row) => {
-    const newData = [...this.state.consignmentData]
+    const newData = [...this.state.productData]
     const index = newData.findIndex((item) => row.key === item.key)
     const item = newData[index]
     // const newRemainNumConsignment = `${Number(row.numberOfProducts) - Number(row.numSoldConsignment || 0)}`
@@ -728,7 +744,7 @@ class TableProductScreen extends React.PureComponent {
       newData.splice(index, 1, newItem)
       console.log('row')
       this.setState({
-        consignmentData: newData
+        productData: newData
       }, async () => {
         console.log(newItem)
         const res = await GapService.updateConsignment(newItem)
@@ -758,7 +774,7 @@ class TableProductScreen extends React.PureComponent {
 
   render () {
     const { userData } = this.props
-    const { isLoadingData, consignmentData, total, isLoadingTags, tags, allInfoTag } = this.state
+    const { isLoadingData, productData, total, isLoadingTags, tags, allInfoTag } = this.state
 
     const components = {
       body: {
@@ -797,7 +813,7 @@ class TableProductScreen extends React.PureComponent {
           size='small'
           loading={isLoadingData || isLoadingTags}
           columns={columns}
-          dataSource={consignmentData}
+          dataSource={productData}
           bordered
           expandable={{ expandedRowRender: (record) => this.expandedRowRender(record) }}
           pagination={{

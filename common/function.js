@@ -187,6 +187,25 @@ export const isObject = (value) => {
   return value && typeof value === 'object' && value.constructor === Object
 }
 
+export const convertMediaArrayToPointerArray = (medias) => {
+  let pointerArr = []
+  if (medias && medias.length > 0) {
+    medias.map(item => {
+      if (item && item.objectId) {
+        pointerArr.push({
+          '__type': 'Pointer',
+          'className': 'Media',
+          'objectId': item.objectId
+        })
+      }
+    })
+
+    return pointerArr
+  } else {
+    return medias
+  }
+}
+
 export const scientificToDecimal = (num) => {
   const sign = Math.sign(num)
   // if the number is in scientific notation remove it
