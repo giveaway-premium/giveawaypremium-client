@@ -14,6 +14,13 @@ import useSmoothScroll from 'use-smooth-scroll'
 import ScrollToTop from 'react-scroll-to-top'
 
 import FashionBox from './Components/FashionBox'
+import BagBox from './Components/BagBox'
+import PerfumeBox from './Components/PerfumeBox'
+import CosmeticBox from './Components/CosmeticBox'
+import AccessoriesBox from './Components/AccessoriesBox'
+import MachineBox from './Components/MachineBox'
+import ShoesBox from './Components/ShoesBox'
+
 import './style.scss'
 
 class StoreScreen extends React.PureComponent {
@@ -103,12 +110,30 @@ class StoreScreen extends React.PureComponent {
         <div id='0paqD5jvw3' className='test-component-1'>
           <FashionBox />
         </div>
-        <div id='dNYERCGnBT' className='test-component-2' />
-        <div id='YIUniNrIKb' className='test-component-3' />
-        <div id='PtUHtoonRc' className='test-component-4' />
-        <div id='OwyMj5kQ2N' className='test-component-5' />
-        <div id='eMxuZ7VdUy' className='test-component-6' />
-        <div id='B3OQuAChW1' className='test-component-7' />
+        <div id='dNYERCGnBT' className='test-component-2'>
+          {/* <BagBox /> */}
+          <FashionBox />
+        </div>
+        <div id='YIUniNrIKb' className='test-component-3'>
+          {/* <PerfumeBox /> */}
+          <FashionBox />
+        </div>
+        <div id='PtUHtoonRc' className='test-component-4'>
+          {/* <ShoesBox /> */}
+          <FashionBox />
+        </div>
+        <div id='OwyMj5kQ2N' className='test-component-5'>
+          {/* <CosmeticBox /> */}
+          <FashionBox />
+        </div>
+        <div id='eMxuZ7VdUy' className='test-component-6'>
+          {/* <AccessoriesBox /> */}
+          <FashionBox />
+        </div>
+        <div id='B3OQuAChW1' className='test-component-7'>
+          {/* <MachineBox /> */}
+          <FashionBox />
+        </div>
 
         <Row type='flex' justify='center'>
           <Col span={20} align='center'>

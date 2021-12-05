@@ -1,7 +1,27 @@
 .fashionBox-container {
-    height: 100%;
-    width: 100%;
+    height: 100vh;
+    width: 100vw;
     display: flex;
     justify-content: space-around;
     align-items: center;
+    position: relative;
+
+    .fashionBox-container-inner {
+        height: calc(100vh - 132px);
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        .top-box {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bottom-box {
+            flex: 1;
+        }
+    }
 }

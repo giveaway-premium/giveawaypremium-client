@@ -29,7 +29,7 @@
         overflow-x: auto;
         position: sticky;
         top: 0px;
-        z-index: 100;
+        z-index: 1000;
 
         // :hover {
         //     margin-top: 20px;
@@ -80,12 +80,20 @@
             overflow-x: scroll;
             justify-content: space-around;
             align-items: center;
+            @media screen and (max-width: 768px) {
+                justify-content: flex-start;
+            }
 
             .tag-box {
+                white-space: nowrap;
                 position: relative;
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                @media screen and (max-width: 768px) {
+                    min-width: 25vw;
+                    padding: 0 10px;
+                }
                 .tag-img {
                     max-width: 250px;
                     max-height: 250px;

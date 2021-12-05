@@ -1,0 +1,32 @@
+.item-container {
+    width: 100%;
+    height: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+
+    .big-avatar-img-box {
+        width: 100%;
+        height: 100%;
+        .big-avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    }
+
+    .small-avatar-img-box-container {
+        height: 100%;
+
+        .small-avatar-img-box {
+            width: 100%;
+            height: 25%;
+            .small-avatar-img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
+        }
+    }
+}

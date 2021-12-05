@@ -13,6 +13,31 @@ export const KEY_STORE = {
   SET_CATEGORY: 'SET_CATEGORY'
 }
 
+export const OBJECTID_CATEGORY = {
+  FASHION: '0paqD5jvw3', // thoi trang
+  MACHINE: 'B3OQuAChW1', // thiet bi lam dep
+  PERFUME: 'YIUniNrIKb', // nuoc hoa
+  SHOES: 'PtUHtoonRc', // giay
+  BAG: 'dNYERCGnBT', // tui & vi
+  COMESTIC: 'OwyMj5kQ2N', // my pham
+  ACCESSORIES: 'eMxuZ7VdUy' // dung cu trang diem
+}
+
+export const OBJECTID_SUB_CATEGORY = {
+  // giay
+  GIAY_BET: 'GBDAbyB7fx',
+  GIAY_CAO_GOT: 'UWobIyULJA',
+  GIAY_THE_THAO: '4FVRp20cE2',
+  // thoi trang
+  DAM: 'LjGfBcm0iz',
+  AO_KHOAC: 'vGY4HOBbTG',
+  SUIT: 'qqsjuoE4HM',
+  VAY: 'EG2GjmOKvj',
+  QUAN: 'AXLJIdkEhI',
+  AO: 'Lz9H9NGGaE'
+  //
+}
+
 export const REQUEST_TYPE = {
   POST: 'POST',
   GET: 'GET',

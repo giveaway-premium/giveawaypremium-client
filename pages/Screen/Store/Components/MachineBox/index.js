@@ -12,7 +12,7 @@ import { isMobile } from 'react-device-detect'
 import './style.scss'
 import Lottie from 'react-lottie'
 import GapService from 'controller/Api/Services/Gap'
-import ItemBox from '../ItemBox'
+
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import { OBJECTID_CATEGORY } from 'common/constants'
@@ -62,19 +62,7 @@ const FashionBox = (props) => {
         isLoadingPage ? (
           <Skeleton style={{ width: '100vw', height: '100vh' }} enableAnimation />
         ) : (
-          <div className='fashionBox-container-inner'>
-            <div className='top-box'>
-              <div className='top-box-left'>
-                <ItemBox itemData={productList[0]} />
-              </div>
-            </div>
-            <div className='bottom-box'>
-              {
-                productList.map((item, index) => <ItemBox key={index} itemData={item} />)
-              }
-            </div>
-
-          </div>
+          <div>123</div>
         )
       }
     </div>

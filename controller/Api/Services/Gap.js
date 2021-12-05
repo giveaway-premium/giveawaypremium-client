@@ -162,10 +162,24 @@ export default class Gap {
     let skip = (limited * page) - limited
 
     if (keyword) {
-      const customQuery = `include=medias&skip=${skip}&limit=${limited}&count=1&where={"name":{"$regex":"${keyword}"},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      const customQuery = `include=medias,category,subCategory&skip=${skip}&limit=${limited}&count=1&where={"name":{"$regex":"${keyword}"},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
       return this.fetchData('/classes/Product', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     } else {
-      const customQuery = `include=medias&skip=${skip}&limit=${limited}&count=1&where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      const customQuery = `include=medias,category,subCategory&skip=${skip}&limit=${limited}&count=1&where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+
+      return this.fetchData('/classes/Product', REQUEST_TYPE.GET, null, null, null, null, customQuery)
+    }
+  }
+
+  static async getProductStore (page = 1, keyword = null, limit = 20, categoryId, subCategoryId) {
+    let limited = limit || 100
+    let skip = (limited * page) - limited
+
+    if (keyword) {
+      const customQuery = `include=medias,category,subCategory&skip=${skip}&limit=${limited}&count=1&where={"name":{"$regex":"${keyword}"},"status":"ACTIVE","categoryId.objectId":"${categoryId}"}`
+      return this.fetchData('/classes/Product', REQUEST_TYPE.GET, null, null, null, null, customQuery)
+    } else {
+      const customQuery = `include=medias,category,subCategory&skip=${skip}&limit=${limited}&count=1&where={"status":"ACTIVE","category":{"__type":"Pointer","className":"Category","objectId":"${categoryId}"}}`
 
       return this.fetchData('/classes/Product', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     }

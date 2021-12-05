@@ -165,6 +165,13 @@ class TableProductScreen extends React.PureComponent {
         render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
       },
       {
+        title: 'Loại',
+        dataIndex: 'category',
+        width: 200,
+        key: 'category',
+        render: (value) => <span>{value}</span>
+      },
+      {
         title: 'Tình trạng',
         dataIndex: 'status',
         width: 95,
@@ -251,6 +258,13 @@ class TableProductScreen extends React.PureComponent {
       if (res) {
         showNotification(`Cập nhật thành công ${item.key}`)
       } else {
+        const newItem = { ...item, status: record.status }
+        newData.splice(index, 1, newItem)
+
+        this.setState({
+          productData: newData
+        })
+
         showNotification(`Cập nhật chưa được`)
       }
     })
@@ -708,9 +722,16 @@ class TableProductScreen extends React.PureComponent {
       let productData = []
       if (res && res.results) {
         res.results.map((item, indexItem) => {
+          let categoryType
+          if (item.category && item.category.name && item.subCategory && item.subCategory.name) {
+            categoryType = `${item.category.name} -> ${item.subCategory.name}`
+          } else if (!item.subCategory || !item.subCategory.name) {
+            categoryType = item.category.name
+          }
           productData.push({
             ...item,
             key: item.objectId,
+            category: categoryType,
             categoryId: item.category.objectId,
             price: Number(item.price) || 0,
             count: Number(item.count) || 0,

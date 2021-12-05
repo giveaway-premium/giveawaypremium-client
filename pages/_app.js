@@ -110,21 +110,19 @@ class GiveAway extends App {
           <title>GiveAwayPremium</title>
           <meta charSet='utf-8' />
           <link rel='shortcut icon' href={'https://i.ibb.co/pr24d1c/favicon.png'} />
-          {/* <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css' /> */}
           <meta httpEquiv='Cache-Control' content='no-cache, no-store, must-revalidate' />
           <meta httpEquiv='Pragma' content='no-cache' />
           <meta httpEquiv='Expires' content='0' />
           <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no' />
           <meta name='theme-color' content='#000000' />
           <meta name='description' content='GiveAway Premium' />
-          <meta name='google-site-verification' content='D1F12tMnugBHZLza2KcmBK5gWmnC32N6e3U5pKw8DFk' />
+          {/* <meta name='google-site-verification' content='D1F12tMnugBHZLza2KcmBK5gWmnC32N6e3U5pKw8DFk' /> */}
           <meta property='og:image' content='https://i.ibb.co/NSz5YLK/Frame-1.png' />
           <meta property='og:image:secure_url' content='https://i.ibb.co/NSz5YLK/Frame-1.png' />
           <meta property='og:image:type' content='image/png' />
           <meta property='og:image:width' content='828' />
           <meta property='og:image:height' content='434' />
           <meta property='og:image:alt' content='GiveAway Premium' />
-          {/* <link rel='stylesheet' type='text/css' href='/nprogress.css' /> */}
         </Head>
         <NextSeo {...this.state.seoData} />
         {
