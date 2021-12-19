@@ -246,6 +246,10 @@ export const checkIsSigned = (userData) => {
   return false
 }
 
+export const isBottomElement = (el) => {
+  return el && el.getBoundingClientRect().bottom <= window.innerHeight
+}
+
 export const numberWithCommas = (x) => {
   var parts = x.toString().split('.')
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')

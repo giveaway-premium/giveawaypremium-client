@@ -171,7 +171,7 @@ export default class Gap {
     }
   }
 
-  static async getProductStore (page = 1, keyword = null, limit = 20, categoryId, subCategoryId) {
+  static async getProductStore (page = 1, keyword = null, limit = 100, categoryId, subCategoryId) {
     let limited = limit || 100
     let skip = (limited * page) - limited
 

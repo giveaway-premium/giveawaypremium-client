@@ -2,7 +2,6 @@
 import React, { useContext, useState, useEffect, useRef } from 'react'
 import { withRouter } from 'next/router'
 import { connect } from 'react-redux'
-import { Form, Row, Col, Layout, Input, Button, Spin, Descriptions, Tabs, Table } from 'antd'
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
 import { showNotification } from 'common/function'
@@ -20,6 +19,8 @@ import { OBJECTID_CATEGORY } from 'common/constants'
 const FashionBox = (props) => {
   const [isLoadingPage, setIsLoadingPage] = useState(false)
   const [productList, setProductList] = useState([])
+  const [productCount, setProductCount] = useState(0)
+
   useEffect(() => {
     loadingProduct()
   }, [])
@@ -28,14 +29,14 @@ const FashionBox = (props) => {
     setIsLoadingPage(true)
     let isLoadingDone = false
     let isAutoOffLoading = true
-    const productList = await GapService.getProductStore(1, null, 5, OBJECTID_CATEGORY.FASHION)
+    const productList = await GapService.getProductStore(1, null, 100, OBJECTID_CATEGORY.FASHION)
     setTimeout(() => {
       if (isLoadingDone) {
         setIsLoadingPage(false)
       } else {
         isAutoOffLoading = false
       }
-    }, 1000)
+    }, 500)
     if (productList && productList.results && productList.results.length > 0) {
       console.log('productList')
       console.log(productList)
@@ -45,6 +46,7 @@ const FashionBox = (props) => {
         setIsLoadingPage(false)
       }
       setProductList(productList.results)
+      productList.count >= 0 && setProductCount(productList.count)
       // setIsLoadingPage(false)
     } else {
       if (isAutoOffLoading) {
@@ -65,13 +67,39 @@ const FashionBox = (props) => {
           <div className='fashionBox-container-inner'>
             <div className='top-box'>
               <div className='top-box-left'>
-                <ItemBox itemData={productList[0]} />
+                <div>
+                  <span>
+                  Thời trang
+                  </span>
+                </div>
+
+                <div>
+                  <span>
+                    {productCount} sản phẩm
+                  </span>
+                </div>
               </div>
+              <div className='top-box-right'>
+                <ItemBox itemData={productList[0]} isTheLastestItem />
+                <ItemBox itemData={productList[0]} isTheHotestItem />
+                <ItemBox itemData={productList[0]} isTheLastestItem />
+              </div>
+
             </div>
             <div className='bottom-box'>
-              {
+              {/* {
                 productList.map((item, index) => <ItemBox key={index} itemData={item} />)
-              }
+              } */}
+              <ItemBox itemData={productList[0]} />
+              <ItemBox itemData={productList[0]} />
+              <ItemBox itemData={productList[0]} />
+              <ItemBox itemData={productList[0]} />
+              <ItemBox itemData={productList[0]} />
+              <ItemBox itemData={productList[0]} />
+              <ItemBox itemData={productList[0]} />
+              <ItemBox itemData={productList[0]} />
+              <ItemBox itemData={productList[0]} />
+              <ItemBox itemData={productList[0]} />
             </div>
 
           </div>
