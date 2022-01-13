@@ -353,6 +353,7 @@ class TableConsignemntScreen extends React.PureComponent {
 
     item.productList[row.key] = {
       ...row,
+      note: row.node || '---',
       code: row.code,
       name: row.name,
       price: Number(row.price),
@@ -368,7 +369,8 @@ class TableConsignemntScreen extends React.PureComponent {
     let newNumSoldConsignment = 0
     let newNumberOfProducts = 0
 
-    item.productList.map(productItem => {
+    item.productList.map((productItem, productItemIndex) => {
+      item.productList[productItemIndex].note = item.productList[productItemIndex].note || '---'
       newNumberOfProducts += Number(productItem.count) || 0
       newRemainNumConsignment += Number(productItem.remainNumberProduct) || 0
       newmoneyBack += Number(productItem.soldNumberProduct) * Number(productItem.priceAfterFee) * 1000 || 0
@@ -385,6 +387,7 @@ class TableConsignemntScreen extends React.PureComponent {
 
     console.log('handleSaveNestTable')
     console.log(newItem)
+    console.log(newData)
 
     // if (!isEqual(newItem, item)) {
     newData.splice(index, 1, newItem)
