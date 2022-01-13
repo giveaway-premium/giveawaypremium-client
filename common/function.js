@@ -298,6 +298,19 @@ export const scrollTop = () => {
   }
 }
 
+export const getCurrentUrl = (req, fallback) => {
+  if (req) {
+    // server side request object(req)
+    return req.protocol + '://' + req.get('host') + req.originalUrl
+  } else if (!(typeof window === 'undefined')) {
+    // making sure we are on the client side
+    // return window.location.href
+    return window.location
+  } else {
+    return fallback
+  }
+}
+
 /**
 * NAME: countDots
 * PARAMS: strString, strLetter

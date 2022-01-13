@@ -7,16 +7,12 @@
     // background-color: red;
     position: relative;
     padding-bottom: 0 !important;
-
-    @media screen and (max-width: 768px) {
-        padding-bottom: 15vh !important;
-    }
     .category-container {
         width: 100%;
         padding: 0 !important;
         // max-width: 1400px;
         // background-color: rgba($color: #BDBDBD, $alpha: 0.1);
-        background-color: rgba($color: #fff, $alpha: 1);
+        background-color: rgba($color: #fff, $alpha: 0.7);
         // height: calc(100vh - 160px);
         display: flex;
         flex-direction: row;
@@ -83,6 +79,10 @@
 
     .body-box {
         width: 100%;
+        min-height: 100vh;
+        background-color: rgba($color: #fff, $alpha: 0.5);
+        backdrop-filter: blur(4px);
+
         .listItem-box {
             display: flex;
             flex-wrap: wrap;
@@ -95,9 +95,8 @@
 
             .item-container {
                 // min-width: 33vw;
-                padding: 2px;
                 width: 25vw;
-                height: 25vw;
+                // height: 25vw;
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -108,60 +107,75 @@
 
                 @media screen and (max-width: 567px) {
                     width: 50vw;
-                    height: 50vw;
+                    // height: 50vw;
                 }
 
 
                 @media screen and (min-width: 2000px) {
                     width: 20vw;
-                    height: 20vw;
-                }
-                :hover {
-                    transition: all 0.7s;
-                    cursor: pointer;
-                    z-index: 1000;
-                    box-shadow: 0 1px 12px rgba(33,33,33,.2); 
+                    // height: 20vw;
                 }
             
                 .big-avatar-img-box {
                     width: 100%;
                     height: 100%;
                     .big-avatar-img {
-                        width: 100%;
-                        height: 100%;
+                        width: 24.75vw;
+                        height: 25vw;
+                        // width: 100%;
+                        // height: 100%;
                         object-fit: cover;
+                        &:hover {
+                            transition: all 0.4s;
+                            cursor: pointer;
+                            z-index: 1000;
+                            box-shadow: 0 1px 12px rgba(33,33,33,.3); 
+                        }
+
+                        @media screen and (max-width: 567px) {
+                            width: 49.7vw;
+                            height: 49.7vw;
+                        }
+        
+        
+                        @media screen and (min-width: 2000px) {
+                            width: 19.9vw;
+                            height: 20vw;
+                        }
                     }
             
                     .detail-box {
+                        margin: 10px 0 20px 0;
                         min-width: 12.4vw;
-                        padding: 4px;
-                        background-color: white;
-                        position: absolute;
-                        bottom: 4px;
-                        right: 4px;
+                        padding: 5px 1.5vw;
                         display: flex;
                         flex-direction: column;
                         justify-items: flex-end;
-                        align-items: flex-end;
-                        text-align: left;
+                        align-items: flex-start;
+                        text-align: left !important;
                         text-transform: uppercase;
                         overflow: auto;
+                        @media screen and (max-width: 567px) {
+                            padding: 5px 3vw;
+                        }
                         @media screen and (min-width: 2000px) {
                             min-width: 10vw;
                         }
                         .detail-box-name {
-                            font-weight: bold !important;
-                            font-size: 8px;
+                            color: #2e2e2e;
+                            font-family: 'myriadpro-bold' !important;
+                            font-size: 15px !important;
                             @media screen and (min-width: 2000px) {
-                                font-size: 15px;
+                                font-size: 17px;
                             }
                         }
                 
                         .detail-box-price {
-                            font-weight: 600;
-                            font-size: 8px;
+                            font-family: 'myriadpro-bold' !important;
+                            // font-weight: 500 !important;
+                            font-size: 15px !important;
                             @media screen and (min-width: 2000px) {
-                                font-size: 15px;
+                                font-size: 17px;
                             }
                         }
                     }
@@ -186,7 +200,7 @@
             max-width: 500px;
             cursor: pointer;
             width: 50vw;
-            margin: 10vh auto 0 auto;
+            margin: 30vh auto 0 auto;
             padding: 5px;
             align-self: center;
             border: 1px solid gray;
@@ -195,6 +209,10 @@
                 text-align: center;
                 color: black;
             }
+
+            @media screen and (max-width: 567px) {
+                width: 80vw;
+            }            
         }
         .load-more-button {
             cursor: pointer;
@@ -204,6 +222,9 @@
             margin: 5vh auto 10vh auto !important;
             border: 1px solid gray;
             text-align: center;
+            @media screen and (max-width: 567px) {
+                margin: 5vh auto 20vh auto !important;
+            }
             span {
                 text-align: center;
                 color: black;

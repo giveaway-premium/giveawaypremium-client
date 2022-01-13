@@ -52,6 +52,7 @@ class StoreScreen extends React.PureComponent {
 
   componentWillUnmount () {
     window.removeEventListener('scroll', this.handleScroll)
+    window.removeEventListener('routeChangeComplete', this.handleScroll)
   }
 
   throttleScroll = () => {
@@ -153,6 +154,10 @@ class StoreScreen extends React.PureComponent {
     // }
   };
 
+  onOpenProductScreen = (item) => {
+    Router.pushRoute(`/sanpham/${item.objectId}`, { itemData: item })
+  }
+
   render () {
     const { productList, count, isLoadingPage, currentPage, maxPage, currentCategoryId, isLoadInit, isLoadingMore } = this.state
     // const defaultOptions = {
@@ -176,7 +181,7 @@ class StoreScreen extends React.PureComponent {
     const TagBox = ({ categoryId, image, name, index }) => {
       return (
         // <a onClick={(e) => this.onPress(categoryId)} href={`#${categoryId}`}>
-        <a onClick={(e) => this.onPress(categoryId)}>
+        <a onClick={(e) => this.onPress(categoryId)}  href={`#${categoryId}`}>
           <div style={categoryId === currentCategoryId ? { backgroundColor: 'black' } : {}} className={`tag-box ${!isLoadInit ? 'animate__animated animate__fadeIn' : ''}`}>
             <span style={categoryId === currentCategoryId ? { color: '#F5FFFA' } : {}} className='tag-product-content'>{name}</span>
           </div>
@@ -209,12 +214,12 @@ class StoreScreen extends React.PureComponent {
                   productList?.length > 0 ? (
                     productList.map((item, key) => {
                       return (
-                        <div key={key} className='item-container'>
+                        <div key={key} className='item-container' onClick={() => this.onOpenProductScreen(item)}>
                           <div className='big-avatar-img-box'>
                             <img src={item && item.medias && item.medias[0] && item.medias[0].data && item.medias[0].data.url ? item.medias[0].data.url : images.aLogoBlack} className='big-avatar-img' />
                             <div className='detail-box'>
                               {item && item.name && <span className='detail-box-name'>{item.name || '--'}</span>}
-                              {item && item.price && <span className='detail-box-price'>{numberWithCommas(item.price * 100)} VND</span>}
+                              {item && item.price && <span className='detail-box-price'>{numberWithCommas(item.price * 100)} ₫</span>}
                             </div>
                           </div>
                         </div>
@@ -222,8 +227,8 @@ class StoreScreen extends React.PureComponent {
                     })
                   ) : (
                     (
-                      <div className='noitem-box'>
-                        <span>Hiện tại chưa có sản phẩm nào</span>
+                      <div className='noitem-box animate__animated animate__fadeIn'>
+                        <span>Hiện tại chưa có sản phẩm</span>
                       </div>
                     )
                   )
