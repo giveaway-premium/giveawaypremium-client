@@ -69,7 +69,8 @@ class GiveAway extends App {
       await Promise.all(promiseArr)
 
       const initDataPromiseArr = [
-        ReduxServices.getCategory()
+        ReduxServices.getCategory(),
+        ReduxServices.getSetting()
       ]
 
       if (getDataLocal(KEY_STORE.SET_CATEGORY)) {

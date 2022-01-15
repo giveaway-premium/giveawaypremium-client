@@ -35,6 +35,143 @@ class ConsignmentScreen extends React.PureComponent {
           timeCode: '1000'
         },
         {
+          timeName: '11:00',
+          timeCode: '1100'
+        },
+        {
+          timeName: '13:30',
+          timeCode: '1330'
+        },
+        {
+          timeName: '14:30',
+          timeCode: '1430'
+        },
+        {
+          timeName: '15:30',
+          timeCode: '1530'
+        },
+        {
+          timeName: '16:30',
+          timeCode: '1630'
+        },
+        {
+          timeName: '17:30',
+          timeCode: '1730'
+        },
+        {
+          timeName: '18:30',
+          timeCode: '1830'
+        }
+      ],
+      step: 0,
+      isHideUserForm: true,
+      isHideDayColumn: false,
+      choosenDayCode: null,
+      choosenTimeCode: null,
+      bookingDataCode: [],
+      isErrorMax: false,
+      isShowEightSlot: true
+    }
+    this.myModal = React.createRef()
+  }
+
+  // timeBooking: [
+  //   {
+  //     timeName: '10:00',
+  //     timeCode: '1000'
+  //   },
+  //   {
+  //     timeName: '10:30',
+  //     timeCode: '1030'
+  //   },
+  //   {
+  //     timeName: '11:00',
+  //     timeCode: '1100'
+  //   },
+  //   {
+  //     timeName: '11:30',
+  //     timeCode: '1130'
+  //   },
+  //   {
+  //     timeName: '12:00',
+  //     timeCode: '1200'
+  //   },
+  //   {
+  //     timeName: '12:30',
+  //     timeCode: '1230'
+  //   },
+  //   {
+  //     timeName: '13:00',
+  //     timeCode: '1300'
+  //   },
+  //   {
+  //     timeName: '13:30',
+  //     timeCode: '1330'
+  //   },
+  //   {
+  //     timeName: '14:00',
+  //     timeCode: '1400'
+  //   },
+  //   {
+  //     timeName: '14:30',
+  //     timeCode: '1430'
+  //   },
+  //   {
+  //     timeName: '15:00',
+  //     timeCode: '1500'
+  //   },
+  //   {
+  //     timeName: '15:30',
+  //     timeCode: '1530'
+  //   },
+  //   {
+  //     timeName: '16:00',
+  //     timeCode: '1600'
+  //   },
+  //   {
+  //     timeName: '16:30',
+  //     timeCode: '1630'
+  //   },
+  //   {
+  //     timeName: '17:00',
+  //     timeCode: '1700'
+  //   },
+  //   {
+  //     timeName: '17:30',
+  //     timeCode: '1730'
+  //   },
+  //   {
+  //     timeName: '18:00',
+  //     timeCode: '1800'
+  //   },
+  //   {
+  //     timeName: '18:30',
+  //     timeCode: '1830'
+  //   }
+  // ],
+  // let dayBookingCount = ['', '', '', '', '', '', '', '', '', '', '', '', '', '']
+
+  async componentDidMount () {
+    let dayBookingCount = ['', '', '', '', '', '', '', '', '', '', '', '', '', '']
+    let dayBookingTemp = []
+    let timeBooking = []
+    let isShowEightSlot = await ReduxServices.getSettingWithKey('IS_SHOW_BOOKINGFORM_EIGHT_SLOT', 'true')
+    console.log('isShowEightSlot')
+    console.log(isShowEightSlot)
+
+    if (isShowEightSlot === 'true' || isShowEightSlot === true) {
+      console.log('isShowEightSlot = true')
+
+      isShowEightSlot = true
+    } else {
+      console.log('isShowEightSlot = false')
+      isShowEightSlot = false
+      timeBooking = [
+        {
+          timeName: '10:00',
+          timeCode: '1000'
+        },
+        {
           timeName: '10:30',
           timeCode: '1030'
         },
@@ -102,25 +239,11 @@ class ConsignmentScreen extends React.PureComponent {
           timeName: '18:30',
           timeCode: '1830'
         }
-      ],
-      step: 0,
-      isHideUserForm: true,
-      isHideDayColumn: false,
-      choosenDayCode: null,
-      choosenTimeCode: null,
-      bookingDataCode: [],
-      isErrorMax: false
+      ]
     }
-    this.myModal = React.createRef()
-  }
-
-  async componentDidMount () {
-    let dayBookingCount = ['', '', '', '', '', '', '', '', '', '', '', '', '', '']
-    let dayBookingTemp = []
-
-    console.log('componentDidMount')
-
-    console.log(moment(Date().now))
+    console.log(ReduxServices.getSettingWithKey('IS_SHOW_BOOKINGFORM_EIGHT_SLOT', 'true'))
+    console.log('timeBooking')
+    console.log(timeBooking)
 
     dayBookingCount.map((item, index) => {
       dayBookingTemp.push({
@@ -130,11 +253,22 @@ class ConsignmentScreen extends React.PureComponent {
       })
     })
 
-    this.setState({
-      dayBooking: dayBookingTemp
-    }, async () => {
-      await this.fetchAppointment()
-    })
+    if (isShowEightSlot) {
+      this.setState({
+        isShowEightSlot: true,
+        dayBooking: dayBookingTemp
+      }, async () => {
+        await this.fetchAppointment()
+      })
+    } else {
+      this.setState({
+        isShowEightSlot: false,
+        dayBooking: dayBookingTemp,
+        timeBooking: timeBooking
+      }, async () => {
+        await this.fetchAppointment()
+      })
+    }
   }
 
   componentDidUpdate () {
@@ -326,7 +460,7 @@ class ConsignmentScreen extends React.PureComponent {
   render () {
     const {
       step, dayBooking, choosenDayCode, timeBooking, bookingDataCode, isErrorMax,
-      choosenTimeCode, formData, isHideUserForm, isConsigning, isHideDayColumn
+      choosenTimeCode, formData, isHideUserForm, isConsigning, isHideDayColumn, isShowEightSlot
     } = this.state
     const layout = {
       labelCol: { span: 9 },
@@ -347,7 +481,7 @@ class ConsignmentScreen extends React.PureComponent {
 
     return (
       <div className='bookingform-home-container'>
-        <div style={{ display: 'flex', flexDirection: 'column', width: '60%', marginTop: '40px' }}>
+        {/* <div style={{ display: 'flex', flexDirection: 'column', width: '60%', marginTop: '40px' }}>
           <p className='text day-txt'>
             Hiện tại tính năng đặt lịch ký gửi trên website đang tạm khoá.
           </p>
@@ -358,10 +492,10 @@ class ConsignmentScreen extends React.PureComponent {
             Xin lỗi vì sự bất tiện này.
           </p>
           <Button style={{ maxWidth: '150px' }} className='MT20' onClick={this.resetAndBackProps} >Quay lại</Button>
-        </div>
+        </div> */}
 
-        {/* <div className='bookingform'>
-          <div style={{ maxHeight: '80vh', overflowY: 'scroll' }} className={'dayBooking-box' + (!isHideDayColumn ? ' show' : '')}>
+        <div className='bookingform'>
+          <div style={{ maxHeight: '80vh', overflowX: 'hidden', overflowY: 'scroll' }} className={'dayBooking-box' + (!isHideDayColumn ? ' show' : '')}>
 
             {dayBooking.map((dayItem, dayIndex) => {
               return (
@@ -389,7 +523,7 @@ class ConsignmentScreen extends React.PureComponent {
           </div>
 
           <div className='timeBooking-box'>
-            <div className={'timeBooking-grid' + (step === 1 && isHideUserForm ? ' show' : '')}>
+            <div style={isShowEightSlot ? { gridTemplateColumns: 'auto auto' } : {}} className={'timeBooking-grid' + (step === 1 && isHideUserForm ? ' show' : '')}>
               {timeBooking.map((itemTime, indexTime) => {
                 const isReady = !bookingDataCode.includes(choosenTimeCode + choosenDayCode) && itemTime.timeCode === choosenTimeCode
                 const isBusy = bookingDataCode.includes(itemTime.timeCode + choosenDayCode)
@@ -497,7 +631,7 @@ class ConsignmentScreen extends React.PureComponent {
               <Button className='MT20' onClick={this.resetAndBackProps} >Quay lại</Button>
             </div>
           </div>
-        </div> */}
+        </div>
         <MyModal ref={this.myModal} />
       </div>
     )
@@ -506,6 +640,7 @@ class ConsignmentScreen extends React.PureComponent {
 
 const mapStateToProps = (state) => ({
   locale: state.locale,
+  settingRedux: state.settingRedux,
   userData: state.userData
 })
 

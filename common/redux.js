@@ -105,6 +105,33 @@ export default class ReduxServices {
     ReduxServices.callDispatchAction(StorageActions.setUserData({}))
   }
 
+  static getSettingWithKey (key, defaultValue = '') {
+    const { settingRedux } = storeRedux.getState()
+    console.log('settingRedux')
+    console.log(settingRedux)
+    console.log(settingRedux[key])
+    console.log(settingRedux[key])
+
+    if (settingRedux && (settingRedux[key] === true || settingRedux[key] === false || settingRedux[key].length > 0)) {
+      return settingRedux[key]
+    } else {
+      return defaultValue
+    }
+  }
+
+  static async getSetting () {
+    const res = await GapService.getSetting()
+
+    console.log('getSetting')
+    console.log(res)
+
+    if (res && res.results && res.results[0] && res.results[0].Setting) {
+      ReduxServices.callDispatchAction(StorageActions.setSetting(res.results[0].Setting))
+    }
+
+    return res.results[0].Setting
+  }
+
   static async getCategory () {
     const res = await GapService.getCategory()
 

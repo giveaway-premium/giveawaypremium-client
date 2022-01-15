@@ -81,6 +81,15 @@ export default class Gap {
 
   // Appointment
 
+  static async getAppointmentWithPhone (phoneNumber, limit = 1, page = 1) {
+    let limited = limit || 1
+    let skip = (limited * page) - limited
+    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"deleteAt":${null},"phoneNumber":"${phoneNumber}"}`
+    // const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"$or":[{"phoneNumber":"${keyword}"},{"consignerIdCard":"${keyword}"]}`
+
+    return this.fetchData('/classes/AppointmentSchedule', REQUEST_TYPE.GET, null, null, null, null, customQuery)
+  }
+
   static async getAppointmentWithDate (dateArray) {
     let limited = 300
     let skip = (limited * 1) - limited
@@ -378,6 +387,25 @@ export default class Gap {
 
   static async getCategoryNhanh () {
     return this.fetchData('functions/nhanh-category', REQUEST_TYPE.GET, null, null, null, null)
+  }
+
+  static async getBookingFormat () {
+    return this.fetchData('/classes/Setting/meu8SzyuLd', REQUEST_TYPE.GET, null, null, null, null)
+  }
+
+  static async updateSetting (settingObject) {
+    const body = {
+      Setting: settingObject
+    }
+
+    console.log('updateSetting')
+    console.log(body)
+
+    return this.fetchData(`/classes/Setting/meu8SzyuLd`, REQUEST_TYPE.PUT, null, body, null, null, null, true)
+  }
+
+  static async getSetting () {
+    return this.fetchData('/classes/Setting', REQUEST_TYPE.GET, null, null, null, null)
   }
 
   static async fetchData (apiUrl, method, queryBody, postData, hostLink, authKey = '', customQuery = null, isUseAuthKey = false) {

@@ -1,0 +1,11 @@
+@import "pages/Style/variable.scss";
+
+.bookingSetting-container {
+    margin: 10px 0 5% 0;
+
+    .switch-container {
+        width: 60px;
+        margin: 0 20px;
+        background-color: #b2dd4d;
+    }
+}
