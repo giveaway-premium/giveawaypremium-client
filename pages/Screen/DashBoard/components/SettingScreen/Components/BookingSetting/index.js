@@ -20,17 +20,14 @@ import StorageActions from 'controller/Redux/actions/storageActions'
 const BookingSetting = (props) => {
   const { setSetting } = props
   const [show, setShow] = useState(true)
+  const [isShowBooking, setIsShowBooking] = useState(true)
 
   useEffect(() => {
     let isShowEightSlot = ReduxServices.getSettingWithKey('IS_SHOW_BOOKINGFORM_EIGHT_SLOT', 'true')
-    console.log('isShowEightSlot')
-    console.log(isShowEightSlot)
+    let isShowBooking = ReduxServices.getSettingWithKey('IS_SHOW_BOOKING_FORM', 'true')
 
-    if (isShowEightSlot === 'true' || isShowEightSlot === true) {
-      // do nothing
-    } else {
-      setShow(false)
-    }
+    setShow(isShowEightSlot)
+    setIsShowBooking(isShowBooking)
   }, [])
 
   const onChangeBookingFormat = async () => {
@@ -57,11 +54,43 @@ const BookingSetting = (props) => {
     }
   }
 
+  const onChangeShowBooking = async () => {
+    setIsShowBooking(!isShowBooking)
+
+    const settingAPI = await ReduxServices.getSetting()
+    const newSettingAPI = {
+      ...settingAPI,
+      'IS_SHOW_BOOKING_FORM': `${!isShowBooking}`
+    }
+    if (settingAPI) {
+      const res = await GapService.updateSetting(newSettingAPI)
+      console.log('res')
+      console.log(res)
+
+      if (res && res.updatedAt) {
+        showNotification(`Thay đổi thành công`)
+        setSetting(newSettingAPI)
+      } else {
+        showNotification(`Thay đổi thất bại`)
+      }
+    } else {
+      showNotification(`Thay đổi thất bại`)
+    }
+  }
+
   return (
     <div className='bookingSetting-container'>
-      <span>18 chổ</span>
-      <Switch className='switch-container' checked={show} onChange={onChangeBookingFormat} />
-      <span>8 chổ</span>
+      <div>
+        <span>18 chổ</span>
+        <Switch className='switch-container' checked={show} onChange={onChangeBookingFormat} />
+        <span>8 chổ</span>
+      </div>
+      <div className='MT10'>
+        <span>Ẩn đặt lịch</span>
+        <Switch className='switch-container' checked={isShowBooking} onChange={onChangeShowBooking} />
+        <span>Hiện đặt lịch</span>
+      </div>
+
     </div>
   )
 }

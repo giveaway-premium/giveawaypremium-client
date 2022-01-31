@@ -113,7 +113,13 @@ export default class ReduxServices {
     console.log(settingRedux[key])
 
     if (settingRedux && (settingRedux[key] === true || settingRedux[key] === false || settingRedux[key].length > 0)) {
-      return settingRedux[key]
+      if (settingRedux[key] === 'true') {
+        return true
+      } else if (settingRedux[key] === 'false') {
+        return false
+      } else {
+        return settingRedux[key]
+      }
     } else {
       return defaultValue
     }

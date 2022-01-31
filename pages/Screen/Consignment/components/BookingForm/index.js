@@ -462,6 +462,10 @@ class ConsignmentScreen extends React.PureComponent {
       step, dayBooking, choosenDayCode, timeBooking, bookingDataCode, isErrorMax,
       choosenTimeCode, formData, isHideUserForm, isConsigning, isHideDayColumn, isShowEightSlot
     } = this.state
+    let isShowBookingForm = ReduxServices.getSettingWithKey('IS_SHOW_BOOKING_FORM', 'true')
+    console.log('isShowBookingForm')
+    console.log(isShowBookingForm)
+
     const layout = {
       labelCol: { span: 9 },
       wrapperCol: { span: 15 }
@@ -481,157 +485,161 @@ class ConsignmentScreen extends React.PureComponent {
 
     return (
       <div className='bookingform-home-container'>
-        <div style={{ display: 'flex', flexDirection: 'column', width: '60%', marginTop: '40px' }}>
-          <p className='text day-txt'>
-            Hiện tại tính năng đặt lịch ký gửi trên website đang tạm khoá.
-          </p>
-          <p className='text day-txt'>
-            Quý khách vui lòng gọi hotline 0703 334 443 để biết thêm thông tin.
-          </p>
-          <p className='text day-txt'>
-            Xin lỗi vì sự bất tiện này.
-          </p>
-          <Button style={{ maxWidth: '150px' }} className='MT20' onClick={this.resetAndBackProps} >Quay lại</Button>
-        </div>
+        {
+          !isShowBookingForm ? (
+            <div style={{ display: 'flex', flexDirection: 'column', width: '60%', marginTop: '40px' }}>
+              <p className='text day-txt'>
+              Hiện tại tính năng đặt lịch ký gửi trên website đang tạm khoá.
+              </p>
+              <p className='text day-txt'>
+              Quý khách vui lòng gọi hotline 0703 334 443 để biết thêm thông tin.
+              </p>
+              <p className='text day-txt'>
+              Xin lỗi vì sự bất tiện này.
+              </p>
+              <Button style={{ maxWidth: '150px' }} className='MT20' onClick={this.resetAndBackProps} >Quay lại</Button>
+            </div>
+          ) : (
+            <div className='bookingform'>
+              <div style={{ maxHeight: '80vh', overflowX: 'hidden', overflowY: 'scroll' }} className={'dayBooking-box' + (!isHideDayColumn ? ' show' : '')}>
 
-        {/* <div className='bookingform'>
-          <div style={{ maxHeight: '80vh', overflowX: 'hidden', overflowY: 'scroll' }} className={'dayBooking-box' + (!isHideDayColumn ? ' show' : '')}>
+                {dayBooking.map((dayItem, dayIndex) => {
+                  return (
+                    <div
+                      key={dayIndex}
+                      className={'day-box'}
+                      onClick={() => this.onChooseDay(dayItem)}
+                      style={(choosenDayCode && choosenDayCode === dayItem.dayCode) ? { borderColor: 'black', opacity: 1 } : (choosenDayCode && choosenDayCode !== dayItem.dayCode) ? { opacity: 0.4 } : {}}
+                    >
+                      <span className='text day-name'>{dayIndex === 0 ? 'Hôm nay' : this.translationDate(dayItem.dayName)}</span>
+                      <span className='text day-txt'>{dayItem.date}</span>
+                    </div>
+                  )
+                })}
 
-            {dayBooking.map((dayItem, dayIndex) => {
-              return (
-                <div
-                  key={dayIndex}
-                  className={'day-box'}
-                  onClick={() => this.onChooseDay(dayItem)}
-                  style={(choosenDayCode && choosenDayCode === dayItem.dayCode) ? { borderColor: 'black', opacity: 1 } : (choosenDayCode && choosenDayCode !== dayItem.dayCode) ? { opacity: 0.4 } : {}}
-                >
-                  <span className='text day-name'>{dayIndex === 0 ? 'Hôm nay' : this.translationDate(dayItem.dayName)}</span>
-                  <span className='text day-txt'>{dayItem.date}</span>
+                <Lottie
+                  style={{ transform: `rotate(90deg)`, position: 'absolute', bottom: 0, right: '-30px', zoom: 0.8 }}
+                  options={defaultOptionsRightArrow}
+                  height={100}
+                  width={100}
+                  speed={1}
+                  isStopped={false}
+                  isPaused={false}
+                />
+              </div>
+
+              <div className='timeBooking-box'>
+                <div style={isShowEightSlot ? { gridTemplateColumns: 'auto auto' } : {}} className={'timeBooking-grid' + (step === 1 && isHideUserForm ? ' show' : '')}>
+                  {timeBooking.map((itemTime, indexTime) => {
+                    const isReady = !bookingDataCode.includes(choosenTimeCode + choosenDayCode) && itemTime.timeCode === choosenTimeCode
+                    const isBusy = bookingDataCode.includes(itemTime.timeCode + choosenDayCode)
+                    // console.log(bookingDataCode)
+                    // console.log(itemTime.timeCode + choosenDayCode)
+                    // console.log(isReady)
+                    // console.log(isBusy)
+
+                    return (
+                      <div style={isBusy ? { pointerEvents: 'none', cursor: 'none' } : {}} onClick={() => isBusy ? {} : this.onChooseTime(itemTime)} key={indexTime} className={'time-box' + (isReady ? ' ready' : isBusy ? ' busy' : '')}>
+                        <span className='text'>{itemTime.timeName}</span>
+                      </div>
+                    )
+                  })}
                 </div>
-              )
-            })}
 
-            <Lottie
-              style={{ transform: `rotate(90deg)`, position: 'absolute', bottom: 0, right: '-30px', zoom: 0.8 }}
-              options={defaultOptionsRightArrow}
-              height={100}
-              width={100}
-              speed={1}
-              isStopped={false}
-              isPaused={false}
-            />
-          </div>
-
-          <div className='timeBooking-box'>
-            <div style={isShowEightSlot ? { gridTemplateColumns: 'auto auto' } : {}} className={'timeBooking-grid' + (step === 1 && isHideUserForm ? ' show' : '')}>
-              {timeBooking.map((itemTime, indexTime) => {
-                const isReady = !bookingDataCode.includes(choosenTimeCode + choosenDayCode) && itemTime.timeCode === choosenTimeCode
-                const isBusy = bookingDataCode.includes(itemTime.timeCode + choosenDayCode)
-                // console.log(bookingDataCode)
-                // console.log(itemTime.timeCode + choosenDayCode)
-                // console.log(isReady)
-                // console.log(isBusy)
-
-                return (
-                  <div style={isBusy ? { pointerEvents: 'none', cursor: 'none' } : {}} onClick={() => isBusy ? {} : this.onChooseTime(itemTime)} key={indexTime} className={'time-box' + (isReady ? ' ready' : isBusy ? ' busy' : '')}>
-                    <span className='text'>{itemTime.timeName}</span>
+                <div className={'explain-box' + (step === 1 && isHideUserForm ? ' show' : '')}>
+                  <div className='explain-box-left'>
+                    <div className='box-full' />
+                    <span className='box-text'>Đã Đặt Chổ</span>
                   </div>
-                )
-              })}
-            </div>
-
-            <div className={'explain-box' + (step === 1 && isHideUserForm ? ' show' : '')}>
-              <div className='explain-box-left'>
-                <div className='box-full' />
-                <span className='box-text'>Đã Đặt Chổ</span>
-              </div>
-              <div className='explain-box-right'>
-                <div className='box-empty' />
-                <span className='box-text'>Còn Trống</span>
-              </div>
-            </div>
-
-            <div className={'timeBooking-footer' + (step === 1 && isHideUserForm ? ' show' : '')}>
-              <span onClick={this.resetAndBackProps} className='text'>{`< Quay lại`}</span>
-              <span onClick={this.onHandleStepTwo} className='text' style={choosenTimeCode ? { color: 'black' } : { opacity: 0.5, pointerEvents: 'none' }}>{`Tiếp tục >`}</span>
-            </div>
-
-            <Form
-              className={'timeBooking-form' + (!isHideUserForm && step === 2 ? ' show' : '')}
-              ref={this.formRef}
-              {...layout}
-              name='consignment'
-              initialValues={formData}
-              // onFinish={this.onFinish}
-              onFinish={this.onConsign}
-              onValuesChange={(changedValues, allValues) => {
-                this.setState({
-                  formData: {
-                    ...formData,
-                    ...changedValues
-                  }
-                }, () => console.log(this.state))
-              }}
-            >
-              <Row className='flex sell-card-form' justify='center'>
-                <Form.Item name='dayTime' label='Thời gian'>
-                  <Col sm={24} md={22}>
-                    <Input size='small' value={this.convertCodeToTime()} placeholder='...' />
-                  </Col>
-                </Form.Item>
-                <Form.Item name='customerName' rules={[{ required: true, message: 'Vui lòng nhập tên quý khách' }]} label='Họ và Tên'>
-                  <Col sm={24} md={22}>
-                    <Input value={formData.customerName} size='small' allowClear id='customerName' key='customerName' onChange={this.changeData} placeholder='...' />
-                  </Col>
-                </Form.Item>
-
-                <Form.Item name='phoneNumber' rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]} label='Số điện thoại'>
-                  <Col sm={24} md={22}>
-                    <Input value={formData.phoneNumber} size='small' type={'number'} id='phoneNumber' key='phoneNumber' onChange={this.changeData} allowClear placeholder='...' />
-                  </Col>
-                </Form.Item>
-
-                <Form.Item
-                  name='numberOfProduct'
-                  rules={[{ required: true, message: 'Vui lòng nhập số lượng hàng' }]}
-                  label='Số lượng Hàng Hoá'
-                  {...formData.numberOfProduct < 1 ? { validateStatus: 'error', help: 'Số lượng tối thiểu là 1' } : {}}
-                  {...isErrorMax ? { validateStatus: 'error', help: 'Với số lượng hàng hoá trên 50, Xin vui lòng liên hệ số Zalo 0703334443' } : {}}
-                >
-                  <Col sm={24} md={6}>
-                    <Input value={formData.numberOfProduct} size='small' defaultValue={1} name='numberOfProduct' type={'number'} id='numberOfProduct' key='numberOfProduct' onChange={this.changeData} placeholder='...' />
-                  </Col>
-                </Form.Item>
-                <div className='flex justify-around align-center' style={{ width: '100%' }}>
-                  <Button onClick={this.backStepOne} type='secondary'>Quay lại</Button>
-                  <Button disabled={isErrorMax || formData.numberOfProduct < 1 || formData.numberOfProduct > 50} loading={isConsigning} type='secondary' htmlType='submit'>Xác nhận</Button>
+                  <div className='explain-box-right'>
+                    <div className='box-empty' />
+                    <span className='box-text'>Còn Trống</span>
+                  </div>
                 </div>
-              </Row>
-            </Form>
 
-            <div className={'timeBooking-confirm' + (isHideUserForm && step === 3 ? ' show' : '')}>
-              <Lottie
-                options={defaultOptionsSuccess}
-                delay={2000}
-                height={150}
-                width={150}
-                isStopped={false}
-                isPaused={false}
-              />
-              <Row justify='center'>
-                <Col span={20}>
-                  <Descriptions>
-                    <Descriptions.Item span={24} label='Thời gian ký gửi'>{this.convertCodeToTime()}</Descriptions.Item>
-                    <Descriptions.Item span={24} label='Tên Khách Hàng'>{formData.customerName}</Descriptions.Item>
-                    <Descriptions.Item span={24} label='Số điện thoại'>{formData.phoneNumber}</Descriptions.Item>
-                    <Descriptions.Item span={24} label='Số lượng hàng hoá'>{formData.numberOfProduct}</Descriptions.Item>
-                  </Descriptions>
-                </Col>
-              </Row>
-              <Button className='MT20' onClick={this.resetAndBackProps} >Quay lại</Button>
+                <div className={'timeBooking-footer' + (step === 1 && isHideUserForm ? ' show' : '')}>
+                  <span onClick={this.resetAndBackProps} className='text'>{`< Quay lại`}</span>
+                  <span onClick={this.onHandleStepTwo} className='text' style={choosenTimeCode ? { color: 'black' } : { opacity: 0.5, pointerEvents: 'none' }}>{`Tiếp tục >`}</span>
+                </div>
+
+                <Form
+                  className={'timeBooking-form' + (!isHideUserForm && step === 2 ? ' show' : '')}
+                  ref={this.formRef}
+                  {...layout}
+                  name='consignment'
+                  initialValues={formData}
+                  // onFinish={this.onFinish}
+                  onFinish={this.onConsign}
+                  onValuesChange={(changedValues, allValues) => {
+                    this.setState({
+                      formData: {
+                        ...formData,
+                        ...changedValues
+                      }
+                    }, () => console.log(this.state))
+                  }}
+                >
+                  <Row className='flex sell-card-form' justify='center'>
+                    <Form.Item name='dayTime' label='Thời gian'>
+                      <Col sm={24} md={22}>
+                        <Input size='small' value={this.convertCodeToTime()} placeholder='...' />
+                      </Col>
+                    </Form.Item>
+                    <Form.Item name='customerName' rules={[{ required: true, message: 'Vui lòng nhập tên quý khách' }]} label='Họ và Tên'>
+                      <Col sm={24} md={22}>
+                        <Input value={formData.customerName} size='small' allowClear id='customerName' key='customerName' onChange={this.changeData} placeholder='...' />
+                      </Col>
+                    </Form.Item>
+
+                    <Form.Item name='phoneNumber' rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]} label='Số điện thoại'>
+                      <Col sm={24} md={22}>
+                        <Input value={formData.phoneNumber} size='small' type={'number'} id='phoneNumber' key='phoneNumber' onChange={this.changeData} allowClear placeholder='...' />
+                      </Col>
+                    </Form.Item>
+
+                    <Form.Item
+                      name='numberOfProduct'
+                      rules={[{ required: true, message: 'Vui lòng nhập số lượng hàng' }]}
+                      label='Số lượng Hàng Hoá'
+                      {...formData.numberOfProduct < 1 ? { validateStatus: 'error', help: 'Số lượng tối thiểu là 1' } : {}}
+                      {...isErrorMax ? { validateStatus: 'error', help: 'Với số lượng hàng hoá trên 50, Xin vui lòng liên hệ số Zalo 0703334443' } : {}}
+                    >
+                      <Col sm={24} md={6}>
+                        <Input value={formData.numberOfProduct} size='small' defaultValue={1} name='numberOfProduct' type={'number'} id='numberOfProduct' key='numberOfProduct' onChange={this.changeData} placeholder='...' />
+                      </Col>
+                    </Form.Item>
+                    <div className='flex justify-around align-center' style={{ width: '100%' }}>
+                      <Button onClick={this.backStepOne} type='secondary'>Quay lại</Button>
+                      <Button disabled={isErrorMax || formData.numberOfProduct < 1 || formData.numberOfProduct > 50} loading={isConsigning} type='secondary' htmlType='submit'>Xác nhận</Button>
+                    </div>
+                  </Row>
+                </Form>
+
+                <div className={'timeBooking-confirm' + (isHideUserForm && step === 3 ? ' show' : '')}>
+                  <Lottie
+                    options={defaultOptionsSuccess}
+                    delay={2000}
+                    height={150}
+                    width={150}
+                    isStopped={false}
+                    isPaused={false}
+                  />
+                  <Row justify='center'>
+                    <Col span={20}>
+                      <Descriptions>
+                        <Descriptions.Item span={24} label='Thời gian ký gửi'>{this.convertCodeToTime()}</Descriptions.Item>
+                        <Descriptions.Item span={24} label='Tên Khách Hàng'>{formData.customerName}</Descriptions.Item>
+                        <Descriptions.Item span={24} label='Số điện thoại'>{formData.phoneNumber}</Descriptions.Item>
+                        <Descriptions.Item span={24} label='Số lượng hàng hoá'>{formData.numberOfProduct}</Descriptions.Item>
+                      </Descriptions>
+                    </Col>
+                  </Row>
+                  <Button className='MT20' onClick={this.resetAndBackProps} >Quay lại</Button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div> */}
+          )
+        }
         <MyModal ref={this.myModal} />
       </div>
     )
