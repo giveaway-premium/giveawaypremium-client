@@ -181,7 +181,7 @@ class StoreScreen extends React.PureComponent {
     const TagBox = ({ categoryId, image, name, index }) => {
       return (
         // <a onClick={(e) => this.onPress(categoryId)} href={`#${categoryId}`}>
-        <a onClick={(e) => this.onPress(categoryId)}  href={`#${categoryId}`}>
+        <a onClick={(e) => this.onPress(categoryId)} href={`#${categoryId}`}>
           <div style={categoryId === currentCategoryId ? { backgroundColor: 'black' } : {}} className={`tag-box ${!isLoadInit ? 'animate__animated animate__fadeIn' : ''}`}>
             <span style={categoryId === currentCategoryId ? { color: '#F5FFFA' } : {}} className='tag-product-content'>{name}</span>
           </div>
