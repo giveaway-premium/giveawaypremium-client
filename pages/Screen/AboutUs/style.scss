@@ -13,7 +13,7 @@
       height: 20px;
     }
 
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 568px) {
       min-height: 40vh;
       align-items: flex-start;
       padding: 10%;
@@ -67,9 +67,9 @@
     }
     .main-content {
     //   height: 100vh;
-      padding: 25px 20px;
+      padding: 40px 40px !important;
       @media screen and (max-width: 767px) {
-        padding: 35px 16px 35px 20px;
+        padding: 35px 20px 35px 20px !important;
       }
 
       &.full-height {
@@ -90,8 +90,8 @@
 
 
       &.radius-bottom {
-        border-bottom-left-radius: 30px;
-        border-bottom-right-radius: 30px;
+        // border-bottom-left-radius: 30px;
+        // border-bottom-right-radius: 30px;
       }
     }
     .intro {
@@ -189,11 +189,11 @@
       }
     }
     .txt-big-intro {
-      font-size: 5vw;
+      font-size: 4.5vw;
       line-height: 60px;
       font-weight: 600;
       white-space: pre-line;
-      @media screen and (max-width: 768px) {
+      @media screen and (max-width: 568px) {
         font-size: 19px;
         line-height: 28px;
         font-weight: 700;

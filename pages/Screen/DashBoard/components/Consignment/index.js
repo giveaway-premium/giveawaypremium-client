@@ -37,16 +37,6 @@ class Consignment extends React.PureComponent {
           totalPriceAfterFee: '',
           categoryId: '',
           subCategoryId: '',
-          inventory: {
-            'remain': 1,
-            'shipping': 0,
-            'damaged': 0,
-            'holding': 1,
-            'available': 1,
-            'warranty': 0,
-            'warrantyHolding': 0,
-            'depots': []
-          },
           note: '---'
         }
       ],
@@ -393,16 +383,6 @@ class Consignment extends React.PureComponent {
           totalPriceAfterFee: '',
           categoryId: '',
           subCategoryId: '',
-          inventory: {
-            'remain': 1,
-            'shipping': 0,
-            'damaged': 0,
-            'holding': 1,
-            'available': 1,
-            'warranty': 0,
-            'warrantyHolding': 0,
-            'depots': []
-          },
           note: '---'
         }
       ],
@@ -513,16 +493,6 @@ class Consignment extends React.PureComponent {
       productListTemp[indexProduct].remainNumberProduct = Number(value.target.value)
       productListTemp[indexProduct].priceAfterFee = Math.round(Number(this.convertPriceAfterFee(Number(productListTemp[indexProduct].price))))
       productListTemp[indexProduct].totalPriceAfterFee = Math.round(Number(value.target.value * this.convertPriceAfterFee(Number(productListTemp[indexProduct].price))))
-      productListTemp[indexProduct].inventory = {
-        'remain': Number(value.target.value),
-        'shipping': 0,
-        'damaged': 0,
-        'holding': Number(value.target.value),
-        'available': Number(value.target.value),
-        'warranty': 0,
-        'warrantyHolding': 0,
-        'depots': []
-      }
 
       let numberOfProducts = 0
       let moneyBackForFullSold = 0

@@ -30,10 +30,283 @@ export const EMAIL_TITLE = {
   PAYMENT: 'Xác nhận thông tin chuyển khoản'
 }
 
+export const BOOKING_OPTION_EACH_DAY = 'BOOKING_OPTION_EACH_DAY'
+
+export const DEFAULT_BOOKING_OPTION_VALUE = 2
+
+export const BOOKING_OPTION_EACH_DAY_DATA_DEFAULT = {
+  OPTION_1: '',
+  OPTION_2: '',
+  OPTION_3: '',
+  OPTION_4: '',
+  OPTION_5: '',
+  OPTION_6: '',
+  OPTION_7: '',
+  OPTION_8: ''
+}
+
 export const LOCALE_DATA = {
   JA: 'ja',
   CN: 'cn',
   EN: 'en'
+}
+
+export const TIME_BOOKING = {
+  OPTION_1: [
+    {
+      timeName: '10:00',
+      timeCode: '1000'
+    },
+    {
+      timeName: '10:30',
+      timeCode: '1030'
+    },
+    {
+      timeName: '11:00',
+      timeCode: '1100'
+    },
+    {
+      timeName: '11:30',
+      timeCode: '1130'
+    },
+    {
+      timeName: '13:00',
+      timeCode: '1300'
+    },
+    {
+      timeName: '13:30',
+      timeCode: '1330'
+    },
+    {
+      timeName: '14:00',
+      timeCode: '1400'
+    },
+    {
+      timeName: '14:30',
+      timeCode: '1430'
+    },
+    {
+      timeName: '15:00',
+      timeCode: '1500'
+    },
+    {
+      timeName: '15:30',
+      timeCode: '1530'
+    },
+    {
+      timeName: '16:00',
+      timeCode: '1600'
+    },
+    {
+      timeName: '16:30',
+      timeCode: '1630'
+    },
+    {
+      timeName: '17:00',
+      timeCode: '1700'
+    },
+    {
+      timeName: '17:30',
+      timeCode: '1730'
+    },
+    {
+      timeName: '18:00',
+      timeCode: '1800'
+    },
+    {
+      timeName: '18:30',
+      timeCode: '1830'
+    }
+  ],
+  OPTION_2: [
+    {
+      timeName: '10:00',
+      timeCode: '1000'
+    },
+    {
+      timeName: '11:00',
+      timeCode: '1100'
+    },
+    {
+      timeName: '13:00',
+      timeCode: '1300'
+    },
+    {
+      timeName: '14:00',
+      timeCode: '1400'
+    },
+    {
+      timeName: '15:00',
+      timeCode: '1500'
+    },
+    {
+      timeName: '16:00',
+      timeCode: '1600'
+    },
+    {
+      timeName: '17:00',
+      timeCode: '1700'
+    },
+    {
+      timeName: '18:00',
+      timeCode: '1800'
+    }
+  ],
+  OPTION_3: [
+    {
+      timeName: '10:00',
+      timeCode: '1000'
+    },
+    {
+      timeName: '10:30',
+      timeCode: '1030'
+    },
+    {
+      timeName: '11:00',
+      timeCode: '1100'
+    },
+    {
+      timeName: '11:30',
+      timeCode: '1130'
+    },
+    {
+      timeName: '13:00',
+      timeCode: '1300'
+    },
+    {
+      timeName: '13:30',
+      timeCode: '1330'
+    },
+    {
+      timeName: '14:00',
+      timeCode: '1400'
+    },
+    {
+      timeName: '14:30',
+      timeCode: '1430'
+    },
+    {
+      timeName: '15:00',
+      timeCode: '1500'
+    }
+  ],
+  OPTION_4: [
+    {
+      timeName: '10:00',
+      timeCode: '1000'
+    },
+    {
+      timeName: '11:00',
+      timeCode: '1100'
+    },
+    {
+      timeName: '13:00',
+      timeCode: '1300'
+    },
+    {
+      timeName: '14:00',
+      timeCode: '1400'
+    },
+    {
+      timeName: '15:00',
+      timeCode: '1500'
+    }
+  ],
+  OPTION_5: [
+    {
+      timeName: '15:00',
+      timeCode: '1500'
+    },
+    {
+      timeName: '15:30',
+      timeCode: '1530'
+    },
+    {
+      timeName: '16:00',
+      timeCode: '1600'
+    },
+    {
+      timeName: '17:00',
+      timeCode: '1700'
+    },
+    {
+      timeName: '17:30',
+      timeCode: '1730'
+    },
+    {
+      timeName: '18:00',
+      timeCode: '1800'
+    },
+    {
+      timeName: '18:30',
+      timeCode: '1830'
+    },
+    {
+      timeName: '19:00',
+      timeCode: '1900'
+    },
+    {
+      timeName: '19:30',
+      timeCode: '1930'
+    }
+  ],
+  OPTION_6: [
+    {
+      timeName: '15:00',
+      timeCode: '1500'
+    },
+    {
+      timeName: '16:00',
+      timeCode: '1600'
+    },
+    {
+      timeName: '17:00',
+      timeCode: '1700'
+    },
+    {
+      timeName: '18:00',
+      timeCode: '1800'
+    },
+    {
+      timeName: '19:00',
+      timeCode: '1900'
+    }
+  ],
+  OPTION_7: [],
+  OPTION_8: [
+    {
+      timeName: '10:00',
+      timeCode: '1000'
+    },
+    {
+      timeName: '11:00',
+      timeCode: '1100'
+    },
+    {
+      timeName: '13:30',
+      timeCode: '1330'
+    },
+    {
+      timeName: '14:30',
+      timeCode: '1430'
+    },
+    {
+      timeName: '15:30',
+      timeCode: '1530'
+    },
+    {
+      timeName: '16:30',
+      timeCode: '1630'
+    },
+    {
+      timeName: '17:30',
+      timeCode: '1730'
+    },
+    {
+      timeName: '18:30',
+      timeCode: '1830'
+    }
+  ]
 }
 
 export const WEB3_RPC = {

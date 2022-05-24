@@ -1,7 +1,7 @@
 import React from 'react'
 import { withRouter } from 'next/router'
 import { connect } from 'react-redux'
-import { Input, Button, Spin, Tabs, Tag, DatePicker, Row, Descriptions } from 'antd'
+import { Input, Button, Spin, Tabs, Tag, DatePicker, Row, Descriptions, Select } from 'antd'
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
 import { showNotification } from 'common/function'
@@ -9,15 +9,14 @@ import { Router } from 'common/routes'
 import { isMobile } from 'react-device-detect'
 import './style.scss'
 import GapService from 'controller/Api/Services/Gap'
-import TweenOneGroup from 'rc-tween-one'
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons'
 import moment from 'moment'
-import './style.scss'
 import rightArrowJson from 'static/Assets/Image/Lottie/rightArrow.json'
 import Lottie from 'react-lottie'
-import ReduxServices from 'common/redux'
 import { bindActionCreators } from 'redux'
 import StorageActions from 'controller/Redux/actions/storageActions'
+import { BOOKING_OPTION_EACH_DAY, BOOKING_OPTION_EACH_DAY_DATA_DEFAULT, TIME_BOOKING } from 'common/constants'
+const { Option } = Select
 class TableAppointment extends React.Component {
   static async getInitialProps ({ query }) {
     return { query }
@@ -74,103 +73,19 @@ class TableAppointment extends React.Component {
       isLoadingBooking: false,
       isShowEightSlot: true,
       inputValue: '',
-      searchInfo: ''
+      searchInfo: '',
+      isLast7Day: false,
+      bookingOptionValue: 2,
+      bookingOptionEachDay: {}
     }
     this.myModal = React.createRef()
   }
 
   async componentDidMount () {
-    let dayBookingCount = ['', '', '', '', '', '', '', '', '', '', '', '', '', '']
+    const { settingRedux } = this.props
+    let dayBookingCount = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
     let dayBookingTemp = []
-    let timeBooking = []
-    let isShowEightSlot = await ReduxServices.getSettingWithKey('IS_SHOW_BOOKINGFORM_EIGHT_SLOT', 'true')
-    console.log('isShowEightSlot')
-    console.log(isShowEightSlot)
-
-    if (isShowEightSlot === 'true' || isShowEightSlot === true) {
-      console.log('isShowEightSlot = true')
-      isShowEightSlot = true
-    } else {
-      console.log('isShowEightSlot = false')
-      isShowEightSlot = false
-      timeBooking = [
-        {
-          timeName: '10:00',
-          timeCode: '1000'
-        },
-        {
-          timeName: '10:30',
-          timeCode: '1030'
-        },
-        {
-          timeName: '11:00',
-          timeCode: '1100'
-        },
-        {
-          timeName: '11:30',
-          timeCode: '1130'
-        },
-        {
-          timeName: '12:00',
-          timeCode: '1200'
-        },
-        {
-          timeName: '12:30',
-          timeCode: '1230'
-        },
-        {
-          timeName: '13:00',
-          timeCode: '1300'
-        },
-        {
-          timeName: '13:30',
-          timeCode: '1330'
-        },
-        {
-          timeName: '14:00',
-          timeCode: '1400'
-        },
-        {
-          timeName: '14:30',
-          timeCode: '1430'
-        },
-        {
-          timeName: '15:00',
-          timeCode: '1500'
-        },
-        {
-          timeName: '15:30',
-          timeCode: '1530'
-        },
-        {
-          timeName: '16:00',
-          timeCode: '1600'
-        },
-        {
-          timeName: '16:30',
-          timeCode: '1630'
-        },
-        {
-          timeName: '17:00',
-          timeCode: '1700'
-        },
-        {
-          timeName: '17:30',
-          timeCode: '1730'
-        },
-        {
-          timeName: '18:00',
-          timeCode: '1800'
-        },
-        {
-          timeName: '18:30',
-          timeCode: '1830'
-        }
-      ]
-    }
-    console.log(ReduxServices.getSettingWithKey('IS_SHOW_BOOKINGFORM_EIGHT_SLOT', 'true'))
-    console.log('timeBooking')
-    console.log(timeBooking)
+    let bookingOptionEachDay = settingRedux.BOOKING_OPTION_EACH_DAY || BOOKING_OPTION_EACH_DAY_DATA_DEFAULT
 
     dayBookingCount.map((item, index) => {
       dayBookingTemp.push({
@@ -180,23 +95,44 @@ class TableAppointment extends React.Component {
       })
     })
 
-    if (isShowEightSlot) {
-      this.setState({
-        choosenDayCode: dayBookingTemp && dayBookingTemp[0] ? dayBookingTemp[0].dayCode : '',
-        isShowEightSlot: true,
-        dayBooking: dayBookingTemp
-      }, async () => {
-        await this.fetchAppointment()
-      })
+    const choosenDayCode = dayBookingTemp && dayBookingTemp[0] ? dayBookingTemp[0].dayCode : ''
+    const { option, timeBooking } = this.checkDayCodeToBookingOption(dayBookingTemp[0], bookingOptionEachDay)
+    console.log('timeBooking')
+    console.log(timeBooking)
+    console.log(option)
+
+    // const bookingOptionList = { ...bookingOptionEachDay }
+    // bookingOptionList[`OPTION_${8}`] = bookingOptionList[`OPTION_${8}`] + `--24052022----25052022----25052022----26052022----27052022----28052022----29052022----30052022----31052022----01062022---02062022---03062022---04062022---05062022---06062022---07062022--`
+    // console.log('bookingOptionList')
+    // console.log(bookingOptionList)
+
+    // let res = await GapService.updateSettingWithKeyAndValue(BOOKING_OPTION_EACH_DAY, bookingOptionList)
+    // console.log(res)
+
+    this.setState({
+      bookingOptionValue: option,
+      timeBooking: timeBooking,
+      bookingOptionEachDay: bookingOptionEachDay,
+      choosenDayCode: choosenDayCode,
+      dayBooking: dayBookingTemp
+    }, async () => {
+      await this.fetchAppointment()
+    })
+  }
+
+  checkDayCodeToBookingOption = (choosenDayCode, bookingOptionData = BOOKING_OPTION_EACH_DAY_DATA_DEFAULT) => {
+    if (choosenDayCode && choosenDayCode.dayCode) {
+      if (bookingOptionData.OPTION_1.includes(choosenDayCode.dayCode)) return { option: 1, timeBooking: TIME_BOOKING.OPTION_1 }
+      else if (bookingOptionData.OPTION_2.includes(choosenDayCode.dayCode)) return { option: 2, timeBooking: TIME_BOOKING.OPTION_2 }
+      else if (bookingOptionData.OPTION_3.includes(choosenDayCode.dayCode)) return { option: 3, timeBooking: TIME_BOOKING.OPTION_3 }
+      else if (bookingOptionData.OPTION_4.includes(choosenDayCode.dayCode)) return { option: 4, timeBooking: TIME_BOOKING.OPTION_4 }
+      else if (bookingOptionData.OPTION_5.includes(choosenDayCode.dayCode)) return { option: 5, timeBooking: TIME_BOOKING.OPTION_5 }
+      else if (bookingOptionData.OPTION_6.includes(choosenDayCode.dayCode)) return { option: 6, timeBooking: TIME_BOOKING.OPTION_6 }
+      else if (bookingOptionData.OPTION_7.includes(choosenDayCode.dayCode)) return { option: 7, timeBooking: TIME_BOOKING.OPTION_7 }
+      else if (bookingOptionData.OPTION_8.includes(choosenDayCode.dayCode)) return { option: 8, timeBooking: TIME_BOOKING.OPTION_8 }
+      else return { option: 2, timeBooking: TIME_BOOKING.OPTION_2 }
     } else {
-      this.setState({
-        choosenDayCode: dayBookingTemp && dayBookingTemp[0] ? dayBookingTemp[0].dayCode : '',
-        isShowEightSlot: false,
-        dayBooking: dayBookingTemp,
-        timeBooking: timeBooking
-      }, async () => {
-        await this.fetchAppointment()
-      })
+      return { option: 2, timeBooking: TIME_BOOKING.OPTION_2 }
     }
   }
 
@@ -265,9 +201,14 @@ class TableAppointment extends React.Component {
     }
   }
 
-  onChooseDay = (choosenDay) => {
-    console.log(choosenDay)
+  onChooseDay = (choosenDay, isLast7Day = false) => {
+    const { bookingOptionEachDay } = this.state
+    const { option, timeBooking } = this.checkDayCodeToBookingOption(choosenDay, bookingOptionEachDay)
+
     this.setState({
+      bookingOptionValue: option,
+      timeBooking: timeBooking,
+      isLast7Day: isLast7Day,
       choosenTimeCode: null,
       choosenDayCode: choosenDay ? choosenDay.dayCode : ''
     })
@@ -281,6 +222,34 @@ class TableAppointment extends React.Component {
     }, () => {
       this.myModal.current.openModal(this.renderInfoAppointment(), { closable: true })
     })
+  }
+
+  onChangeBookingOption = async (value = 1) => {
+    const { choosenDayCode } = this.state
+    const { settingRedux, setSetting } = this.props
+    let bookingOptionEachDay = settingRedux.BOOKING_OPTION_EACH_DAY
+
+    const bookingOptionList = { ...bookingOptionEachDay }
+    bookingOptionList[`OPTION_${value}`] = bookingOptionList[`OPTION_${value}`] + `--${choosenDayCode}--`
+    let res = await GapService.updateSettingWithKeyAndValue(BOOKING_OPTION_EACH_DAY, bookingOptionList)
+
+    console.log(value)
+    console.log(bookingOptionList)
+    console.log(res)
+    if (res.code === 101 || res.error) {
+      showNotification('Thay đổi không thành công')
+    } else {
+      this.setState({
+        timeBooking: TIME_BOOKING[`OPTION_${value}`],
+        bookingOptionValue: value,
+        bookingOptionEachDay: bookingOptionList
+      })
+      const settingReduxTemp = { ...settingRedux }
+      settingReduxTemp.BOOKING_OPTION_EACH_DAY = bookingOptionList
+      console.log(settingReduxTemp)
+      setSetting(settingReduxTemp)
+      showNotification('Thay đổi thành công')
+    }
   }
 
   renderInfoAppointment = () => {
@@ -378,7 +347,7 @@ class TableAppointment extends React.Component {
 
   render () {
     const {
-      step, dayBooking, choosenDayCode, timeBooking, bookingDataCode, isErrorMax,
+      step, dayBooking, choosenDayCode, timeBooking, bookingDataCode, isErrorMax, isLast7Day, bookingOptionValue,
       choosenTimeCode, formData, isHideUserForm, isConsigning, isHideDayColumn, isLoadingBooking, isShowEightSlot, searchInfo
     } = this.state
 
@@ -387,6 +356,8 @@ class TableAppointment extends React.Component {
       autoplay: true,
       animationData: rightArrowJson
     }
+
+    console.log(bookingOptionValue)
     return (
       <>
         <div className='TableAppointment-home-container'>
@@ -394,15 +365,16 @@ class TableAppointment extends React.Component {
             <div style={{ overflowX: 'hidden', overflowY: 'scroll', position: 'relative' }} className={'dayBooking-box show'}>
 
               {dayBooking.map((dayItem, dayIndex) => {
+                const isLast7Day = dayIndex >= 14
                 return (
                   <div
                     key={dayIndex}
                     className={'day-box'}
-                    onClick={() => this.onChooseDay(dayItem)}
-                    style={(choosenDayCode && choosenDayCode === dayItem.dayCode) ? { borderColor: 'black', opacity: 1 } : (choosenDayCode && choosenDayCode !== dayItem.dayCode) ? { opacity: 0.4 } : {}}
+                    onClick={() => this.onChooseDay(dayItem, isLast7Day)}
+                    style={(choosenDayCode && choosenDayCode === dayItem.dayCode) ? isLast7Day ? { borderColor: 'green', opacity: 1 } : { borderColor: 'black', opacity: 1 } : (choosenDayCode && choosenDayCode !== dayItem.dayCode) ? { opacity: 0.4 } : {}}
                   >
-                    <span className='text day-name'>{dayIndex === 0 ? 'Hôm nay' : this.translationDate(dayItem.dayName)}</span>
-                    <span className='text day-txt'>{dayItem.date}</span>
+                    <span className='text day-name' style={isLast7Day ? { color: 'green' } : {}}>{dayIndex === 0 ? 'Hôm nay' : this.translationDate(dayItem.dayName)}</span>
+                    <span className='text day-txt' style={isLast7Day ? { color: 'green' } : {}}>{dayItem.date}</span>
                   </div>
                 )
               })}
@@ -425,7 +397,22 @@ class TableAppointment extends React.Component {
                     ? <div className='flex justity-center align-center'>
                       <LoadingOutlined width={60} height={60} />
                     </div>
-                    : timeBooking.map((itemTime, indexTime) => {
+                    : bookingOptionValue === 7 ? <div className='justity-center align-center'>
+                      <div style={{ display: 'flex', flexDirection: 'column', width: '90%', justifyContent: 'center', alignItems: 'center' }}>
+                        <img width={70} src={images.logoHeaderWhite} style={{ objectFit: 'contain' }} />
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', width: '70%', margin: '30px 5% 0 5%' }}>
+                        <p className='text day-txt'>
+              Hiện tại tính năng đặt lịch ký gửi trên website đang tạm khoá.
+                        </p>
+                        <p className='text day-txt'>
+              Quý khách vui lòng gọi hotline 0703 334 443 để biết thêm thông tin.
+                        </p>
+                        <p className='text day-txt'>
+              Xin lỗi vì sự bất tiện này.
+                        </p>
+                      </div>
+                    </div> : timeBooking.map((itemTime, indexTime) => {
                       const isReady = !bookingDataCode.includes(choosenTimeCode + choosenDayCode) && itemTime.timeCode === choosenTimeCode
                       const isBusy = bookingDataCode.includes(itemTime.timeCode + choosenDayCode)
                       // console.log(bookingDataCode)
@@ -452,6 +439,23 @@ class TableAppointment extends React.Component {
             <span className='MT10' style={{ whiteSpace: 'pre-wrap' }}>{searchInfo}</span>
           )}
         </div>
+
+        <div className='select-booking-option-box'>
+          <div className='flex align-center'>
+            <div className={`${isLast7Day ? 'status-on' : 'status-off'} MR3 MB4`} />
+            <span className='MB3'>{isLast7Day ? 'Khung thời gian hoạt động' : 'Hiện đang hoạt động:'}</span>
+          </div>
+          <Select disabled={!isLast7Day} onChange={this.onChangeBookingOption} value={bookingOptionValue} defaultValue={bookingOptionValue} size='large' id='bookingOption' key='bookingOption' placeholder='...'>
+            <Option value={1}>{'Full ngày - 30 phút'}</Option>
+            <Option value={2}>{'Full ngày - 1 tiếng'}</Option>
+            <Option value={3}>{'Sáng 30 phút'}</Option>
+            <Option value={4}>{'Sáng 1 tiếng'}</Option>
+            <Option value={5}>{'Chiều 30 phút'}</Option>
+            <Option value={6}>{'Chiều 1 tiếng'}</Option>
+            <Option value={7}>{'Off nghỉ!'}</Option>
+            <Option value={8}>{'Định dạng cũ'}</Option>
+          </Select>
+        </div>
       </>
     )
   }
@@ -459,7 +463,8 @@ class TableAppointment extends React.Component {
 
 const mapStateToProps = (state) => ({
   locale: state.locale,
-  userData: state.userData
+  userData: state.userData,
+  settingRedux: state.settingRedux
 })
 
 const mapDispatchToProps = (dispatch) => {

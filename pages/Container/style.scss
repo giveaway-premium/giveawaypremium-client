@@ -1,6 +1,7 @@
 .main-base-container {
     background: transparent !important;
     width: 100vw;
+    // overflow: hidden !important;
     // overflow:  !important;
 
     @media screen and (max-width: 500px) {
@@ -11,6 +12,7 @@
         position: absolute;
         width: 100%;
         height: 100vh;
+
         background-image: url(../../static/Assets/Image/Icon/ALogoWhite.svg);
         background-repeat: no-repeat;
         background-position: center;

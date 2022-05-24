@@ -27,6 +27,7 @@ import { images } from 'config/images'
 import { Router } from 'common/routes'
 // import NProgress from 'nprogress'
 import homeLoadingJson from 'static/Assets/Image/Lottie/homeLoadingBar.json'
+import GapService from 'controller/Api/Services/Gap'
 
 addLocaleData([...intlEN, ...intlJA, ...intlCN])
 class GiveAway extends App {
@@ -72,6 +73,8 @@ class GiveAway extends App {
         ReduxServices.getCategory(),
         ReduxServices.getSetting()
       ]
+
+      GapService.deleteSettingWithKey('alo')
 
       if (getDataLocal(KEY_STORE.SET_CATEGORY)) {
         // data is already in local store, don't need to wait for get init data

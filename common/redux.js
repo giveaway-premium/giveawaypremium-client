@@ -110,9 +110,9 @@ export default class ReduxServices {
     console.log('settingRedux')
     console.log(settingRedux)
     console.log(settingRedux[key])
-    console.log(settingRedux[key])
+    // console.log(settingRedux[key])
 
-    if (settingRedux && (settingRedux[key] === true || settingRedux[key] === false || settingRedux[key].length > 0)) {
+    if (settingRedux && settingRedux[key] && (settingRedux[key] === true || settingRedux[key] === false || settingRedux[key].length > 0)) {
       if (settingRedux[key] === 'true') {
         return true
       } else if (settingRedux[key] === 'false') {
@@ -130,6 +130,7 @@ export default class ReduxServices {
 
     console.log('getSetting')
     console.log(res)
+    console.log(res.results[0].Setting)
 
     if (res && res.results && res.results[0] && res.results[0].Setting) {
       ReduxServices.callDispatchAction(StorageActions.setSetting(res.results[0].Setting))

@@ -393,6 +393,8 @@ export default class Gap {
     return this.fetchData('/classes/Setting/meu8SzyuLd', REQUEST_TYPE.GET, null, null, null, null)
   }
 
+  // SETTING
+
   static async updateSetting (settingObject) {
     const body = {
       Setting: settingObject
@@ -404,9 +406,41 @@ export default class Gap {
     return this.fetchData(`/classes/Setting/meu8SzyuLd`, REQUEST_TYPE.PUT, null, body, null, null, null, true)
   }
 
+  static async updateSettingWithKeyAndValue (keyString = '', valueString = '') {
+    const settingAPI = await ReduxService.getSetting()
+    const newSettingAPI = {
+      ...settingAPI,
+      [keyString]: valueString
+    }
+    const body = {
+      Setting: newSettingAPI
+    }
+    console.log('updateSetting')
+    console.log(body)
+
+    return this.fetchData(`/classes/Setting/meu8SzyuLd`, REQUEST_TYPE.PUT, null, body, null, null, null, true)
+  }
+
+  static async deleteSettingWithKey (keyString = '') {
+    const settingAPI = await ReduxService.getSetting()
+    const newSettingAPI = {
+      ...settingAPI
+    }
+    delete newSettingAPI[keyString]
+    const body = {
+      Setting: newSettingAPI
+    }
+    console.log('updateSetting')
+    console.log(body)
+
+    return this.fetchData(`/classes/Setting/meu8SzyuLd`, REQUEST_TYPE.PUT, null, body, null, null, null, true)
+  }
+
   static async getSetting () {
     return this.fetchData('/classes/Setting', REQUEST_TYPE.GET, null, null, null, null)
   }
+
+  //
 
   static async fetchData (apiUrl, method, queryBody, postData, hostLink, authKey = '', customQuery = null, isUseAuthKey = false) {
     try {
