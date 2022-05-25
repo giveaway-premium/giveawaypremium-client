@@ -121,7 +121,7 @@ class TableAppointment extends React.Component {
   }
 
   checkDayCodeToBookingOption = (choosenDayCode, bookingOptionData = BOOKING_OPTION_EACH_DAY_DATA_DEFAULT) => {
-    if (choosenDayCode && choosenDayCode.dayCode) {
+    if (choosenDayCode && choosenDayCode.dayCode && bookingOptionData && bookingOptionData.length > 0) {
       if (bookingOptionData.OPTION_1.includes(choosenDayCode.dayCode)) return { option: 1, timeBooking: TIME_BOOKING.OPTION_1 }
       else if (bookingOptionData.OPTION_2.includes(choosenDayCode.dayCode)) return { option: 2, timeBooking: TIME_BOOKING.OPTION_2 }
       else if (bookingOptionData.OPTION_3.includes(choosenDayCode.dayCode)) return { option: 3, timeBooking: TIME_BOOKING.OPTION_3 }
