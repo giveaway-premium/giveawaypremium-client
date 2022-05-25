@@ -75,7 +75,7 @@ class TableAppointment extends React.Component {
       inputValue: '',
       searchInfo: '',
       isLast7Day: false,
-      bookingOptionValue: 2,
+      bookingOptionValue: 8,
       bookingOptionEachDay: {}
     }
     this.myModal = React.createRef()
@@ -130,9 +130,9 @@ class TableAppointment extends React.Component {
       else if (bookingOptionData.OPTION_6.includes(choosenDayCode.dayCode)) return { option: 6, timeBooking: TIME_BOOKING.OPTION_6 }
       else if (bookingOptionData.OPTION_7.includes(choosenDayCode.dayCode)) return { option: 7, timeBooking: TIME_BOOKING.OPTION_7 }
       else if (bookingOptionData.OPTION_8.includes(choosenDayCode.dayCode)) return { option: 8, timeBooking: TIME_BOOKING.OPTION_8 }
-      else return { option: 2, timeBooking: TIME_BOOKING.OPTION_2 }
+      else return { option: 8, timeBooking: TIME_BOOKING.OPTION_8 }
     } else {
-      return { option: 2, timeBooking: TIME_BOOKING.OPTION_2 }
+      return { option: 8, timeBooking: TIME_BOOKING.OPTION_8 }
     }
   }
 
