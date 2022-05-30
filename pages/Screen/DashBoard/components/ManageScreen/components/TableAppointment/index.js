@@ -83,7 +83,7 @@ class TableAppointment extends React.Component {
 
   async componentDidMount () {
     const { settingRedux } = this.props
-    let dayBookingCount = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+    let dayBookingCount = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
     let dayBookingTemp = []
     let bookingOptionEachDay = settingRedux.BOOKING_OPTION_EACH_DAY || BOOKING_OPTION_EACH_DAY_DATA_DEFAULT
 

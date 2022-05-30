@@ -1,4 +1,7 @@
 .main-base-container {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh);
     background: transparent !important;
     width: 100vw;
     // overflow: hidden !important;
@@ -8,8 +11,10 @@
         // height: calc(100vh - 80px);
     }
     #parallax {
+        pointer-events: none;
+        touch-action: none;
         opacity: 0;
-        position: absolute;
+        position: fixed;
         width: 100%;
         height: 100vh;
 
@@ -19,7 +24,7 @@
         background-position: 22.34% 69.745%, 47.34% 49.745%, 47.34% 49.745%;
 
         @media screen and (max-width: 500px) {
-            height: calc(100vh - 50px);
+            height: calc(100vh);
             background-position: 25% 50%;
             background-size: auto 120vh;
         }
@@ -27,10 +32,38 @@
     .ant-layout {
         background: transparent;
     }
-    .base-content {
-        // margin-top: 10px;
-        .base-container {
-            // min-height: calc(100vh - 102px);
+    // .base-content {
+    //     // margin-top: 10px;
+    //     .base-container {
+    //         // min-height: calc(100vh - 102px);
+    //     }
+    // }
+
+    .contentLayout {
+        width: 100%;
+        // background-color: yellow;
+        position: relative;
+        display: flex;
+        flex-basis: auto;
+        justify-content: flex-start;
+        flex-direction: column;
+        max-width: 1440px;  
+        align-self: center;  
+        // mobile
+        @media screen and (max-width: 768px) {
+            // position: fixed;
+          // 64px is header height
+          min-height: calc(100vh - 80px - 20px);
         }
-    }
+    
+        // desktop
+        @media screen and (min-width: 768px) {
+          min-width: 768px;
+          // 71px is footer height
+          min-height: calc(100vh - 130px);
+          // calc(64px + 25px)
+          // => 64px is header height
+          // => 25px is padding top from header
+        }
+      }
 }

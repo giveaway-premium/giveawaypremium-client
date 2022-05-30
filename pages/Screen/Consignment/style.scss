@@ -1,11 +1,17 @@
 .consignment-home-container {
+    // position: fixed;
     width: 100%;
-    height: calc(100vh - 125.5px);
-    max-width: 1000px;
+    // height: 90%;
+    // background-color: red;
+    max-width: 1200px;
     margin: auto;
+    @media screen and (max-width: 768px) {
+        width: 100vw;
+        max-width: 100vw;
+    }
     .body-box {
         width: 100%;
-        height: 100%;
+        // height: 90%;
         display: flex;
         justify-content: center;
         flex-direction: column;

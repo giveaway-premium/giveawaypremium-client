@@ -80,11 +80,11 @@ const BookingSetting = (props) => {
 
   return (
     <div className='bookingSetting-container'>
-      <div>
+      {/* <div>
         <span>18 chổ</span>
         <Switch className='switch-container' checked={show} onChange={onChangeBookingFormat} />
         <span>8 chổ</span>
-      </div>
+      </div> */}
       <div className='MT10'>
         <span>Ẩn đặt lịch</span>
         <Switch className='switch-container' checked={isShowBooking} onChange={onChangeShowBooking} />

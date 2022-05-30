@@ -1,7 +1,8 @@
 @import 'pages/Style/variable.scss';
 
 .aboutUs-page-container {
-
+  width: 100vw;
+  align-self: center;
   .footer-aboutus {
     min-height: 50vh;
     display: flex;
@@ -209,7 +210,7 @@
     }
     //
     .box-content-introduce {
-      margin: 20px 0;
+      margin: 20px 10px;
       opacity: 0;
       transform: translate(-150px, 0px);
       transition: 1s all;

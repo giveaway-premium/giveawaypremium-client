@@ -270,16 +270,16 @@ class Header extends React.PureComponent {
   }
   render () {
     return (
-      <Layout.Header className='header-container'>
+      <div className='header-container'>
         <Media
           query='(min-width: 500px)'
           render={() => this.renderDesktop()}
         />
         <Media
-          query='(max-width: 501px)'
+          query='(max-width: 499px)'
           render={() => this.renderMobile()}
         />
-      </Layout.Header>
+      </div>
     )
   }
 }

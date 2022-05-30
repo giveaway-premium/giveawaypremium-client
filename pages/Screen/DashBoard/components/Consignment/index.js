@@ -579,17 +579,19 @@ class Consignment extends React.PureComponent {
       }
     })
 
-    console.log('onDeleteProductList')
+    // console.log('onDeleteProductList -start')
 
-    console.log(index)
-    console.log(productListTemp)
+    // console.log(index)
+    // console.log(productListTemp)
 
     let moneyBackTemp = moneyBackForFullSold - (this.convertPriceAfterFee(Number(productList[index].price)) * 1000 * Number(productList[index].count))
     let totalMoneyTemp = totalMoney - Number(productList[index].price) * 1000 * Number(productList[index].count)
     let productNumber = formData.numberOfProducts - productList[index].count
     // delete productListTemp[index]
     productListTemp[index].isDeleted = true
-    console.log(productListTemp)
+    productListTemp = productListTemp.filter((itemNew, itemIndex) => itemIndex !== index)
+    // console.log(productListTemp)
+    // console.log('onDeleteProductList end')
 
     this.setState({
       moneyBackForFullSold: moneyBackTemp,

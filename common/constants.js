@@ -51,6 +51,9 @@ export const LOCALE_DATA = {
   EN: 'en'
 }
 
+// 2 -> 1
+// 3 -> 1
+// 4 -> 3,2,1
 export const TIME_BOOKING = {
   OPTION_1: [
     {
@@ -224,6 +227,10 @@ export const TIME_BOOKING = {
     {
       timeName: '16:00',
       timeCode: '1600'
+    },
+    {
+      timeName: '16:30',
+      timeCode: '1630'
     },
     {
       timeName: '17:00',
