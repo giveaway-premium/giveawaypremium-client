@@ -74,7 +74,7 @@ class GiveAway extends App {
         ReduxServices.getSetting()
       ]
 
-      GapService.deleteSettingWithKey('alo')
+      // GapService.deleteSettingWithKey('alo')
 
       if (getDataLocal(KEY_STORE.SET_CATEGORY)) {
         // data is already in local store, don't need to wait for get init data

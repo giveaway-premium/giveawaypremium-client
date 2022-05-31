@@ -276,9 +276,9 @@ class AboutUsScreen extends React.PureComponent {
 
             <div className='flex MB10'>
               <img src={images.phoneIcon} className='icon-footer MR10' />
-              <span>0703334443</span>
+              {/* <span>0703334443</span> */}
+              <a href='tel:0703334443'>0703334443</a>
             </div>
-
 
             <div className='line-footer' />
           </div>

@@ -5,7 +5,7 @@ import { Form, Row, Col, Input, Button, Descriptions, Divider, DatePicker, Selec
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
 import { numberWithCommas, showNotification, generateIdMix } from 'common/function'
-import { LoadingOutlined, CheckCircleFilled, PlusCircleFilled, PlusOneTwoTone, PlusOutlined, CloseOutlined } from '@ant-design/icons'
+import { LoadingOutlined, CheckCircleFilled, PlusCircleFilled, PlusOneTwoTone, PlusOutlined, CloseOutlined, DollarCircleOutlined } from '@ant-design/icons'
 import { Router } from 'common/routes'
 import { isMobile } from 'react-device-detect'
 import './style.scss'
@@ -29,7 +29,7 @@ class Consignment extends React.PureComponent {
         {
           hashCode: generateIdMix(),
           code: '',
-          productId: '',
+          productId: 0,
           price: '',
           count: 1,
           remainNumberProduct: 1,
@@ -66,7 +66,9 @@ class Consignment extends React.PureComponent {
       isLoadingUser: false,
       categoryList: [],
       timeGroupId: '',
-      timeGroupCode: ''
+      timeGroupCode: '',
+      onlineCodeStringInput: '',
+      isErrorFormat: false
     }
     this.formRef = React.createRef()
     this.myModal = React.createRef()
@@ -159,14 +161,15 @@ class Consignment extends React.PureComponent {
           isError = true
           showNotification(`Chưa nhập tên sản phẩm số  ${indexItem + 1}`)
         }
-  
+
         if ((Number(item.price) > 0 || item.price.length > 0) && Number(item.count) > 0 && !item.isDeleted) {
           productId += 1
           productCount += Number(item.count)
           productListTemp.push({
             ...item,
             code: formData.consignmentId + '-' + timeGroupCode + '-' + productId,
-            key: indexItem
+            key: indexItem,
+            productId: productId
           })
         }
       }
@@ -409,7 +412,9 @@ class Consignment extends React.PureComponent {
       isConsigning: false,
       isShowConfirmForm: false,
       isFoundUser: false,
-      isLoadingUser: false
+      isLoadingUser: false,
+      onlineCodeStringInput: '',
+      isErrorFormat: false
     })
   }
 
@@ -536,28 +541,37 @@ class Consignment extends React.PureComponent {
       productList: [
         ...productList,
         {
+          categoryId: '',
+          subCategoryId: '',
           hashCode: generateIdMix(),
           price: '',
           count: 1,
           remainNumberProduct: 1,
           priceAfterFee: '',
-          note: '---'
+          note: '---',
+          productId: productList.length
         },
         {
+          categoryId: '',
+          subCategoryId: '',
           hashCode: generateIdMix(),
           price: '',
           count: 1,
           remainNumberProduct: 1,
           priceAfterFee: '',
-          note: '---'
+          note: '---',
+          productId: productList.length + 1
         },
         {
+          categoryId: '',
+          subCategoryId: '',
           hashCode: generateIdMix(),
           price: '',
           count: 1,
           remainNumberProduct: 1,
           priceAfterFee: '',
-          note: '---'
+          note: '---',
+          productId: productList.length + 2
         }
       ],
       formData: {
@@ -570,38 +584,60 @@ class Consignment extends React.PureComponent {
   onDeleteProductList = async (hashCode) => {
     const { productList, formData, moneyBackForFullSold, totalMoney } = this.state
 
-    let productListTemp = productList.slice()
-    let index
+    let index = null
 
-    await productListTemp.map((item, hashCodeIndex) => {
+    console.log('hashCode')
+    console.log(hashCode)
+
+    productList.map((item, hashCodeIndex) => {
       if (item && item.hashCode === hashCode) {
         index = hashCodeIndex
       }
     })
+    console.log(index)
+    console.log(productList[index])
 
-    // console.log('onDeleteProductList -start')
+    console.log('onDeleteProductList -start')
 
-    // console.log(index)
-    // console.log(productListTemp)
+    console.log(index)
 
-    let moneyBackTemp = moneyBackForFullSold - (this.convertPriceAfterFee(Number(productList[index].price)) * 1000 * Number(productList[index].count))
-    let totalMoneyTemp = totalMoney - Number(productList[index].price) * 1000 * Number(productList[index].count)
-    let productNumber = formData.numberOfProducts - productList[index].count
-    // delete productListTemp[index]
-    productListTemp[index].isDeleted = true
-    productListTemp = productListTemp.filter((itemNew, itemIndex) => itemIndex !== index)
-    // console.log(productListTemp)
-    // console.log('onDeleteProductList end')
-
-    this.setState({
-      moneyBackForFullSold: moneyBackTemp,
-      totalMoney: totalMoneyTemp,
-      productList: productListTemp,
-      formData: {
-        ...formData,
-        numberOfProducts: productNumber
-      }
-    })
+    if (index >= 0) {
+      let moneyBackTemp = moneyBackForFullSold - (this.convertPriceAfterFee(Number(productList[index].price)) * 1000 * Number(productList[index].count))
+      let totalMoneyTemp = totalMoney - Number(productList[index].price) * 1000 * Number(productList[index].count)
+      let productNumber = formData.numberOfProducts - productList[index].count
+      // delete productListTemp[index]
+  
+      let productListTemp = []
+      let productId = -1
+      productList.map((itemProduct, itemProductIndex) => {
+        if (itemProductIndex !== index) {
+          productId += 1
+          productListTemp.push({
+            ...itemProduct,
+            productId: productId
+          })
+        } else {
+          productListTemp.push({
+            ...itemProduct,
+            productId: 0,
+            isDeleted: true
+          })
+        }
+      })
+  
+      console.log(productListTemp)
+      console.log('onDeleteProductList end')
+  
+      this.setState({
+        moneyBackForFullSold: moneyBackTemp,
+        totalMoney: totalMoneyTemp,
+        productList: productListTemp,
+        formData: {
+          ...formData,
+          numberOfProducts: productNumber
+        }
+      })
+    }
   }
 
   convertPriceAfterFee = (productPrice = 0) => {
@@ -640,9 +676,16 @@ onChangeCategory = async (valueProp) => {
   const { productList } = this.state
   let productListTemp = productList.slice()
 
+  let filterTxt
+
+  if (valueProp && valueProp.value) {
+    filterTxt = valueProp.value
+  } else if (valueProp && !valueProp.value) {
+    filterTxt = valueProp
+  }
   console.log(valueProp)
 
-  const categorySplitTxt = valueProp.value.split('+')
+  const categorySplitTxt = filterTxt && filterTxt.split('+')
   let categoryId
   let subCategoryId
   let hashCode
@@ -674,6 +717,159 @@ onChangeCategory = async (valueProp) => {
   this.setState({
     productList: productListTemp
   })
+}
+
+onOpenInputOnline = () => {
+  this.onRefeshAll()
+  this.myModal.current.openModal(this.renderStringCodeBox(), { closable: true })
+}
+
+onOpenInputOnlineWithError = () => {
+  this.setState({
+    isErrorFormat: true,
+    onlineCodeStringInput: ''
+  }, () => {
+    console.log(this.state)
+    this.myModal.current.openModal(this.renderStringCodeBox(), { closable: true })
+  })
+}
+
+onChangeOnlineInput = (valueTxt) => {
+  console.log('onChangeOnlineInput')
+  console.log(valueTxt.target.value)
+  this.setState({
+    onlineCodeStringInput: valueTxt.target.value
+  })
+}
+
+renderStringCodeBox = () => {
+  const { isErrorFormat } = this.state
+  console.log('isErrorFormat')
+  console.log(isErrorFormat)
+  console.log(this.state)
+
+  return (
+    <div>
+      <p className='text text-title MB10'>Thông tin đơn ký gửi</p>
+      <p className='text'>Loại / tên sản phẩm / số lượng / giá tiền / tình trạng</p>
+      {isErrorFormat ? <span className='text text-color-6 MB10'>Sai Định dạng</span> : null}
+      <div className='product-item-note MB20'>
+        <TextArea style={{ minHeight: '300px'}} onChange={this.onChangeOnlineInput} placeholder='Ghi Chú' id='onlineInput' key='onlineInput' />
+      </div>
+      <Button className='ML10' onClick={this.convertStringToConsignment}>Ok</Button>
+    </div>
+  )
+}
+
+convertStringToConsignment = () => {
+  const { onlineCodeStringInput, categoryList } = this.state
+  console.log('convertStringToConsignment run')
+  let productList = []
+  let isErrorFormat = false
+  let categoryListObjectTemp = {}
+  categoryList.map((itemCate, itemCateIndex) => {
+    switch (itemCate.objectId) {
+    case 'B3OQuAChW1': {
+      categoryListObjectTemp.thiet = { ...itemCate, keyCode: 'thiet' }
+      break
+    }
+    case 'YIUniNrIKb': {
+      categoryListObjectTemp.hoa = { ...itemCate, keyCode: 'hoa' }
+      break
+    }
+    default: {
+      categoryListObjectTemp[itemCate.keyCode] = { ...itemCate }
+    }
+    }
+  })
+  const result = onlineCodeStringInput.trim().split(/\r?\n/)
+
+  console.log(result)
+
+  result.map((item, itemIndex) => {
+    let type
+    let name
+    let amount
+    let price
+    let detail
+    let subCategoryId
+    let categoryId
+    const stringCodeArr = item.trim().split('/')
+    console.log(stringCodeArr)
+    if (isErrorFormat === false && stringCodeArr && stringCodeArr.length === 5 && Number(stringCodeArr[2].trim()) + 1 > 0 && Number(stringCodeArr[3].trim()) + 1 > 0) {
+      type = stringCodeArr[0].trim().toLowerCase()
+      name = stringCodeArr[1].trim()
+      amount = Number(stringCodeArr[2].trim())
+      price = Number(stringCodeArr[3].trim())
+      detail = stringCodeArr[4].trim()
+      console.log(categoryListObjectTemp[type])
+
+      if (type && categoryListObjectTemp && categoryListObjectTemp[type]) {
+        if (categoryListObjectTemp[type].isParentSelf) {
+          subCategoryId = categoryListObjectTemp[type].objectId
+          categoryId = categoryListObjectTemp[type].objectId
+        } else {
+          subCategoryId = categoryListObjectTemp[type].objectId
+          categoryId = categoryListObjectTemp[type].category.objectId
+        }
+      }
+
+      const hashCode = generateIdMix()
+
+      productList.push({
+        name: name,
+        productId: itemIndex,
+        hashCode: hashCode,
+        price: price,
+        count: amount,
+        remainNumberProduct: amount,
+        totalPriceAfterFee: Math.round(Number(amount * this.convertPriceAfterFee(price))),
+        priceAfterFee: Math.round(Number(this.convertPriceAfterFee(price))),
+        categoryId: categoryId,
+        subCategoryId: subCategoryId,
+        note: detail || '---',
+        defaultCategoryCode: {
+          key: categoryListObjectTemp[type].isParentSelf ? `${categoryId}+${subCategoryId}+${hashCode}` : `${subCategoryId}+${hashCode}`,
+          label: categoryListObjectTemp[type].name,
+          value: categoryListObjectTemp[type].isParentSelf ? `${categoryId}+${subCategoryId}+${hashCode}` : `${subCategoryId}+${hashCode}`
+        }
+      })
+      isErrorFormat = false
+    } else {
+      console.log('isErrorFormat')
+      isErrorFormat = true
+    }
+  })
+
+  if (!isErrorFormat) {
+    let moneyBackForFullSold = 0
+    let totalMoney = 0
+    let numberOfProducts = 0
+    productList.map(item => {
+      numberOfProducts = numberOfProducts + item.count
+      moneyBackForFullSold += item.count * this.convertPriceAfterFee(Number(item.price)) * 1000
+      totalMoney += item.count * Number(item.price) * 1000
+    })
+
+    this.setState({
+      isErrorFormat: false,
+      productList: productList,
+      moneyBackForFullSold: moneyBackForFullSold,
+      totalMoney: totalMoney,
+      formData: {
+        ...this.state.formData,
+        numberOfProducts: numberOfProducts
+      }
+    })
+
+    this.myModal.current.closeModal()
+  } else {
+    this.setState({
+      isErrorFormat: true
+    })
+
+    this.onOpenInputOnlineWithError()
+  }
 }
 
 onBlurCategory = () => {
@@ -777,7 +973,9 @@ render () {
               // onFinish={this.onFinish}
               onFinish={this.onConsign}
               onValuesChange={(changedValues, allValues) => {
+                console.log('changedValues')
                 console.log(changedValues)
+
                 this.setState({
                   formData: {
                     ...formData,
@@ -787,6 +985,7 @@ render () {
               }}
             >
               <Row className='flex sell-card-form PT40 PB35' justify='center'>
+                <Button onClick={this.onOpenInputOnline} type='secondary' className='MB30'><DollarCircleOutlined /> Ký gửi online</Button>
                 <Form.Item name='phoneNumber' rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]} label='Số điện thoại'>
                   <Col sm={24} md={12}>
                     {/* <Search placeholder="input search loading default" loading /> */}
@@ -833,8 +1032,8 @@ render () {
                         <div key={indexItem} className='product-box MB30'>
                           <div className='close-box MB5'>
                             <span style={{ opacity: 0 }}>{indexItem + 1}</span>
-  
-                            <div disabled={indexItem === 0} onClick={() => this.onDeleteProductList(item.hashCode)} style={{ cursor: 'pointer', opacity: indexItem === 0 ? 0 : 1 }}>
+
+                            <div onClick={() => this.onDeleteProductList(item.hashCode)}>
                               <CloseOutlined />
                             </div>
                           </div>
@@ -843,12 +1042,15 @@ render () {
                             <Select
                               labelInValue
                               showSearch
-                              // value={`${item.categoryId}+${item.subCategoryId}+${item.hashCode}`}
+                              key={indexItem}
                               style={{ width: '50%' }}
                               placeholder='Danh mục'
                               // optionFilterProp='children'
                               onChange={this.onChangeCategory}
                               autoFocus={false}
+                              defaultActiveFirstOption
+                              // {...item.defaultCategoryCode ? { defaultValue: item.defaultCategoryCode } : null}
+                              {...item.defaultCategoryCode ? { value: item.defaultCategoryCode } : null}
                               // onFocus={this.onFocusCategory}
                               // onBlur={this.onBlurCategory}
                               onSearch={this.onSearchCategory}
@@ -864,11 +1066,13 @@ render () {
                                     return (
                                       <>
                                         <Option key={categoryIndex} style={{ width: '100%' }} value={`${categoryItem.category.objectId}+${categoryItem.objectId}+${item.hashCode}`}>{categoryItem.name}</Option>
+                                        {/* <Option key={categoryIndex} style={{ width: '100%' }} value={categoryIndex}>{categoryItem.name}</Option> */}
                                       </>
                                     )
                                   } else {
                                     return (
                                       <>
+                                        {/* <Option key={categoryIndex} style={{ width: '100%' }} value={categoryIndex}>{categoryItem.name}</Option> */}
                                         <Option key={categoryIndex} style={{ width: '100%' }} value={`${categoryItem.objectId}+${item.hashCode}`}>{categoryItem.name}</Option>
                                       </>
                                     )
@@ -881,7 +1085,7 @@ render () {
                             <Input style={{ marginRight: '10px' }} value={item.price} allowClear type={'number'} id='priceProduct' key='priceProduct' onChange={(value) => this.changeDataProduct(value, indexItem)} placeholder='Giá tiền' />
                             <Input value={item.count} prefix={<span>SL</span>} defaultValue={1} type={'number'} id='numberOfProducts' key='numberOfProducts' onChange={(value) => this.changeDataProduct(value, indexItem)} allowClear placeholder='Số lượng' />
                           </div>
-  
+
                           <div className='product-item-note'>
                             <TextArea placeholder='Ghi Chú' value={item.note || '---'} type={'number'} id='note' key='note' onChange={(value) => this.changeDataProduct(value, indexItem)} />
                           </div>
