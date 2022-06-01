@@ -223,7 +223,7 @@ class Consignment extends React.PureComponent {
             console.log(customerFormData)
             console.log(objectIdFoundUser)
 
-            formData.mail && formData.mail.length > 0 && GapService.sendMail(customerFormData, formData, EMAIL_TYPE.CONSIGNMENT, EMAIL_TITLE.CONSIGNMENT, timeGroupCode)
+            formData.mail && formData.mail.length > 0 && GapService.sendMail(customerFormData, formData, EMAIL_TYPE.CONSIGNMENT, EMAIL_TITLE.CONSIGNMENT, timeGroupCode, productListTemp)
             GapService.updateCustomer(customerFormData, objectIdFoundUser)
           })
         } else {
@@ -264,7 +264,7 @@ class Consignment extends React.PureComponent {
               isShowConfirmForm: true,
               isConsigning: false
             })
-            GapService.sendMail(customerFormData, formData, EMAIL_TYPE.CONSIGNMENT, EMAIL_TITLE.CONSIGNMENT, timeGroupCode)
+            GapService.sendMail(customerFormData, formData, EMAIL_TYPE.CONSIGNMENT, EMAIL_TITLE.CONSIGNMENT, timeGroupCode, productListTemp)
           } else {
             // this.onRefeshAll()
             this.setState({

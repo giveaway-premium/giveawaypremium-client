@@ -46,13 +46,19 @@ export default class Gap {
 
   // Mail
 
-  static async sendMail (customerInfo, consignmentInfo, type, title, timeGroupCode) {
-    console.log(customerInfo)
-    console.log(consignmentInfo)
-    console.log(type)
-    console.log(title)
-    console.log(timeGroupCode)
+  static async sendMail (customerInfo, consignmentInfo, type, title, timeGroupCode, productList = []) {
+    const productListTemp = []
+    productList.map(itemProduct => {
+      productListTemp.push({
+        name: itemProduct.name || '',
+        amount: itemProduct.count,
+        status: itemProduct.note || '---',
+        price: itemProduct.price ? `${numberWithCommas(itemProduct.price * 100)} vnd` : '0 vnd',
+        priceAfterFee: itemProduct.priceAfterFee ? `${numberWithCommas(itemProduct.priceAfterFee * 100)} vnd` : '0 vnd'
+      })
+    })
 
+    console.log(productListTemp)
     if (type) {
       const body = {
         'mailTo': customerInfo.mail,
@@ -69,7 +75,8 @@ export default class Gap {
           'bankId': consignmentInfo.bankId,
           // 'timeGetMoney': consignmentInfo.timeGetMoney,
           'timeGetMoney': `${consignmentInfo.timeGetMoney} -> ${moment(consignmentInfo.timeGetMoney, 'DD-MM-YYYY').add(10, 'day').format('DD-MM-YYYY')}`,
-          'timeCheck': moment(consignmentInfo.timeGetMoney, 'DD-MM-YYYY').subtract(3, 'day').format('DD-MM-YYYY')
+          'timeCheck': moment(consignmentInfo.timeGetMoney, 'DD-MM-YYYY').subtract(3, 'day').format('DD-MM-YYYY'),
+          'products': productListTemp || []
         }
       }
       console.log('body')
