@@ -53,8 +53,8 @@ export default class Gap {
         name: itemProduct.name || '',
         amount: itemProduct.count,
         status: itemProduct.note || '---',
-        price: itemProduct.price ? `${numberWithCommas(itemProduct.price * 100)} vnd` : '0 vnd',
-        priceAfterFee: itemProduct.priceAfterFee ? `${numberWithCommas(itemProduct.priceAfterFee * 100)} vnd` : '0 vnd'
+        price: itemProduct.price ? `${numberWithCommas(itemProduct.price * 1000)} vnd` : '0 vnd',
+        priceAfterFee: itemProduct.priceAfterFee ? `${numberWithCommas(itemProduct.priceAfterFee * 1000)} vnd` : '0 vnd'
       })
     })
 
