@@ -97,9 +97,10 @@ class TableAppointment extends React.Component {
 
     const choosenDayCode = dayBookingTemp && dayBookingTemp[0] ? dayBookingTemp[0].dayCode : ''
     const { option, timeBooking } = this.checkDayCodeToBookingOption(dayBookingTemp[0], bookingOptionEachDay)
-    console.log('timeBooking')
-    console.log(timeBooking)
-    console.log(option)
+    // console.log('timeBooking')
+    // console.log(timeBooking)
+    // console.log(option)
+    // console.log(settingRedux)
 
     // const bookingOptionList = { ...bookingOptionEachDay }
     // bookingOptionList[`OPTION_${8}`] = bookingOptionList[`OPTION_${8}`] + `--24052022----25052022----25052022----26052022----27052022----28052022----29052022----30052022----31052022----01062022---02062022---03062022---04062022---05062022---06062022---07062022--`
@@ -121,7 +122,7 @@ class TableAppointment extends React.Component {
   }
 
   checkDayCodeToBookingOption = (choosenDayCode, bookingOptionData = BOOKING_OPTION_EACH_DAY_DATA_DEFAULT) => {
-    if (choosenDayCode && choosenDayCode.dayCode && bookingOptionData && bookingOptionData.length > 0) {
+    if (choosenDayCode && choosenDayCode.dayCode && bookingOptionData) {
       if (bookingOptionData.OPTION_1.includes(choosenDayCode.dayCode)) return { option: 1, timeBooking: TIME_BOOKING.OPTION_1 }
       else if (bookingOptionData.OPTION_2.includes(choosenDayCode.dayCode)) return { option: 2, timeBooking: TIME_BOOKING.OPTION_2 }
       else if (bookingOptionData.OPTION_3.includes(choosenDayCode.dayCode)) return { option: 3, timeBooking: TIME_BOOKING.OPTION_3 }
@@ -202,8 +203,13 @@ class TableAppointment extends React.Component {
   }
 
   onChooseDay = (choosenDay, isLast7Day = false) => {
+    // console.log('onChooseDay')
+
     const { bookingOptionEachDay } = this.state
     const { option, timeBooking } = this.checkDayCodeToBookingOption(choosenDay, bookingOptionEachDay)
+    // console.log(option)
+    // console.log(choosenDay)
+    // console.log(bookingOptionEachDay)
 
     this.setState({
       bookingOptionValue: option,
@@ -215,7 +221,9 @@ class TableAppointment extends React.Component {
   }
 
   onChooseTime = (choosenTime) => {
-    console.log(choosenTime)
+    // console.log('choosenTime')
+    // console.log(choosenTime)
+
     this.setState({
       step: 1,
       choosenTimeCode: choosenTime ? choosenTime.timeCode : ''
@@ -230,6 +238,14 @@ class TableAppointment extends React.Component {
     let bookingOptionEachDay = settingRedux.BOOKING_OPTION_EACH_DAY
 
     const bookingOptionList = { ...bookingOptionEachDay }
+    bookingOptionList.OPTION_1 = bookingOptionList.OPTION_1 ? bookingOptionList.OPTION_1.replaceAll(choosenDayCode, '-') : '-'
+    bookingOptionList.OPTION_2 = bookingOptionList.OPTION_2 ? bookingOptionList.OPTION_2.replaceAll(choosenDayCode, '-') : '-'
+    bookingOptionList.OPTION_3 = bookingOptionList.OPTION_3 ? bookingOptionList.OPTION_3.replaceAll(choosenDayCode, '-') : '-'
+    bookingOptionList.OPTION_4 = bookingOptionList.OPTION_4 ? bookingOptionList.OPTION_4.replaceAll(choosenDayCode, '-') : '-'
+    bookingOptionList.OPTION_5 = bookingOptionList.OPTION_5 ? bookingOptionList.OPTION_5.replaceAll(choosenDayCode, '-') : '-'
+    bookingOptionList.OPTION_6 = bookingOptionList.OPTION_6 ? bookingOptionList.OPTION_6.replaceAll(choosenDayCode, '-') : '-'
+    bookingOptionList.OPTION_7 = bookingOptionList.OPTION_7 ? bookingOptionList.OPTION_7.replaceAll(choosenDayCode, '-') : '-'
+    bookingOptionList.OPTION_8 = bookingOptionList.OPTION_8 ? bookingOptionList.OPTION_8.replaceAll(choosenDayCode, '-') : '-'
     bookingOptionList[`OPTION_${value}`] = bookingOptionList[`OPTION_${value}`] + `--${choosenDayCode}--`
     let res = await GapService.updateSettingWithKeyAndValue(BOOKING_OPTION_EACH_DAY, bookingOptionList)
 
@@ -357,7 +373,6 @@ class TableAppointment extends React.Component {
       animationData: rightArrowJson
     }
 
-    console.log(bookingOptionValue)
     return (
       <>
         <div className='TableAppointment-home-container'>
