@@ -123,14 +123,14 @@ class TableAppointment extends React.Component {
 
   checkDayCodeToBookingOption = (choosenDayCode, bookingOptionData = BOOKING_OPTION_EACH_DAY_DATA_DEFAULT) => {
     if (choosenDayCode && choosenDayCode.dayCode && bookingOptionData) {
-      if (bookingOptionData.OPTION_1.includes(choosenDayCode.dayCode)) return { option: 1, timeBooking: TIME_BOOKING.OPTION_1 }
-      else if (bookingOptionData.OPTION_2.includes(choosenDayCode.dayCode)) return { option: 2, timeBooking: TIME_BOOKING.OPTION_2 }
-      else if (bookingOptionData.OPTION_3.includes(choosenDayCode.dayCode)) return { option: 3, timeBooking: TIME_BOOKING.OPTION_3 }
-      else if (bookingOptionData.OPTION_4.includes(choosenDayCode.dayCode)) return { option: 4, timeBooking: TIME_BOOKING.OPTION_4 }
-      else if (bookingOptionData.OPTION_5.includes(choosenDayCode.dayCode)) return { option: 5, timeBooking: TIME_BOOKING.OPTION_5 }
-      else if (bookingOptionData.OPTION_6.includes(choosenDayCode.dayCode)) return { option: 6, timeBooking: TIME_BOOKING.OPTION_6 }
-      else if (bookingOptionData.OPTION_7.includes(choosenDayCode.dayCode)) return { option: 7, timeBooking: TIME_BOOKING.OPTION_7 }
-      else if (bookingOptionData.OPTION_8.includes(choosenDayCode.dayCode)) return { option: 8, timeBooking: TIME_BOOKING.OPTION_8 }
+      if (bookingOptionData.OPTION_1 && bookingOptionData.OPTION_1.includes(choosenDayCode.dayCode)) return { option: 1, timeBooking: TIME_BOOKING.OPTION_1 }
+      else if (bookingOptionData.OPTION_2 && bookingOptionData.OPTION_2.includes(choosenDayCode.dayCode)) return { option: 2, timeBooking: TIME_BOOKING.OPTION_2 }
+      else if (bookingOptionData.OPTION_3 && bookingOptionData.OPTION_3.includes(choosenDayCode.dayCode)) return { option: 3, timeBooking: TIME_BOOKING.OPTION_3 }
+      else if (bookingOptionData.OPTION_4 && bookingOptionData.OPTION_4.includes(choosenDayCode.dayCode)) return { option: 4, timeBooking: TIME_BOOKING.OPTION_4 }
+      else if (bookingOptionData.OPTION_5 && bookingOptionData.OPTION_5.includes(choosenDayCode.dayCode)) return { option: 5, timeBooking: TIME_BOOKING.OPTION_5 }
+      else if (bookingOptionData.OPTION_6 && bookingOptionData.OPTION_6.includes(choosenDayCode.dayCode)) return { option: 6, timeBooking: TIME_BOOKING.OPTION_6 }
+      else if (bookingOptionData.OPTION_7 && bookingOptionData.OPTION_7.includes(choosenDayCode.dayCode)) return { option: 7, timeBooking: TIME_BOOKING.OPTION_7 }
+      else if (bookingOptionData.OPTION_8 && bookingOptionData.OPTION_8.includes(choosenDayCode.dayCode)) return { option: 8, timeBooking: TIME_BOOKING.OPTION_8 }
       else return { option: 8, timeBooking: TIME_BOOKING.OPTION_8 }
     } else {
       return { option: 8, timeBooking: TIME_BOOKING.OPTION_8 }
