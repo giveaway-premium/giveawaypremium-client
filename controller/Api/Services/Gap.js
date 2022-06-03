@@ -311,6 +311,14 @@ export default class Gap {
     }
   }
 
+  // IP HASH
+  static async setIPHASH (formData) {
+    const body = {
+      HashIP: formData.HashIP
+    }
+    return this.fetchData('/classes/IP', REQUEST_TYPE.POST, null, body)
+  }
+
   // Customer
   static async setCustomer (formData) {
     const body = {

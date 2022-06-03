@@ -26,6 +26,14 @@ export default class StorageActions {
     }
   }
 
+  static setIPHASH (payload) {
+    saveDataLocal(KEY_STORE.SET_IP_HASH, payload)
+    return {
+      type: KEY_STORE.SET_IP_HASH,
+      payload
+    }
+  }
+
   static setSetting (payload) {
     saveDataLocal(KEY_STORE.SET_SETTING, payload)
     return {

@@ -161,6 +161,30 @@ export default class ReduxServices {
     }
   }
 
+  static async checkIpHash () {
+    const { IPHASHData } = storeRedux.getState()
+
+    try {
+      if (IPHASHData) {
+        // do nothing
+      } else {
+        let text = 'giveaway'
+        let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+
+        for (let i = 0; i < 50; i++) { text += possible.charAt(Math.floor(Math.random() * possible.length)) }
+        ReduxServices.callDispatchAction(StorageActions.setIPHASH(text))
+
+        const formData = {
+          HashIP: text
+        }
+
+        GapService.setIPHASH(formData)
+      }
+    } catch (e) {
+      //
+    }
+  }
+
   static async detectConnection (baseUrl) {
     // const { walletConnect } = storeRedux.getState()
   }

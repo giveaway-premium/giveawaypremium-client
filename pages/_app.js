@@ -59,6 +59,7 @@ class GiveAway extends App {
         { key: KEY_STORE.SET_LOCALE, action: storageActions.setLocale, init: init.lang },
         { key: KEY_STORE.SET_CONNECTION_METHOD, action: storageActions.setConnectionMethod, init: init.connectionMethod },
         { key: KEY_STORE.SET_USER, action: storageActions.setUserData, init: init.userData },
+        { key: KEY_STORE.SET_IP_HASH, action: storageActions.setIPHASH, init: init.userData },
         { key: KEY_STORE.SET_TRANSFER_DATA, action: storageActions.setTransferData, init: init.transferData },
         { key: KEY_STORE.SET_SETTING, action: storageActions.setSetting, init: init.setting },
         { key: KEY_STORE.SET_CATEGORY, action: storageActions.setCategory, init: init.category }
@@ -71,9 +72,13 @@ class GiveAway extends App {
 
       const initDataPromiseArr = [
         ReduxServices.getCategory(),
-        ReduxServices.getSetting()
+        ReduxServices.getSetting(),
+        ReduxServices.checkIpHash()
       ]
 
+      const IPhash = getDataLocal(KEY_STORE.SET_IP_HASH)
+      console.log('IPhash')
+      console.log(IPhash)
       // GapService.deleteSettingWithKey('alo')
 
       if (getDataLocal(KEY_STORE.SET_CATEGORY)) {

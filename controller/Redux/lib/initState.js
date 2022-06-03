@@ -1,4 +1,5 @@
 var initState = {
+  string: '',
   lang: 'en',
   userData: null,
   walletConnect: [],
