@@ -93,6 +93,18 @@ export default class ReduxServices {
     }
   }
 
+  static getUserData () {
+    const { userData } = storeRedux.getState()
+
+    return userData
+  }
+
+  static getIpHash () {
+    const { IPHASHData } = storeRedux.getState()
+
+    return IPHASHData
+  }
+
   static setUserToken (result) {
     const { userData } = storeRedux.getState()
 
@@ -165,24 +177,30 @@ export default class ReduxServices {
     const { IPHASHData, userData } = storeRedux.getState()
 
     try {
-      if (IPHASHData) {
+      if (IPHASHData && IPHASHData.hash && IPHASHData.objectId) {
         // do nothing
+        // console.log('res exist')
+        // console.log(IPHASHData)
+        // ReduxServices.callDispatchAction(StorageActions.setIPHASH({}))
       } else {
-        let text = 'giveaway'
+        let hash = 'giveaway'
         let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 
-        for (let i = 0; i < 50; i++) { text += possible.charAt(Math.floor(Math.random() * possible.length)) }
-        ReduxServices.callDispatchAction(StorageActions.setIPHASH(text))
-
+        for (let i = 0; i < 50; i++) { hash += possible.charAt(Math.floor(Math.random() * possible.length)) }
         const formData = {
-          HashIP: text
+          HashIP: hash
         }
-
         if (userData) {
           formData.userData = userData
         }
 
-        GapService.setIPHASH(formData)
+        const res = await GapService.setIPHASH(formData)
+
+        if (res && res.objectId) {
+          ReduxServices.callDispatchAction(StorageActions.setIPHASH({ objectId: res.objectId, hash: hash }))
+        } else {
+          ReduxServices.callDispatchAction(StorageActions.setIPHASH({ objectId: null, hash: hash }))
+        }
       }
     } catch (e) {
       //

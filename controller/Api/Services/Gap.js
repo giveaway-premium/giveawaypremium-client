@@ -319,6 +319,21 @@ export default class Gap {
     return this.fetchData('/classes/IP', REQUEST_TYPE.POST, null, body)
   }
 
+  static async updateIPHASH (formData = {}) {
+    const ipHash = ReduxService.getIpHash()
+    const userData = ReduxService.getUserData()
+
+    const body = {
+      userData: { ...userData, ...formData.userData }
+    }
+
+    if (ipHash && ipHash.objectId) {
+      return this.fetchData(`/classes/IP/${ipHash.objectId}`, REQUEST_TYPE.PUT, null, body)
+    } else {
+      return false
+    }
+  }
+
   // Customer
   static async setCustomer (formData) {
     const body = {

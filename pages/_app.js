@@ -77,8 +77,12 @@ class GiveAway extends App {
       ]
 
       const IPhash = getDataLocal(KEY_STORE.SET_IP_HASH)
-      console.log('IPhash')
+      const usesr = getDataLocal(KEY_STORE.SET_USER)
+
+      console.log('usesr')
+      console.log(usesr)
       console.log(IPhash)
+
       // GapService.deleteSettingWithKey('alo')
 
       if (getDataLocal(KEY_STORE.SET_CATEGORY)) {

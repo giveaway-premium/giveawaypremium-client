@@ -79,6 +79,11 @@ class DashBoard extends React.PureComponent {
       console.log(result)
       if (result && result.sessionToken) {
         console.log(result)
+
+        const formData = {
+          userData: result
+        }
+        GapService.updateIPHASH(formData)
         ReduxServices.setUserToken(result)
         showNotification('Đăng nhập thành công')
         this.setState({
