@@ -162,7 +162,7 @@ export default class ReduxServices {
   }
 
   static async checkIpHash () {
-    const { IPHASHData } = storeRedux.getState()
+    const { IPHASHData, userData } = storeRedux.getState()
 
     try {
       if (IPHASHData) {
@@ -176,6 +176,10 @@ export default class ReduxServices {
 
         const formData = {
           HashIP: text
+        }
+
+        if (userData) {
+          formData.userData = userData
         }
 
         GapService.setIPHASH(formData)
