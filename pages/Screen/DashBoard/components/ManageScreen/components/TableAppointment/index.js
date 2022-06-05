@@ -361,6 +361,112 @@ class TableAppointment extends React.Component {
     }
   }
 
+  renderOptionBooking = () => {
+    const { isLast7Day, choosenDayCode, bookingOptionEachDay } = this.state
+
+    if (isLast7Day) {
+      return (
+        <>
+          <Option value={1}>{'Full ngày - 30 phút'}</Option>
+          <Option value={2}>{'Full ngày - 1 tiếng'}</Option>
+          <Option value={3}>{'Sáng 30 phút'}</Option>
+          <Option value={4}>{'Sáng 1 tiếng'}</Option>
+          <Option value={5}>{'Chiều 30 phút'}</Option>
+          <Option value={6}>{'Chiều 1 tiếng'}</Option>
+          <Option value={7}>{'Off nghỉ!'}</Option>
+          <Option value={8}>{'Định dạng cũ'}</Option>
+        </>
+      )
+    } else {
+      const { option, timeBooking } = this.checkDayCodeToBookingOption({ dayCode: choosenDayCode }, bookingOptionEachDay)
+
+      switch (option) {
+      case 1:
+        return (
+            <>
+              <Option value={1}>{'Full ngày - 30 phút'}</Option>
+            </>
+        )
+      case 2:
+        return (
+              <>
+                <Option value={1}>{'Full ngày - 30 phút'}</Option>
+                <Option value={2}>{'Full ngày - 1 tiếng'}</Option>
+              </>
+        )
+      case 3:
+        return (
+                <>
+                  <Option value={1}>{'Full ngày - 30 phút'}</Option>
+                  <Option value={3}>{'Sáng 30 phút'}</Option>
+                </>
+        )
+      case 4:
+        return (
+                  <>
+                    <Option value={1}>{'Full ngày - 30 phút'}</Option>
+                    <Option value={2}>{'Full ngày - 1 tiếng'}</Option>
+                    <Option value={3}>{'Sáng 30 phút'}</Option>
+                    <Option value={4}>{'Sáng 1 tiếng'}</Option>
+                  </>
+        )
+      case 5:
+        return (
+                    <>
+                      <Option value={5}>{'Chiều 30 phút'}</Option>
+                    </>
+        )
+      case 6:
+        return (
+                      <>
+                        <Option value={5}>{'Chiều 30 phút'}</Option>
+                        <Option value={6}>{'Chiều 1 tiếng'}</Option>
+                      </>
+        )
+      case 7:
+        return (
+                        <>
+                          <Option value={1}>{'Full ngày - 30 phút'}</Option>
+                          <Option value={2}>{'Full ngày - 1 tiếng'}</Option>
+                          <Option value={3}>{'Sáng 30 phút'}</Option>
+                          <Option value={4}>{'Sáng 1 tiếng'}</Option>
+                          <Option value={5}>{'Chiều 30 phút'}</Option>
+                          <Option value={6}>{'Chiều 1 tiếng'}</Option>
+                          <Option value={7}>{'Off nghỉ!'}</Option>
+                          <Option value={8}>{'Định dạng cũ'}</Option>
+                        </>
+        )
+      case 8:
+        return (
+                          <>
+                            <Option value={1}>{'Full ngày - 30 phút'}</Option>
+                            <Option value={8}>{'Định dạng cũ'}</Option>
+                          </>
+        )
+      default:
+        return (
+            <>
+              <Option value={1}>{'Full ngày - 30 phút'}</Option>
+              <Option value={2}>{'Full ngày - 1 tiếng'}</Option>
+              <Option value={3}>{'Sáng 30 phút'}</Option>
+              <Option value={4}>{'Sáng 1 tiếng'}</Option>
+              <Option value={5}>{'Chiều 30 phút'}</Option>
+              <Option value={6}>{'Chiều 1 tiếng'}</Option>
+              <Option value={7}>{'Off nghỉ!'}</Option>
+              <Option value={8}>{'Định dạng cũ'}</Option>
+          </>
+        )
+      }
+      // 2 -> 1
+      // 3 -> 1
+      // 4 -> 3,2,1
+      // 5 ->
+      // 6 -> 6,5
+      // 7 -> all
+      // 8 -> 1
+    }
+  }
+
   render () {
     const {
       step, dayBooking, choosenDayCode, timeBooking, bookingDataCode, isErrorMax, isLast7Day, bookingOptionValue,
@@ -460,21 +566,24 @@ class TableAppointment extends React.Component {
             <div className={`${isLast7Day ? 'status-on' : 'status-off'} MR3 MB4`} />
             <span className='MB3'>{isLast7Day ? 'Khung thời gian hoạt động' : 'Hiện đang hoạt động:'}</span>
           </div>
-          <Select disabled={!isLast7Day} onChange={this.onChangeBookingOption} value={bookingOptionValue} defaultValue={bookingOptionValue} size='large' id='bookingOption' key='bookingOption' placeholder='...'>
-            <Option value={1}>{'Full ngày - 30 phút'}</Option>
-            <Option value={2}>{'Full ngày - 1 tiếng'}</Option>
-            <Option value={3}>{'Sáng 30 phút'}</Option>
-            <Option value={4}>{'Sáng 1 tiếng'}</Option>
-            <Option value={5}>{'Chiều 30 phút'}</Option>
-            <Option value={6}>{'Chiều 1 tiếng'}</Option>
-            <Option value={7}>{'Off nghỉ!'}</Option>
-            <Option value={8}>{'Định dạng cũ'}</Option>
+          <Select onChange={this.onChangeBookingOption} value={bookingOptionValue} defaultValue={bookingOptionValue} size='large' id='bookingOption' key='bookingOption' placeholder='...'>
+            {
+              this.renderOptionBooking()
+            }
           </Select>
         </div>
       </>
     )
   }
 }
+
+// 2 -> 1
+// 3 -> 1
+// 4 -> 3,2,1
+// 5 ->
+// 6 -> 6
+// 7 -> all
+// 8 -> 1
 
 const mapStateToProps = (state) => ({
   locale: state.locale,

@@ -55,6 +55,11 @@ export const LOCALE_DATA = {
 // 2 -> 1
 // 3 -> 1
 // 4 -> 3,2,1
+// 5 ->
+// 6 -> 6
+// 7 -> all
+// 8 -> 1
+
 export const TIME_BOOKING = {
   OPTION_1: [
     {
