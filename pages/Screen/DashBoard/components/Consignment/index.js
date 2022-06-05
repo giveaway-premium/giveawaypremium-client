@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { Form, Row, Col, Input, Button, Descriptions, Divider, DatePicker, Select, Checkbox } from 'antd'
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
-import { numberWithCommas, showNotification, generateIdMix } from 'common/function'
+import { numberWithCommas, showNotification, generateIdMix, toLowerCaseNonAccentVietnamese } from 'common/function'
 import { LoadingOutlined, CheckCircleFilled, PlusCircleFilled, PlusOneTwoTone, PlusOutlined, CloseOutlined, DollarCircleOutlined } from '@ant-design/icons'
 import { Router } from 'common/routes'
 import { isMobile } from 'react-device-detect'
@@ -88,6 +88,8 @@ class Consignment extends React.PureComponent {
         }
       })
     }
+
+    this.convertStringNameToObjectIdCategory('con cho heo đất   aloo hã')
 
     this.setState({
       categoryList: categoryList
@@ -606,7 +608,7 @@ class Consignment extends React.PureComponent {
       let totalMoneyTemp = totalMoney - Number(productList[index].price) * 1000 * Number(productList[index].count)
       let productNumber = formData.numberOfProducts - productList[index].count
       // delete productListTemp[index]
-  
+
       let productListTemp = []
       let productId = -1
       productList.map((itemProduct, itemProductIndex) => {
@@ -624,10 +626,10 @@ class Consignment extends React.PureComponent {
           })
         }
       })
-  
+
       console.log(productListTemp)
       console.log('onDeleteProductList end')
-  
+
       this.setState({
         moneyBackForFullSold: moneyBackTemp,
         totalMoney: totalMoneyTemp,
@@ -751,14 +753,119 @@ renderStringCodeBox = () => {
   return (
     <div>
       <p className='text text-title MB10'>Thông tin đơn ký gửi</p>
-      <p className='text'>Loại / tên sản phẩm / số lượng / giá tiền / tình trạng</p>
+      <p className='text'>Tên sản phẩm / số lượng / giá tiền / tình trạng</p>
       {isErrorFormat ? <span className='text text-color-6 MB10'>Sai Định dạng</span> : null}
       <div className='product-item-note MB20'>
-        <TextArea style={{ minHeight: '300px'}} onChange={this.onChangeOnlineInput} placeholder='Ghi Chú' id='onlineInput' key='onlineInput' />
+        <TextArea style={{ minHeight: '300px', maxHeight: '50vh' }} onChange={this.onChangeOnlineInput} placeholder='Ghi Chú' id='onlineInput' key='onlineInput' />
       </div>
       <Button className='ML10' onClick={this.convertStringToConsignment}>Ok</Button>
     </div>
   )
+}
+
+convertStringNameToObjectIdCategory = (stringName = '') => {
+  // const lowerCaseStringCode = toLowerCaseNonAccentVietnamese(stringName)
+  const lowerCaseStringCode = stringName.toLowerCase()
+
+  console.log('lowerCaseStringCode')
+  console.log(lowerCaseStringCode)
+  console.log(lowerCaseStringCode)
+
+  // quần áo
+  if (stringName.includes('áo') || stringName.includes('bra')) {
+    return 'ao'
+  } else if (stringName.includes('đầm')) {
+    return 'dam'
+  } else if (stringName.includes('quần')) {
+    return 'quan'
+  } else if (stringName.includes('chân váy') || stringName.includes('chan váy') || stringName.includes('cv') || stringName.includes('cvay') || stringName.includes('chân vay') || stringName.includes('váy') || stringName.includes('vay')) {
+    return 'vay'
+  } else if (stringName.includes('body') || stringName.includes('bodysuit') || stringName.includes('suit') || stringName.includes('jum') || stringName.includes('jumsuit')) {
+    return 'set'
+  } else if (stringName.includes('ao khoác') || stringName.includes('áo khoác') || stringName.includes('áo khoac') || stringName.includes('ao khoac') || stringName.includes('aokhoac')) {
+    return 'khoac'
+  // eslint-disable-next-line brace-style
+  }
+  // giày dép
+  else if (stringName.includes('giày') || stringName.includes('giay') || stringName.includes('giày thể thao') || stringName.includes('giay the thao') || stringName.includes('sneaker') || stringName.includes('giày the thao') || stringName.includes('giay thể thao')) {
+    return 'thao'
+  } else if (stringName.includes('cao gót') || stringName.includes('cao got') || stringName.includes('giày cao gót') || stringName.includes('giay cao gót') || stringName.includes('giay cao got')) {
+    return 'cao'
+  } else if (stringName.includes('dép') || stringName.includes('đôi dép') || stringName.includes('doi dep ')) {
+    return 'dep'
+  } else if (stringName.includes('boot')) {
+    return 'boot'
+  } else if (stringName.includes('sandal')) {
+    return 'sandal'
+    // eslint-disable-next-line brace-style
+  }
+  // Túi Ví
+  else if (stringName.includes('balo') || stringName.includes('balô') || stringName.includes('ba lô')) {
+    return 'balo'
+  } else if (stringName.includes('túi') || stringName.includes('chiếc túi')) {
+    return 'tui'
+  } else if (stringName.includes('clutch')) {
+    return 'clutch'
+  } else if (stringName.includes('beltbag') || stringName.includes('belt bag')) {
+    return 'bag'
+  } else if (stringName.includes('ví')) {
+    return 'vi'
+    // eslint-disable-next-line brace-style
+  }
+  // Phụ kiện
+  else if (stringName.includes('vòng') || stringName.includes('vòng tay') || stringName.includes('vong tay') || stringName.includes('lắc') || stringName.includes('cuff')) {
+    return 'vong'
+  } else if (stringName.includes('hoa tai') || stringName.includes('bông tai') || stringName.includes('bong tai')) {
+    return 'tai'
+  } else if (stringName.includes('nhẫn')) {
+    return 'nhan'
+  } else if (stringName.includes('dây chuyền') || stringName.includes('set vòng cổ') || stringName.includes('day chuyen') || stringName.includes('vòng cổ')) {
+    return 'chuyen'
+  } else if (stringName.includes('cài') || stringName.includes('charm')) {
+    return 'pkhac'
+  } else if (stringName.includes('đồng hồ') || stringName.includes('dong ho') || stringName.includes('đồnghồ') || stringName.includes('watch') || stringName.includes('đh') || stringName.includes('dh')) {
+    return 'ho'
+  } else if (stringName.includes('mắt kính') || stringName.includes('kính')) {
+    return 'kinh'
+    // eslint-disable-next-line brace-style
+  }
+  // Mỹ phẩm
+  else if (
+    stringName.includes('mascara') || stringName.includes('son') || stringName.includes('phấn') ||
+    stringName.includes('phấn má') || stringName.includes('nền') || stringName.includes('phấn mắt') ||
+    stringName.includes('tẩy trang') || stringName.includes('cọ') || stringName.includes('set mỹ phẩm') ||
+    stringName.includes('set mp') || stringName.includes('mỹ phẩm') || stringName.includes('mĩ phẩm') ||
+    stringName.includes('phấn nước') || stringName.includes('cushion') || stringName.includes('bút kẻ') ||
+    stringName.includes('nước cân bằng') || stringName.includes('tạo khối') || stringName.includes('phần phủ') ||
+    stringName.includes('bắt sáng') || stringName.includes('kem lót') || stringName.includes('kem nền') ||
+    stringName.includes('bộ mỹ phẩm') || stringName.includes('trang điểm') || stringName.includes('má hồng') ||
+    stringName.includes('bảng mắt')
+  ) {
+    return 'diem'
+  } else if (
+    stringName.includes('tonner') || stringName.includes('toner') || stringName.includes('kem dưỡng') ||
+    stringName.includes('dưỡng') || stringName.includes('dưỡng tóc') || stringName.includes('sữa rửa mặt') ||
+    stringName.includes('kem tay') || stringName.includes('serum') || stringName.includes('kem chống nắng') ||
+    stringName.includes('kcn') || stringName.includes('lotion') || stringName.includes('mặt nạ') ||
+    stringName.includes('lăn nách') || stringName.includes('sữa tắm') || stringName.includes('gel') ||
+    stringName.includes('dầu gội') || stringName.includes('xịt khoáng') || stringName.includes('dưỡng da') ||
+    stringName.includes('tinh chất') || stringName.includes('dầu dưỡng') || stringName.includes('mask')
+  ) {
+    return 'da'
+    // eslint-disable-next-line brace-style
+  }
+  // Nước hoa
+  else if (stringName.includes('nước hoa') || stringName.includes('nuoc hoa') || stringName.includes('perfume') || stringName.includes('scent') || stringName.includes('fragrance')) {
+    return 'YIUniNrIKb'
+    // eslint-disable-next-line brace-style
+  }
+  // Thiết bị làm đẹp
+  else if (stringName.includes('máy rửa mặt') || stringName.includes('thiết bị') || stringName.includes('máy rửa') || stringName.includes('máy')) {
+    return 'B3OQuAChW1'
+    // eslint-disable-next-line brace-style
+  } else {
+    return 'ao'
+  }
 }
 
 convertStringToConsignment = () => {
@@ -770,11 +877,11 @@ convertStringToConsignment = () => {
   categoryList.map((itemCate, itemCateIndex) => {
     switch (itemCate.objectId) {
     case 'B3OQuAChW1': {
-      categoryListObjectTemp.thiet = { ...itemCate, keyCode: 'thiet' }
+      categoryListObjectTemp.B3OQuAChW1 = { ...itemCate, keyCode: 'thiet' }
       break
     }
     case 'YIUniNrIKb': {
-      categoryListObjectTemp.hoa = { ...itemCate, keyCode: 'hoa' }
+      categoryListObjectTemp.YIUniNrIKb = { ...itemCate, keyCode: 'hoa' }
       break
     }
     default: {
@@ -782,6 +889,7 @@ convertStringToConsignment = () => {
     }
     }
   })
+
   const result = onlineCodeStringInput.trim().split(/\r?\n/)
 
   console.log(result)
@@ -795,13 +903,23 @@ convertStringToConsignment = () => {
     let subCategoryId
     let categoryId
     const stringCodeArr = item.trim().split('/')
+    console.log('stringCodeArr')
     console.log(stringCodeArr)
-    if (isErrorFormat === false && stringCodeArr && stringCodeArr.length === 5 && Number(stringCodeArr[2].trim()) + 1 > 0 && Number(stringCodeArr[3].trim()) + 1 > 0) {
-      type = stringCodeArr[0].trim().toLowerCase()
-      name = stringCodeArr[1].trim()
-      amount = Number(stringCodeArr[2].trim())
-      price = Number(stringCodeArr[3].trim())
-      detail = stringCodeArr[4].trim()
+
+    if (isErrorFormat === false && stringCodeArr && stringCodeArr.length === 4 && Number(stringCodeArr[1].trim()) + 1 > 0 && Number(stringCodeArr[2].trim()) + 1 > 0) {
+      // type = stringCodeArr[0].trim().toLowerCase()
+      name = stringCodeArr[0].trim()
+      amount = Number(stringCodeArr[1].trim())
+      price = Number(stringCodeArr[2].trim())
+      detail = stringCodeArr[3].trim()
+
+      type = this.convertStringNameToObjectIdCategory(name)
+      console.log('type')
+      console.log(type)
+      console.log(categoryListObjectTemp)
+
+      //váy da heo/ 4/ 33/ bị rách ở cổ tay
+      console.log(categoryListObjectTemp[type])
       console.log(categoryListObjectTemp[type])
 
       if (type && categoryListObjectTemp && categoryListObjectTemp[type]) {
