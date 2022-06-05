@@ -144,6 +144,10 @@
   align-items: flex-start;
   justify-content: center;
 
+  .ant-select-selector {
+    min-width: 300px !important;
+  }
+
   .status-on {
     width: 10px;
     height: 10px;
