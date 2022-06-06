@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev": " nodemon -w server/index.js server/index.js",
     "build-dev": "node server/index.js",
     "build-production": "npm run build && npm run start",
     "start": "node server/index.js",
@@ -52,6 +53,7 @@
     "node-datetime": "^2.1.2",
     "node-sass": "^6.0.1",
     "node-sass-chokidar": "^1.3.4",
+    "nodemon": "2.0.16",
     "nouislider": "14.5.0",
     "npm": "^6.12.1",
     "nprogress": "^0.2.0",
