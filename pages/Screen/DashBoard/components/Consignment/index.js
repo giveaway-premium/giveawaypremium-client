@@ -753,7 +753,10 @@ renderStringCodeBox = () => {
   return (
     <div>
       <p className='text text-title MB10'>Thông tin đơn ký gửi</p>
-      <p className='text'>Tên sản phẩm / số lượng / giá tiền / tình trạng</p>
+      <p className='text'>Tên sản phẩm / giá tiền (k) / số lượng / tình trạng</p>
+      <p className='text'>Tên sản phẩm / giá tiền (k) / số lượng</p>
+      <p className='text'>Tên sản phẩm / giá tiền (k)</p>
+
       {isErrorFormat ? <span className='text text-color-6 MB10'>Sai Định dạng</span> : null}
       <div className='product-item-note MB20'>
         <TextArea style={{ minHeight: '300px', maxHeight: '50vh' }} onChange={this.onChangeOnlineInput} placeholder='Ghi Chú' id='onlineInput' key='onlineInput' />
@@ -906,19 +909,39 @@ convertStringToConsignment = () => {
     console.log('stringCodeArr')
     console.log(stringCodeArr)
 
-    if (isErrorFormat === false && stringCodeArr && stringCodeArr.length === 4 && Number(stringCodeArr[1].trim()) + 1 > 0 && Number(stringCodeArr[2].trim()) + 1 > 0) {
+    if (isErrorFormat === false && stringCodeArr && (((stringCodeArr.length === 3 || stringCodeArr.length === 4) && Number(stringCodeArr[2].trim()) + 1 > 0) || stringCodeArr.length === 2) && Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', '')) + 1 > 0) {
       // type = stringCodeArr[0].trim().toLowerCase()
-      name = stringCodeArr[0].trim()
-      amount = Number(stringCodeArr[1].trim())
-      price = Number(stringCodeArr[2].trim())
-      detail = stringCodeArr[3].trim()
+
+      switch (stringCodeArr.length) {
+      case 4: {
+        name = stringCodeArr[0].trim()
+        price = Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', ''))
+        amount = Number(stringCodeArr[2].trim()) || 1
+        detail = stringCodeArr[3].trim() || '---'
+        break
+      }
+      case 3: {
+        name = stringCodeArr[0].trim()
+        price = Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', ''))
+        amount = Number(stringCodeArr[2].trim()) || 1
+        detail = '---'
+        break
+      }
+      case 2: {
+        name = stringCodeArr[0].trim()
+        price = Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', ''))
+        amount = 1
+        detail = '---'
+        break
+      }
+      }
 
       type = this.convertStringNameToObjectIdCategory(name)
       console.log('type')
       console.log(type)
       console.log(categoryListObjectTemp)
 
-      //váy da heo/ 4/ 33/ bị rách ở cổ tay
+      // váy da heo/ 4/ 33/ bị rách ở cổ tay
       console.log(categoryListObjectTemp[type])
       console.log(categoryListObjectTemp[type])
 
