@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { Form, Row, Col, Input, Button, Descriptions, Divider, DatePicker, Select, Checkbox } from 'antd'
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
-import { numberWithCommas, showNotification, generateIdMix, toLowerCaseNonAccentVietnamese } from 'common/function'
+import { numberWithCommas, showNotification, generateIdMix, toLowerCaseNonAccentVietnamese, debounce } from 'common/function'
 import { LoadingOutlined, CheckCircleFilled, PlusCircleFilled, PlusOneTwoTone, PlusOutlined, CloseOutlined, DollarCircleOutlined } from '@ant-design/icons'
 import { Router } from 'common/routes'
 import { isMobile } from 'react-device-detect'
@@ -19,6 +19,7 @@ const { TextArea } = Input
 const { Option } = Select
 
 const dateFormat = 'DD-MM-YYYY'
+var intervalId = null
 class Consignment extends React.PureComponent {
   constructor (props) {
     super(props)
@@ -75,9 +76,8 @@ class Consignment extends React.PureComponent {
   }
 
   componentDidMount () {
-    const { categoryRedux } = this.props
-    console.log('categoryRedux')
-    console.log(categoryRedux)
+    const { categoryRedux, channelMonitorRedux } = this.props
+
     let categoryList = []
     if (categoryRedux) {
       categoryRedux.map((item, indexItem) => {
@@ -89,19 +89,35 @@ class Consignment extends React.PureComponent {
       })
     }
 
-    this.convertStringNameToObjectIdCategory('con cho heo đất   aloo hã')
-
     this.setState({
       categoryList: categoryList
     })
 
-    console.log(categoryList)
-
     this.fetchAllTags()
+
+    if (channelMonitorRedux && channelMonitorRedux.objectId) {
+      intervalId = setInterval(async () => {
+        const body = {
+          data: this.state
+        }
+        const res = await GapService.updateChannel(body, channelMonitorRedux.objectId)
+        console.log('changeData and update channel')
+        console.log(res)
+      }, 2000)
+    }
   }
 
   componentDidUpdate () {
 
+  }
+
+  componentWillUnmount () {
+    clearInterval(intervalId)
+    Router.events.off('routeChangeComplete', this.handleRouteChange)
+  }
+
+  handleRouteChange = () => {
+    clearInterval(intervalId)
   }
 
   //
@@ -372,6 +388,16 @@ class Consignment extends React.PureComponent {
     }
   }
 
+  onUpdateMobitorData = async () => {
+    const { channelMonitorRedux } = this.props
+    const body = {
+      data: this.state
+    }
+    const res = await GapService.updateChannel(body, channelMonitorRedux.objectId)
+    console.log('changeData and update channel')
+    console.log(res)
+  }
+
   onRefeshAll = () => {
     const { formData } = this.state
     this.setState({
@@ -440,7 +466,7 @@ class Consignment extends React.PureComponent {
     }
   }
 
-  changeData = (value) => {
+  changeData = async (value) => {
     console.log(value.target.id)
     const { formData } = this.state
 
@@ -449,7 +475,14 @@ class Consignment extends React.PureComponent {
         ...formData,
         [value.target.id]: value.target.value
       }
-    }, () => console.log(this.state))
+    }, async () => {
+      // const body = {
+      //   data: this.state
+      // }
+      // const res = await GapService.updateChannel(body)
+      // console.log('changeData and update channel')
+      // console.log(res)
+    })
   }
 
   onChangeTimeGetMoney = (value) => {
@@ -741,6 +774,13 @@ onChangeOnlineInput = (valueTxt) => {
   console.log(valueTxt.target.value)
   this.setState({
     onlineCodeStringInput: valueTxt.target.value
+  }, async () => {
+    const body = {
+      data: this.state
+    }
+    const res = await GapService.updateChannel(body)
+    console.log('changeData and update channel')
+    console.log(res)
   })
 }
 
@@ -1026,7 +1066,7 @@ onSearchCategory = (val) => {
 }
 
 render () {
-  const { userData, categoryRedux } = this.props
+  const { userData, categoryRedux, channelMonitorRedux } = this.props
   const {
     formData, isConsigning, isShowConfirmForm, moneyBackForFullSold, totalMoney, timeGroupId, isTransferMoneyWithBank,
     birthday, isLoadingUser, isFoundUser, isLoadingTags, allInfoTag, productList, categoryList, timeGroupCode
@@ -1113,10 +1153,23 @@ render () {
               initialValues={formData}
               // onFinish={this.onFinish}
               onFinish={this.onConsign}
-              onValuesChange={(changedValues, allValues) => {
-                console.log('changedValues')
-                console.log(changedValues)
-
+              onValuesChange={async (changedValues, allValues) => {
+                // console.log('changedValues')
+                // console.log(changedValues)
+                // if (channelMonitorRedux && channelMonitorRedux.objectId) {
+                //   const body = {
+                //     data: {
+                //       ...this.state,
+                //       formData: {
+                //         ...formData,
+                //         ...changedValues
+                //       }
+                //     }
+                //   }
+                //   const res = await GapService.updateChannel(body, channelMonitorRedux.objectId)
+                //   console.log('changeData and update channel')
+                //   console.log(res)
+                // }
                 this.setState({
                   formData: {
                     ...formData,
@@ -1296,6 +1349,9 @@ render () {
                 </Form.Item>
 
                 <Form.Item className='button-confirm-box MT20 MB40'>
+                  {channelMonitorRedux && channelMonitorRedux.objectId && (
+                    <Button className='MR20' onClick={this.onUpdateMobitorData}>Cập nhật monitor</Button>
+                  )}
                   <Button className='MR20' onClick={this.onRefeshAll}>Khôi phục</Button>
                   <Button disabled={isLoadingTags || isLoadingUser || !formData.phoneNumber} loading={isConsigning} type='primary' htmlType='submit'>Xác nhận</Button>
                 </Form.Item>
@@ -1310,6 +1366,7 @@ render () {
 }
 
 const mapStateToProps = (state) => ({
+  channelMonitorRedux: state.channelMonitorRedux,
   locale: state.locale,
   categoryRedux: state.categoryRedux,
   userData: state.userData

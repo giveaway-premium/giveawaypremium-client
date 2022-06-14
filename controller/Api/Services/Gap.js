@@ -311,6 +311,42 @@ export default class Gap {
     }
   }
 
+  // CHANNEL
+  static async updateChannel (dataBody, objectId) {
+    const body = {
+      ...dataBody
+    }
+
+    return this.fetchData(`/classes/Channel/${objectId}`, REQUEST_TYPE.PUT, null, body, null, null, null, true)
+  }
+
+  static async getChannel () {
+    const customQuery = `where={"deleteAt":${null}}`
+    return this.fetchData('/classes/Channel', REQUEST_TYPE.GET, null, null, null, null, customQuery)
+  }
+
+  static async setChannel (dataBody) {
+    const body = {
+      name: dataBody.name,
+      data: dataBody.data || {},
+      type: dataBody.type
+    }
+    return this.fetchData('/classes/Channel', REQUEST_TYPE.POST, null, body, null, null, null, true)
+  }
+
+  static async deleteChannel (objectId) {
+    try {
+      const body = {
+        deleteAt: moment()
+      }
+
+      return this.fetchData(`/classes/Channel/${objectId}`, REQUEST_TYPE.PUT, null, body)
+    } catch (e) {
+      console.log(e)
+      return false
+    }
+  }
+
   // IP HASH
   static async setIPHASH (formData) {
     const body = {

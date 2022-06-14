@@ -14,6 +14,7 @@ import Lottie from 'react-lottie'
 import GapService from 'controller/Api/Services/Gap'
 import ConfigConsignmentId from './Components/ConfigConsignmentId'
 import BookingSetting from './Components/BookingSetting'
+import MonitorList from './Components/MonitorList'
 
 const SettingScreen = (props) => {
   return (
@@ -22,6 +23,8 @@ const SettingScreen = (props) => {
       <ConfigConsignmentId />
       <span className='title-setting'>Đặt Lịch</span>
       <BookingSetting />
+      <span className='title-setting'>Monitor</span>
+      <MonitorList />
     </div>
   )
 }

@@ -46,6 +46,12 @@ export const IPHASHData = createReducer(initState.userData, {
   }
 })
 
+export const channelMonitorRedux = createReducer(initState.object, {
+  [KEY_STORE.SET_CHANNEL_MONITOR] (state, action) {
+    return action.payload
+  }
+})
+
 export const settingRedux = createReducer(initState.setting, {
   [KEY_STORE.SET_SETTING] (state, action) {
     return action.payload

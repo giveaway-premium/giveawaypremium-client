@@ -60,6 +60,7 @@ class GiveAway extends App {
         { key: KEY_STORE.SET_CONNECTION_METHOD, action: storageActions.setConnectionMethod, init: init.connectionMethod },
         { key: KEY_STORE.SET_USER, action: storageActions.setUserData, init: init.userData },
         { key: KEY_STORE.SET_IP_HASH, action: storageActions.setIPHASH, init: init.userData },
+        { key: KEY_STORE.SET_CHANNEL_MONITOR, action: storageActions.setChannelMonitor, init: init.object },
         { key: KEY_STORE.SET_TRANSFER_DATA, action: storageActions.setTransferData, init: init.transferData },
         { key: KEY_STORE.SET_SETTING, action: storageActions.setSetting, init: init.setting },
         { key: KEY_STORE.SET_CATEGORY, action: storageActions.setCategory, init: init.category }

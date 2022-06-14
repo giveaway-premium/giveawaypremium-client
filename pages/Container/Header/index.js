@@ -90,7 +90,7 @@ class Header extends React.PureComponent {
   renderMainNav (mode = 'horizontal') {
     const { isShowAboutUs, isShowConsignment, isShowStore, isShowRightSideHeader, isShowRightSideHeaderAnimation } = this.state
     const { messages } = this.props.locale
-    const isHomePage = this.props.router.asPath === '/'
+    const isHide = this.props.router.asPath === '/' || this.props.router.asPath === '/monitor'
 
     // if (isHomePage) {
     //   return null
@@ -99,7 +99,7 @@ class Header extends React.PureComponent {
     return (
       <Menu
         // className='main-nav'
-        style={isHomePage ? { opacity: 0, PointerEvent: 'none' } : {}}
+        style={isHide ? { opacity: 0, PointerEvent: 'none' } : {}}
         className={'main-nav' + (isShowRightSideHeader ? ' show' : '') + (isShowRightSideHeaderAnimation ? ' animation' : '')}
         mode={mode}
         onClick={() => this.closeDrawer()}
@@ -185,7 +185,7 @@ class Header extends React.PureComponent {
   renderMainNavMobile (mode = 'horizontal') {
     const { isShowAboutUs, isShowConsignment, isShowStore, isShowRightSideHeader, isShowRightSideHeaderAnimation, isOpen } = this.state
     const { messages } = this.props.locale
-    const isHomePage = this.props.router.asPath === '/'
+    const isHide = this.props.router.asPath === '/' || this.props.router.asPath === '/monitor'
 
     // if (isHomePage) {
     //   return null
@@ -193,7 +193,7 @@ class Header extends React.PureComponent {
 
     return (
       <Menu
-        style={isHomePage ? { opacity: 0, PointerEvent: 'none' } : {}}
+        style={isHide ? { opacity: 0, PointerEvent: 'none' } : {}}
         className={'main-nav-mobile' + (isShowRightSideHeader ? ' show' : '') + (isShowRightSideHeaderAnimation ? ' animation' : '')}
         mode={mode}
         onClick={() => this.closeDrawer()}
@@ -221,7 +221,7 @@ class Header extends React.PureComponent {
     const { locale, userData } = this.props
     const { messages } = locale
     const isSigned = true
-    const isHomePage = this.props.router.asPath === '/'
+    const isHide = this.props.router.asPath === '/' || this.props.router.asPath === '/monitor'
 
     return (
       <div className='wrapper'>
@@ -259,7 +259,7 @@ class Header extends React.PureComponent {
         </Drawer>
         {this.renderLeftSide()}
         {
-          !isHomePage && <div className='right-side'>
+          !isHide && <div className='right-side'>
             <a className='menu-bugger ML15' onClick={this.showDrawer}>
               <img src={images.threeDots} />
             </a>
@@ -269,18 +269,23 @@ class Header extends React.PureComponent {
     )
   }
   render () {
-    return (
-      <div className='header-container'>
-        <Media
-          query='(min-width: 500px)'
-          render={() => this.renderDesktop()}
-        />
-        <Media
-          query='(max-width: 499px)'
-          render={() => this.renderMobile()}
-        />
-      </div>
-    )
+    const isMonitor = this.props.router.asPath === '/monitor'
+    if (isMonitor) {
+      return null
+    } else {
+      return (
+        <div className='header-container'>
+          <Media
+            query='(min-width: 500px)'
+            render={() => this.renderDesktop()}
+          />
+          <Media
+            query='(max-width: 499px)'
+            render={() => this.renderMobile()}
+          />
+        </div>
+      )
+    }
   }
 }
 const mapStateToProps = (state) => ({

@@ -11,4 +11,5 @@ module.exports = routes()
   // main routes
   .add('/', 'Screen/HomeScreen')
   .add('/admin', 'Screen/DashBoard')
+  .add('/monitor', 'Screen/Monitor')
   .add('/error', 'pages/_error')

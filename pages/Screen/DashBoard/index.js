@@ -28,6 +28,7 @@ import {
 import Consignment from './components/Consignment'
 import ManageScreen from './components/ManageScreen'
 import SettingScreen from './components/SettingScreen'
+import * as Parse from 'parse'
 
 class DashBoard extends React.PureComponent {
   static async getInitialProps ({ query }) {
@@ -38,7 +39,7 @@ class DashBoard extends React.PureComponent {
     this.state = {
       isLogin: false,
       isLoadingLogin: false,
-      numberPage: 4,
+      numberPage: 5,
       formData: {
         nameConsigner: '',
         nameConsignee: '',
@@ -52,6 +53,35 @@ class DashBoard extends React.PureComponent {
 
   async componentDidMount () {
     this.checkIsSigned()
+
+    // Parse.initialize('myAppId', 'myJavascriptKey')npx9ZOI6fokHfvaJQjDjidPnogS8PCH0
+    // javascriptKey is required only if you have it on server.
+    // console.log('Parse initialize')
+
+    // Parse.initialize('EJKfA5jFxiC98aMbvir0vSAuDHO4NQ7x', 'npx9ZOI6fokHfvaJQjDjidPnogS8PCH0')
+    // // @ts-ignore
+    // Parse.serverURL = 'https://giveaway-premium.herokuapp.com/api'
+    // console.log(Parse)
+
+    // const query = new Parse.Query('Channel')
+    // console.log(query)
+
+    // query.equalTo('name', 'Consignment').subscribe().then((subscription) => {
+    //   console.log('------------')
+    //   console.log(subscription)
+    //   subscription.on('open', () => {
+    //     console.log('subscription opened')
+    //   })
+
+    //   // subscription.on('create', (object) => {
+    //   //   console.log('object created: ', object)
+    //   // })
+
+    //   subscription.on('update', (object) => {
+    //     console.log('object updated', object)
+    //   })
+    // }).catch(err => console.error(err))
+    // const res = await GapService.updateChannel()
   }
 
   componentDidUpdate (prevProps, prevState) {
@@ -100,7 +130,7 @@ class DashBoard extends React.PureComponent {
     })
   };
 
-  handleSignOut = () => {
+  handleSignOut = async () => {
     ReduxServices.deleteUserToken()
   }
 

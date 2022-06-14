@@ -424,7 +424,7 @@ class ConsignmentScreen extends React.PureComponent {
                   <div className={'explain-box' + (step === 1 && isHideUserForm ? ' show' : '')}>
                     <div className='explain-box-left'>
                       <div className='box-full' />
-                      <span className='box-text'>Đã Đặt Chổ</span>
+                      <span className='box-text'>Đã Đặt Chỗ</span>
                     </div>
                     <div className='explain-box-right'>
                       <div className='box-empty' />

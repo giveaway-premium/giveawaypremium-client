@@ -142,13 +142,14 @@ export default class ReduxServices {
 
     console.log('getSetting')
     console.log(res)
-    console.log(res.results[0].Setting)
+    // console.log(res.results[0].Setting)
 
     if (res && res.results && res.results[0] && res.results[0].Setting) {
       ReduxServices.callDispatchAction(StorageActions.setSetting(res.results[0].Setting))
+      return res.results[0].Setting
+    } else {
+      return {}
     }
-
-    return res.results[0].Setting
   }
 
   static async getCategory () {

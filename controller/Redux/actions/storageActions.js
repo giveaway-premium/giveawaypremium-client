@@ -34,6 +34,14 @@ export default class StorageActions {
     }
   }
 
+  static setChannelMonitor (payload) {
+    saveDataLocal(KEY_STORE.SET_CHANNEL_MONITOR, payload)
+    return {
+      type: KEY_STORE.SET_CHANNEL_MONITOR,
+      payload
+    }
+  }
+
   static setSetting (payload) {
     saveDataLocal(KEY_STORE.SET_SETTING, payload)
     return {
