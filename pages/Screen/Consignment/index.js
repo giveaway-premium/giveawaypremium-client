@@ -48,6 +48,7 @@ class ConsignmentScreen extends React.PureComponent {
   }
 
   onHandleOpenContent = (formName) => {
+    ReduxServices.getSetting()
     this.setState({
       isShowText1: false,
       isShowText2: false,

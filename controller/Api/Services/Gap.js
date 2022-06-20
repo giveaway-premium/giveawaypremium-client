@@ -60,9 +60,11 @@ export default class Gap {
 
     console.log(productListTemp)
     if (type) {
+      let formatedTitle = customerInfo && customerInfo.timeConfirmGetMoney && customerInfo.timeConfirmGetMoney.length > 0 ? ((`GAP ${title}` || 'GAP') + ' ' + consignmentInfo.consignmentId + ' ' + (consignmentInfo.timeConfirmGetMoney)) : ((`GAP ${title}` || 'GAP') + ' ' + consignmentInfo.consignmentId + ' ' + (consignmentInfo.timeGetMoney))
+      formatedTitle = formatedTitle.replaceAll('-', '/')
       const body = {
-        'mailTo': customerInfo.mail,
-        'title': customerInfo.timeConfirmGetMoney && customerInfo.timeConfirmGetMoney.length > 0 ? ((title || 'GAP') + ' ' + consignmentInfo.consignmentId + '*' + (consignmentInfo.timeConfirmGetMoney)) : ((title || 'GAP') + ' ' + consignmentInfo.consignmentId + '*' + (consignmentInfo.timeGetMoney)),
+        'mailTo': customerInfo.mail.toLowerCase(),
+        'title': formatedTitle,
         'type': type,
         'data': {
           'moneyBack': consignmentInfo.moneyBack ? `${numberWithCommas(consignmentInfo.moneyBack)} vnd` : '0 vnd',

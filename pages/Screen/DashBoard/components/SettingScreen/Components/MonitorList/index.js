@@ -29,7 +29,10 @@ class MonitorList extends React.Component {
   }
 
   componentDidMount () {
+    // const { setChannelMonitor } = this.props
+
     this.fetchAllMonitor()
+    // setChannelMonitor({})
   }
 
   fetchAllMonitor = async () => {

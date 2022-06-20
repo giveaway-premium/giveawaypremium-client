@@ -30,40 +30,41 @@ class ConsignmentScreen extends React.PureComponent {
         phoneNumber: '',
         numberOfProduct: 1
       },
-      timeBooking: [
-        {
-          timeName: '10:00',
-          timeCode: '1000'
-        },
-        {
-          timeName: '11:00',
-          timeCode: '1100'
-        },
-        {
-          timeName: '13:30',
-          timeCode: '1330'
-        },
-        {
-          timeName: '14:30',
-          timeCode: '1430'
-        },
-        {
-          timeName: '15:30',
-          timeCode: '1530'
-        },
-        {
-          timeName: '16:30',
-          timeCode: '1630'
-        },
-        {
-          timeName: '17:30',
-          timeCode: '1730'
-        },
-        {
-          timeName: '18:30',
-          timeCode: '1830'
-        }
-      ],
+      timeBooking: [],
+      // timeBooking: [
+      //   {
+      //     timeName: '10:00',
+      //     timeCode: '1000'
+      //   },
+      //   {
+      //     timeName: '11:00',
+      //     timeCode: '1100'
+      //   },
+      //   {
+      //     timeName: '13:30',
+      //     timeCode: '1330'
+      //   },
+      //   {
+      //     timeName: '14:30',
+      //     timeCode: '1430'
+      //   },
+      //   {
+      //     timeName: '15:30',
+      //     timeCode: '1530'
+      //   },
+      //   {
+      //     timeName: '16:30',
+      //     timeCode: '1630'
+      //   },
+      //   {
+      //     timeName: '17:30',
+      //     timeCode: '1730'
+      //   },
+      //   {
+      //     timeName: '18:30',
+      //     timeCode: '1830'
+      //   }
+      // ],
       step: 0,
       isHideUserForm: true,
       isHideDayColumn: false,
@@ -79,10 +80,11 @@ class ConsignmentScreen extends React.PureComponent {
   }
 
   async componentDidMount () {
+    const newSettingRedux = await ReduxServices.getSetting()
     const { settingRedux } = this.props
     let dayBookingCount = ['', '', '', '', '', '', '', '', '', '', '', '', '', '']
     let dayBookingTemp = []
-    let bookingOptionEachDay = settingRedux.BOOKING_OPTION_EACH_DAY || BOOKING_OPTION_EACH_DAY_DATA_DEFAULT
+    let bookingOptionEachDay = newSettingRedux.BOOKING_OPTION_EACH_DAY || BOOKING_OPTION_EACH_DAY_DATA_DEFAULT
 
     dayBookingCount.map((item, index) => {
       dayBookingTemp.push({
@@ -136,6 +138,7 @@ class ConsignmentScreen extends React.PureComponent {
       arrayDate.push(`"${itemDate.date}"`)
     })
 
+    ReduxServices.getSetting()
     const res = await GapService.getAppointmentWithDate(arrayDate)
 
     if (res && res.results) {
@@ -193,7 +196,9 @@ class ConsignmentScreen extends React.PureComponent {
   }
 
   onChooseTime = (choosenTime) => {
-    console.log(choosenTime)
+    // console.log('choosenTime')
+    // console.log(choosenTime)
+
     this.setState({
       step: 1,
       choosenTimeCode: choosenTime ? choosenTime.timeCode : ''

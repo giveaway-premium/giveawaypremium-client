@@ -28,8 +28,8 @@ export const EMAIL_TYPE = {
 }
 
 export const EMAIL_TITLE = {
-  CONSIGNMENT: 'Xác nhận thông tin ký gửi',
-  PAYMENT: 'Xác nhận thông tin chuyển khoản'
+  CONSIGNMENT: 'Xác Nhận Thông Tin Ký Gửi',
+  PAYMENT: 'Xác Nhận Thông Tin Chuyển Khoản'
 }
 
 export const BOOKING_OPTION_EACH_DAY = 'BOOKING_OPTION_EACH_DAY'

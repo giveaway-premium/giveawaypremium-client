@@ -774,13 +774,6 @@ onChangeOnlineInput = (valueTxt) => {
   console.log(valueTxt.target.value)
   this.setState({
     onlineCodeStringInput: valueTxt.target.value
-  }, async () => {
-    const body = {
-      data: this.state
-    }
-    const res = await GapService.updateChannel(body)
-    console.log('changeData and update channel')
-    console.log(res)
   })
 }
 
@@ -815,95 +808,95 @@ convertStringNameToObjectIdCategory = (stringName = '') => {
   console.log(lowerCaseStringCode)
 
   // quần áo
-  if (stringName.includes('áo') || stringName.includes('bra')) {
+  if (lowerCaseStringCode.includes('áo') || lowerCaseStringCode.includes('bra')) {
     return 'ao'
-  } else if (stringName.includes('đầm')) {
+  } else if (lowerCaseStringCode.includes('đầm')) {
     return 'dam'
-  } else if (stringName.includes('quần')) {
+  } else if (lowerCaseStringCode.includes('quần')) {
     return 'quan'
-  } else if (stringName.includes('chân váy') || stringName.includes('chan váy') || stringName.includes('cv') || stringName.includes('cvay') || stringName.includes('chân vay') || stringName.includes('váy') || stringName.includes('vay')) {
+  } else if (lowerCaseStringCode.includes('chân váy') || lowerCaseStringCode.includes('chan váy') || lowerCaseStringCode.includes('cv') || lowerCaseStringCode.includes('cvay') || lowerCaseStringCode.includes('chân vay') || lowerCaseStringCode.includes('váy') || lowerCaseStringCode.includes('vay')) {
     return 'vay'
-  } else if (stringName.includes('body') || stringName.includes('bodysuit') || stringName.includes('suit') || stringName.includes('jum') || stringName.includes('jumsuit')) {
+  } else if (lowerCaseStringCode.includes('body') || lowerCaseStringCode.includes('bodysuit') || lowerCaseStringCode.includes('suit') || lowerCaseStringCode.includes('jum') || lowerCaseStringCode.includes('jumsuit')) {
     return 'set'
-  } else if (stringName.includes('ao khoác') || stringName.includes('áo khoác') || stringName.includes('áo khoac') || stringName.includes('ao khoac') || stringName.includes('aokhoac')) {
+  } else if (lowerCaseStringCode.includes('ao khoác') || lowerCaseStringCode.includes('áo khoác') || lowerCaseStringCode.includes('áo khoac') || lowerCaseStringCode.includes('ao khoac') || lowerCaseStringCode.includes('aokhoac')) {
     return 'khoac'
   // eslint-disable-next-line brace-style
   }
   // giày dép
-  else if (stringName.includes('giày') || stringName.includes('giay') || stringName.includes('giày thể thao') || stringName.includes('giay the thao') || stringName.includes('sneaker') || stringName.includes('giày the thao') || stringName.includes('giay thể thao')) {
+  else if (lowerCaseStringCode.includes('giày') || lowerCaseStringCode.includes('giay') || lowerCaseStringCode.includes('giày thể thao') || lowerCaseStringCode.includes('giay the thao') || lowerCaseStringCode.includes('sneaker') || lowerCaseStringCode.includes('giày the thao') || lowerCaseStringCode.includes('giay thể thao')) {
     return 'thao'
-  } else if (stringName.includes('cao gót') || stringName.includes('cao got') || stringName.includes('giày cao gót') || stringName.includes('giay cao gót') || stringName.includes('giay cao got')) {
+  } else if (lowerCaseStringCode.includes('cao gót') || lowerCaseStringCode.includes('cao got') || lowerCaseStringCode.includes('giày cao gót') || lowerCaseStringCode.includes('giay cao gót') || lowerCaseStringCode.includes('giay cao got')) {
     return 'cao'
-  } else if (stringName.includes('dép') || stringName.includes('đôi dép') || stringName.includes('doi dep ')) {
+  } else if (lowerCaseStringCode.includes('dép') || lowerCaseStringCode.includes('đôi dép') || lowerCaseStringCode.includes('doi dep ')) {
     return 'dep'
-  } else if (stringName.includes('boot')) {
+  } else if (lowerCaseStringCode.includes('boot')) {
     return 'boot'
-  } else if (stringName.includes('sandal')) {
+  } else if (lowerCaseStringCode.includes('sandal')) {
     return 'sandal'
     // eslint-disable-next-line brace-style
   }
   // Túi Ví
-  else if (stringName.includes('balo') || stringName.includes('balô') || stringName.includes('ba lô')) {
+  else if (lowerCaseStringCode.includes('balo') || lowerCaseStringCode.includes('balô') || lowerCaseStringCode.includes('ba lô')) {
     return 'balo'
-  } else if (stringName.includes('túi') || stringName.includes('chiếc túi')) {
+  } else if (lowerCaseStringCode.includes('túi') || lowerCaseStringCode.includes('chiếc túi')) {
     return 'tui'
-  } else if (stringName.includes('clutch')) {
+  } else if (lowerCaseStringCode.includes('clutch')) {
     return 'clutch'
-  } else if (stringName.includes('beltbag') || stringName.includes('belt bag')) {
+  } else if (lowerCaseStringCode.includes('beltbag') || lowerCaseStringCode.includes('belt bag')) {
     return 'bag'
-  } else if (stringName.includes('ví')) {
+  } else if (lowerCaseStringCode.includes('ví')) {
     return 'vi'
     // eslint-disable-next-line brace-style
   }
   // Phụ kiện
-  else if (stringName.includes('vòng') || stringName.includes('vòng tay') || stringName.includes('vong tay') || stringName.includes('lắc') || stringName.includes('cuff')) {
+  else if (lowerCaseStringCode.includes('vòng') || lowerCaseStringCode.includes('vòng tay') || lowerCaseStringCode.includes('vong tay') || lowerCaseStringCode.includes('lắc') || lowerCaseStringCode.includes('cuff')) {
     return 'vong'
-  } else if (stringName.includes('hoa tai') || stringName.includes('bông tai') || stringName.includes('bong tai')) {
+  } else if (lowerCaseStringCode.includes('hoa tai') || lowerCaseStringCode.includes('bông tai') || lowerCaseStringCode.includes('bong tai')) {
     return 'tai'
-  } else if (stringName.includes('nhẫn')) {
+  } else if (lowerCaseStringCode.includes('nhẫn')) {
     return 'nhan'
-  } else if (stringName.includes('dây chuyền') || stringName.includes('set vòng cổ') || stringName.includes('day chuyen') || stringName.includes('vòng cổ')) {
+  } else if (lowerCaseStringCode.includes('dây chuyền') || lowerCaseStringCode.includes('set vòng cổ') || lowerCaseStringCode.includes('day chuyen') || lowerCaseStringCode.includes('vòng cổ')) {
     return 'chuyen'
-  } else if (stringName.includes('cài') || stringName.includes('charm')) {
+  } else if (lowerCaseStringCode.includes('cài') || lowerCaseStringCode.includes('charm')) {
     return 'pkhac'
-  } else if (stringName.includes('đồng hồ') || stringName.includes('dong ho') || stringName.includes('đồnghồ') || stringName.includes('watch') || stringName.includes('đh') || stringName.includes('dh')) {
+  } else if (lowerCaseStringCode.includes('đồng hồ') || lowerCaseStringCode.includes('dong ho') || lowerCaseStringCode.includes('đồnghồ') || lowerCaseStringCode.includes('watch') || lowerCaseStringCode.includes('đh') || lowerCaseStringCode.includes('dh')) {
     return 'ho'
-  } else if (stringName.includes('mắt kính') || stringName.includes('kính')) {
+  } else if (lowerCaseStringCode.includes('mắt kính') || lowerCaseStringCode.includes('kính')) {
     return 'kinh'
     // eslint-disable-next-line brace-style
   }
   // Mỹ phẩm
   else if (
-    stringName.includes('mascara') || stringName.includes('son') || stringName.includes('phấn') ||
-    stringName.includes('phấn má') || stringName.includes('nền') || stringName.includes('phấn mắt') ||
-    stringName.includes('tẩy trang') || stringName.includes('cọ') || stringName.includes('set mỹ phẩm') ||
-    stringName.includes('set mp') || stringName.includes('mỹ phẩm') || stringName.includes('mĩ phẩm') ||
-    stringName.includes('phấn nước') || stringName.includes('cushion') || stringName.includes('bút kẻ') ||
-    stringName.includes('nước cân bằng') || stringName.includes('tạo khối') || stringName.includes('phần phủ') ||
-    stringName.includes('bắt sáng') || stringName.includes('kem lót') || stringName.includes('kem nền') ||
-    stringName.includes('bộ mỹ phẩm') || stringName.includes('trang điểm') || stringName.includes('má hồng') ||
-    stringName.includes('bảng mắt')
+    lowerCaseStringCode.includes('mascara') || lowerCaseStringCode.includes('son') || lowerCaseStringCode.includes('phấn') ||
+    lowerCaseStringCode.includes('phấn má') || lowerCaseStringCode.includes('nền') || lowerCaseStringCode.includes('phấn mắt') ||
+    lowerCaseStringCode.includes('tẩy trang') || lowerCaseStringCode.includes('cọ') || lowerCaseStringCode.includes('set mỹ phẩm') ||
+    lowerCaseStringCode.includes('set mp') || lowerCaseStringCode.includes('mỹ phẩm') || lowerCaseStringCode.includes('mĩ phẩm') ||
+    lowerCaseStringCode.includes('phấn nước') || lowerCaseStringCode.includes('cushion') || lowerCaseStringCode.includes('bút kẻ') ||
+    lowerCaseStringCode.includes('nước cân bằng') || lowerCaseStringCode.includes('tạo khối') || lowerCaseStringCode.includes('phần phủ') ||
+    lowerCaseStringCode.includes('bắt sáng') || lowerCaseStringCode.includes('kem lót') || lowerCaseStringCode.includes('kem nền') ||
+    lowerCaseStringCode.includes('bộ mỹ phẩm') || lowerCaseStringCode.includes('trang điểm') || lowerCaseStringCode.includes('má hồng') ||
+    lowerCaseStringCode.includes('bảng mắt')
   ) {
     return 'diem'
   } else if (
-    stringName.includes('tonner') || stringName.includes('toner') || stringName.includes('kem dưỡng') ||
-    stringName.includes('dưỡng') || stringName.includes('dưỡng tóc') || stringName.includes('sữa rửa mặt') ||
-    stringName.includes('kem tay') || stringName.includes('serum') || stringName.includes('kem chống nắng') ||
-    stringName.includes('kcn') || stringName.includes('lotion') || stringName.includes('mặt nạ') ||
-    stringName.includes('lăn nách') || stringName.includes('sữa tắm') || stringName.includes('gel') ||
-    stringName.includes('dầu gội') || stringName.includes('xịt khoáng') || stringName.includes('dưỡng da') ||
-    stringName.includes('tinh chất') || stringName.includes('dầu dưỡng') || stringName.includes('mask')
+    lowerCaseStringCode.includes('tonner') || lowerCaseStringCode.includes('toner') || lowerCaseStringCode.includes('kem dưỡng') ||
+    lowerCaseStringCode.includes('dưỡng') || lowerCaseStringCode.includes('dưỡng tóc') || lowerCaseStringCode.includes('sữa rửa mặt') ||
+    lowerCaseStringCode.includes('kem tay') || lowerCaseStringCode.includes('serum') || lowerCaseStringCode.includes('kem chống nắng') ||
+    lowerCaseStringCode.includes('kcn') || lowerCaseStringCode.includes('lotion') || lowerCaseStringCode.includes('mặt nạ') ||
+    lowerCaseStringCode.includes('lăn nách') || lowerCaseStringCode.includes('sữa tắm') || lowerCaseStringCode.includes('gel') ||
+    lowerCaseStringCode.includes('dầu gội') || lowerCaseStringCode.includes('xịt khoáng') || lowerCaseStringCode.includes('dưỡng da') ||
+    lowerCaseStringCode.includes('tinh chất') || lowerCaseStringCode.includes('dầu dưỡng') || lowerCaseStringCode.includes('mask')
   ) {
     return 'da'
     // eslint-disable-next-line brace-style
   }
   // Nước hoa
-  else if (stringName.includes('nước hoa') || stringName.includes('nuoc hoa') || stringName.includes('perfume') || stringName.includes('scent') || stringName.includes('fragrance')) {
+  else if (lowerCaseStringCode.includes('nước hoa') || lowerCaseStringCode.includes('nuoc hoa') || lowerCaseStringCode.includes('perfume') || lowerCaseStringCode.includes('scent') || lowerCaseStringCode.includes('fragrance')) {
     return 'YIUniNrIKb'
     // eslint-disable-next-line brace-style
   }
   // Thiết bị làm đẹp
-  else if (stringName.includes('máy rửa mặt') || stringName.includes('thiết bị') || stringName.includes('máy rửa') || stringName.includes('máy')) {
+  else if (lowerCaseStringCode.includes('máy rửa mặt') || lowerCaseStringCode.includes('thiết bị') || lowerCaseStringCode.includes('máy rửa') || lowerCaseStringCode.includes('máy')) {
     return 'B3OQuAChW1'
     // eslint-disable-next-line brace-style
   } else {
