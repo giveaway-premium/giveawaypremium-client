@@ -233,7 +233,7 @@ class Consignment extends React.PureComponent {
               consignerIdCard: formData.consignerIdCard,
               mail: formData.mail,
               email: formData.mail || 'nothing@giveaway.com',
-              birthday: formData.birthday,
+              birthday: formData.birthday && formData.birthday.length > 0 && formData.birthday !== 'Invalid date' ? formData.birthday : moment().format('DD-MM-YYYY'),
               bankName: formData.bankName,
               bankId: formData.bankId
             }
@@ -262,7 +262,7 @@ class Consignment extends React.PureComponent {
           // email: formData.mail || 'nothing@giveaway.com',
           username: formData.phoneNumber,
           password: formData.consignerIdCard,
-          birthday: formData.birthday,
+          birthday: formData.birthday && formData.birthday.length > 0 && formData.birthday !== 'Invalid date' ? formData.birthday : moment().format('DD-MM-YYYY'),
           bankName: formData.bankName,
           bankId: formData.bankId
         }

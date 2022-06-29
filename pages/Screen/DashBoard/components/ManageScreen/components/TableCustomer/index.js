@@ -280,11 +280,10 @@ class TableConsignemntScreen extends React.PureComponent {
         res = await GapService.getCustomerTable(page, searchText)
       }
 
-      console.log('res')
-      console.log(res)
       let customerData = []
       if (res && res.results) {
         res.results.map((item, indexItem) => {
+          console.log(item)
           customerData.push({
             key: indexItem,
             objectId: item.objectId,
@@ -294,7 +293,7 @@ class TableConsignemntScreen extends React.PureComponent {
             bankName: item.banks[0].type,
             bankId: item.banks[0].accNumber,
             email: item.mail,
-            birthday: moment(item.birthday).format('DD-MM-YYYY')
+            birthday: item.birthday
           })
         })
         this.setState({
