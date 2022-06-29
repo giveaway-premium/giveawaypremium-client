@@ -718,24 +718,38 @@ onChangeCategory = async (valueProp) => {
   } else if (valueProp && !valueProp.value) {
     filterTxt = valueProp
   }
-  console.log(valueProp)
 
   const categorySplitTxt = filterTxt && filterTxt.split('+')
   let categoryId
   let subCategoryId
   let hashCode
   let indexProduct
+  let defaultCategoryCode
 
   if (categorySplitTxt.length === 3) {
     categoryId = categorySplitTxt[0]
     subCategoryId = categorySplitTxt[1]
     hashCode = categorySplitTxt[2]
+    defaultCategoryCode = {
+      key: categoryId + '+' + subCategoryId + '+' + hashCode,
+      label: valueProp.label,
+      value: categoryId + '+' + subCategoryId + '+' + hashCode
+    }
   } else if (categorySplitTxt.length === 2) {
     // this is also parent category
     categoryId = categorySplitTxt[0]
     hashCode = categorySplitTxt[1]
     subCategoryId = null
+    defaultCategoryCode = {
+      key: categoryId + '+' + hashCode,
+      label: valueProp.label,
+      value: categoryId + '+' + hashCode
+    }
   }
+
+  console.log(categoryId)
+  console.log(hashCode)
+  console.log(subCategoryId)
 
   await productListTemp.map((item, hashCodeIndex) => {
     if (item.hashCode === hashCode) {
@@ -743,8 +757,11 @@ onChangeCategory = async (valueProp) => {
     }
   })
 
+  console.log(indexProduct)
+
   productListTemp[indexProduct].categoryId = categoryId
   productListTemp[indexProduct].subCategoryId = subCategoryId
+  productListTemp[indexProduct].defaultCategoryCode = defaultCategoryCode
 
   console.log('productListTemp')
   console.log(productListTemp)
@@ -786,9 +803,8 @@ renderStringCodeBox = () => {
   return (
     <div>
       <p className='text text-title MB10'>Thông tin đơn ký gửi</p>
-      <p className='text'>Tên sản phẩm / giá tiền (k) / số lượng / tình trạng</p>
-      <p className='text'>Tên sản phẩm / giá tiền (k) / số lượng</p>
-      <p className='text'>Tên sản phẩm / giá tiền (k)</p>
+      <p className='text'>Tên sản phẩm / giá tiền (k) / tình trạng / số lượng</p>
+      <p className='text MB10'>Tên sản phẩm / giá tiền (k) / tình trạng</p>
 
       {isErrorFormat ? <span className='text text-color-6 MB10'>Sai Định dạng</span> : null}
       <div className='product-item-note MB20'>
@@ -942,31 +958,31 @@ convertStringToConsignment = () => {
     console.log('stringCodeArr')
     console.log(stringCodeArr)
 
-    if (isErrorFormat === false && stringCodeArr && (((stringCodeArr.length === 3 || stringCodeArr.length === 4) && Number(stringCodeArr[2].trim()) + 1 > 0) || stringCodeArr.length === 2) && Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', '')) + 1 > 0) {
-      // type = stringCodeArr[0].trim().toLowerCase()
-
+    // if (isErrorFormat === false && stringCodeArr && (((stringCodeArr.length === 3 || stringCodeArr.length === 4) && Number(stringCodeArr[3].trim()) + 1 > 0) || stringCodeArr.length === 2) && Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', '')) + 1 > 0) {
+    // type = stringCodeArr[0].trim().toLowerCase()
+    if (isErrorFormat === false && stringCodeArr && (((stringCodeArr.length === 4) && Number(stringCodeArr[3].trim()) + 1 > 0) || stringCodeArr.length === 3) && Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', '')) + 1 > 0) {
       switch (stringCodeArr.length) {
       case 4: {
         name = stringCodeArr[0].trim()
         price = Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', ''))
-        amount = Number(stringCodeArr[2].trim()) || 1
-        detail = stringCodeArr[3].trim() || '---'
+        detail = stringCodeArr[2].trim() || '---'
+        amount = Number(stringCodeArr[3].trim()) || 1
         break
       }
       case 3: {
         name = stringCodeArr[0].trim()
         price = Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', ''))
-        amount = Number(stringCodeArr[2].trim()) || 1
-        detail = '---'
-        break
-      }
-      case 2: {
-        name = stringCodeArr[0].trim()
-        price = Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', ''))
+        detail = stringCodeArr[2].trim() || '---'
         amount = 1
-        detail = '---'
         break
       }
+      // case 2: {
+      //   name = stringCodeArr[0].trim()
+      //   price = Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', ''))
+      //   amount = 1
+      //   detail = '---'
+      //   break
+      // }
       }
 
       type = this.convertStringNameToObjectIdCategory(name)

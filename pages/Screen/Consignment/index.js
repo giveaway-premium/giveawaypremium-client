@@ -108,7 +108,7 @@ class ConsignmentScreen extends React.PureComponent {
     return (
       <div>
         <p className='text text-title MB10'>Hướng dẫn ký gửi</p>
-        <p className='text'>Vui lòng nhấn nút Quan Tâm để chúng tôi được phục vụ bạn một cách tốt nhất. Cảm ơn quý khách.</p>
+        <p className='text'>Sau khi truy cập Zalo, vui lòng nhấn Quan tâm/Follow để GAP có thể ghi nhận thông tin ký gửi từ anh/chị nhé!</p>
         <img className='MR10 cursor-pointer MB10 MT10' src={images.kyguiZalo} style={{ objectFit: 'contain', height: '100%', width: '100%' }} />
 
         <Button className='MT10' onClick={onContinue}>Tiếp tục</Button>

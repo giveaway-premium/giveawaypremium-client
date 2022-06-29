@@ -6,7 +6,7 @@ import { Form, Row, Col, Layout, Input, Button, Badge, Spin, Descriptions, Tabs,
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
 import { showNotification, numberWithCommas } from 'common/function'
-import { LoadingOutlined, SearchOutlined } from '@ant-design/icons'
+import { DeleteFilled, LoadingOutlined, SearchOutlined } from '@ant-design/icons'
 import { Router } from 'common/routes'
 import { isMobile } from 'react-device-detect'
 import './style.scss'
@@ -108,7 +108,9 @@ class TableConsignemntScreen extends React.PureComponent {
       {
         title: 'Tên khách hàng',
         dataIndex: 'consignerName',
-        key: 'name'
+        key: '0',
+        width: 250,
+        ...this.getColumnSearchPropsConsignmentName('consignerName')
       },
       {
         title: 'Số điện thoại',
@@ -120,6 +122,7 @@ class TableConsignemntScreen extends React.PureComponent {
         title: 'Mã ký gửi',
         dataIndex: 'consignmentId',
         key: '2',
+        width: 120,
         editable: true
       },
       {
@@ -138,9 +141,10 @@ class TableConsignemntScreen extends React.PureComponent {
       },
       {
         title: 'Còn lại',
-        width: 80,
+        width: 120,
         dataIndex: 'remainNumConsignment',
-        key: '5'
+        key: '5',
+        ...this.getColumnSearchProps('remainNumConsignment')
       },
       {
         title: 'Số tiền trả khách',
@@ -162,7 +166,8 @@ class TableConsignemntScreen extends React.PureComponent {
       {
         title: 'Nhận tiền',
         dataIndex: 'isTransferMoneyWithBank',
-        key: '9'
+        key: '9',
+        ...this.getColumnSearchProps('isTransferMoneyWithBank')
       },
       {
         title: 'Thời gian nhận tiền',
@@ -240,14 +245,14 @@ class TableConsignemntScreen extends React.PureComponent {
         title: 'Giá',
         dataIndex: 'price',
         key: 'price',
-        editable: true,
+        // editable: true,
         render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
       },
       {
         title: 'Số lượng',
         dataIndex: 'count',
         key: 'count',
-        editable: true,
+        // editable: true,
         width: 100
       },
       {
@@ -408,29 +413,51 @@ class TableConsignemntScreen extends React.PureComponent {
     // }
   };
 
+  convertDataIndexToName = (dataIndex) => {
+    console.log('dataIndex')
+    console.log(dataIndex)
+    switch (dataIndex) {
+    case 'consignerName':
+      return 'Tìm tên khách hàng'
+    case 'phoneNumber':
+      return 'Tìm số điện thoại'
+    }
+  }
+
   getColumnSearchProps = dataIndex => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-      <div style={{ padding: 8 }}>
+      <div style={{ padding: 10 }}>
         <Input
           ref={node => {
             this.searchInput = node
           }}
-          placeholder={`Tìm số điện thoại`}
+          placeholder={this.convertDataIndexToName}
           value={selectedKeys[0]}
           onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
           onPressEnter={() => this.handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{ width: 188, marginBottom: 8, display: 'block' }}
+          style={{ width: '100%', marginBottom: 8, display: 'block' }}
         />
         {/* <Space> */}
-        <Button
-          type='primary'
-          onClick={() => this.handleSearch(selectedKeys, confirm, dataIndex)}
-          icon={<SearchOutlined />}
-          size='small'
-          style={{ width: '100%' }}
-        >
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <Button
+            type='primary'
+            onClick={() => this.handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size='small'
+            style={{ width: '100%', marginBottom: '10px', marginTop: '10px' }}
+          >
             Tìm kiếm
-        </Button>
+          </Button>
+          <Button
+            type='primary'
+            onClick={() => this.handleReset(clearFilters)}
+            icon={<DeleteFilled />}
+            size='small'
+            style={{ width: '100%' }}
+          >
+          Xoá
+          </Button>
+        </div>
         {/* <Button
           type='link'
           size='small'
@@ -462,6 +489,79 @@ class TableConsignemntScreen extends React.PureComponent {
         <Highlighter
           highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
           searchWords={[this.state.searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ''}
+        />
+      ) : (
+        text
+      )
+  });
+
+  getColumnSearchPropsConsignmentName = dataIndex => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div style={{ padding: 10 }}>
+        <Input
+          ref={node => {
+            this.searchInput = node
+          }}
+          placeholder={this.convertDataIndexToName}
+          value={selectedKeys[0]}
+          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => this.handleSearchName(selectedKeys, confirm, dataIndex)}
+          style={{ width: '100%', marginBottom: 8, display: 'block' }}
+        />
+        {/* <Space> */}
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <Button
+            type='primary'
+            onClick={() => this.handleSearchName(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size='small'
+            style={{ width: '100%', marginBottom: '10px', marginTop: '10px' }}
+          >
+            Tìm kiếm
+          </Button>
+          <Button
+            type='primary'
+            onClick={() => this.handleResetName(clearFilters)}
+            icon={<DeleteFilled />}
+            size='small'
+            style={{ width: '100%' }}
+          >
+          Xoá
+          </Button>
+        </div>
+        {/* <Button
+          type='link'
+          size='small'
+          onClick={() => {
+            confirm({ closeDropdown: false })
+            this.setState({
+              searchText: selectedKeys[0],
+              searchedColumn: dataIndex
+            })
+          }}
+        >
+            Filter
+        </Button> */}
+        {/* </Space> */}
+      </div>
+    ),
+    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+    // onFilter: (value, record) =>
+    //   record[dataIndex]
+    //     ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+    //     : '',
+    onFilterDropdownVisibleChange: visible => {
+      if (visible) {
+        setTimeout(() => this.searchInput.select(), 100)
+      }
+    },
+    render: text =>
+      this.state.searchedColumnName === dataIndex ? (
+        <Highlighter
+          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+          searchWords={[this.state.searchTextName]}
           autoEscape
           textToHighlight={text ? text.toString() : ''}
         />
@@ -536,9 +636,30 @@ class TableConsignemntScreen extends React.PureComponent {
     }
   }
 
+  handleSearchName = (selectedKeys, confirm, dataIndex) => {
+    console.log('handleSearch')
+    console.log(selectedKeys)
+    console.log(dataIndex)
+
+    // confirm()
+    // this.fetchTableData(1, selectedKeys[0])
+    this.setState({
+      searchTextName: selectedKeys[0],
+      searchedColumnName: dataIndex
+    }, () => {
+      confirm()
+    })
+  }
+
+  handleResetName = clearFilters => {
+    clearFilters()
+    this.setState({ searchTextName: '', searchedColumnName: null })
+  };
+
   handleSearch = (selectedKeys, confirm, dataIndex) => {
     console.log('handleSearch')
     console.log(selectedKeys)
+    console.log(dataIndex)
 
     // confirm()
     // this.fetchTableData(1, selectedKeys[0])
@@ -552,7 +673,7 @@ class TableConsignemntScreen extends React.PureComponent {
 
   handleReset = clearFilters => {
     clearFilters()
-    this.setState({ searchText: '' })
+    this.setState({ searchText: '', searchedColumn: null })
   };
 
   fetchAllTags = async () => {
