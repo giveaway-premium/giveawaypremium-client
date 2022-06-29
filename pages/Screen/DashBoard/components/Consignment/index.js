@@ -38,7 +38,8 @@ class Consignment extends React.PureComponent {
           totalPriceAfterFee: '',
           categoryId: '',
           subCategoryId: '',
-          note: '---'
+          note: '---',
+          isNew: 'true'
         }
       ],
       formData: {
@@ -185,6 +186,7 @@ class Consignment extends React.PureComponent {
           productCount += Number(item.count)
           productListTemp.push({
             ...item,
+            isNew: item.isNew || 'true',
             code: formData.consignmentId + '-' + timeGroupCode + '-' + productId,
             key: indexItem,
             productId: productId
@@ -414,7 +416,8 @@ class Consignment extends React.PureComponent {
           totalPriceAfterFee: '',
           categoryId: '',
           subCategoryId: '',
-          note: '---'
+          note: '---',
+          isNew: 'true'
         }
       ],
       formData: {
@@ -584,7 +587,8 @@ class Consignment extends React.PureComponent {
           remainNumberProduct: 1,
           priceAfterFee: '',
           note: '---',
-          productId: productList.length
+          productId: productList.length,
+          isNew: 'true'
         },
         {
           categoryId: '',
@@ -595,7 +599,8 @@ class Consignment extends React.PureComponent {
           remainNumberProduct: 1,
           priceAfterFee: '',
           note: '---',
-          productId: productList.length + 1
+          productId: productList.length + 1,
+          isNew: 'true'
         },
         {
           categoryId: '',
@@ -606,7 +611,8 @@ class Consignment extends React.PureComponent {
           remainNumberProduct: 1,
           priceAfterFee: '',
           note: '---',
-          productId: productList.length + 2
+          productId: productList.length + 2,
+          isNew: 'true'
         }
       ],
       formData: {
@@ -705,6 +711,21 @@ class Consignment extends React.PureComponent {
         isTransferMoneyWithBank: 'false'
       })
     }
+  }
+
+  onChangeProductTypeNewOrOld = (value, indexProduct) => {
+    const { productList } = this.state
+
+    let productListTemp = productList.slice()
+    if (value[0] === 'new') {
+      productListTemp[indexProduct].isNew = 'true'
+    } else {
+      productListTemp[indexProduct].isNew = 'false'
+    }
+
+    this.setState({
+      productList: productListTemp
+    })
   }
 
 onChangeCategory = async (valueProp) => {
@@ -1022,7 +1043,8 @@ convertStringToConsignment = () => {
           key: categoryListObjectTemp[type].isParentSelf ? `${categoryId}+${subCategoryId}+${hashCode}` : `${subCategoryId}+${hashCode}`,
           label: categoryListObjectTemp[type].name,
           value: categoryListObjectTemp[type].isParentSelf ? `${categoryId}+${subCategoryId}+${hashCode}` : `${subCategoryId}+${hashCode}`
-        }
+        },
+        isNew: 'true'
       })
       isErrorFormat = false
     } else {
@@ -1101,6 +1123,11 @@ render () {
   const options = [
     { label: 'Chuyển khoản', value: 'true' },
     { label: 'Trực tiếp', value: 'false' }
+  ]
+
+  const optionsTypeProduct = [
+    { label: 'Hàng mới', value: 'new' },
+    { label: 'Hàng đã sử dụng', value: 'old' }
   ]
 
   return (
@@ -1287,6 +1314,10 @@ render () {
                           <div className='product-item-value'>
                             <Input style={{ marginRight: '10px' }} value={item.price} allowClear type={'number'} id='priceProduct' key='priceProduct' onChange={(value) => this.changeDataProduct(value, indexItem)} placeholder='Giá tiền' />
                             <Input value={item.count} prefix={<span>SL</span>} defaultValue={1} type={'number'} id='numberOfProducts' key='numberOfProducts' onChange={(value) => this.changeDataProduct(value, indexItem)} allowClear placeholder='Số lượng' />
+                          </div>
+
+                          <div>
+                            <Checkbox.Group options={optionsTypeProduct} value={this.state.productList[indexItem].isNew === 'true' ? 'new' : 'old'} defaultValue={['new']} onChange={(value) => this.onChangeProductTypeNewOrOld(value, indexItem)} />
                           </div>
 
                           <div className='product-item-note'>
