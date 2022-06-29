@@ -14,6 +14,7 @@ export const images = {
   icClose: '/static/Assets/Image/Icon/close.svg',
 
   favicon: '/static/favicon.png',
+  kyguiZalo: '/static/Assets/Image/kyguiquantam.png',
   threeDots: '/static/Assets/Image/Common/three-dots.svg',
   error: '/static/Assets/Image/Common/error.png',
   pageNotFound: '/static/Assets/Image/Common/404.svg',
