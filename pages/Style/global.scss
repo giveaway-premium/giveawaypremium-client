@@ -341,11 +341,11 @@ h1, h2, h3, h4 {
   padding: 15px;
   margin: 0 auto;
   @media screen and (min-width: 1024px) {
-    width: 1024px;
+    max-width: 1024px;
   }
 
   @media screen and (min-width: 1424px) {
-    width: 1424px;
+    max-width: 1424px;
   }
 }
 
