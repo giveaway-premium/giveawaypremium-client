@@ -245,21 +245,21 @@ class TableConsignemntScreen extends React.PureComponent {
         title: 'Giá',
         dataIndex: 'price',
         key: 'price',
-        // editable: true,
+        editable: true,
         render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
       },
       {
         title: 'Số lượng',
         dataIndex: 'count',
         key: 'count',
-        // editable: true,
+        editable: true,
         width: 100
       },
       {
         title: 'Giá sau phí',
         dataIndex: 'priceAfterFee',
         key: 'priceAfterFee',
-        // editable: true,
+        editable: true,
         render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
       },
       {
