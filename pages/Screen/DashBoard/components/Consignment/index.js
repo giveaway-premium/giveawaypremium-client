@@ -39,7 +39,8 @@ class Consignment extends React.PureComponent {
           categoryId: '',
           subCategoryId: '',
           note: '---',
-          isNew: 'true'
+          isNew: 'true',
+          rateNew: 100
         }
       ],
       formData: {
@@ -48,12 +49,12 @@ class Consignment extends React.PureComponent {
         phoneNumber: '',
         consignerIdCard: '',
         mail: '',
-        birthday: moment().format('DD-MM-YYYY'),
+        birthday: '',
         bankName: '',
         bankId: '',
         numberOfProducts: 1,
         consignmentId: '',
-        timeGetMoney: moment().format('DD-MM-YYYY'),
+        timeGetMoney: '',
         numberOfConsignmentTime: 0,
         numberOfConsignment: 0
       },
@@ -61,7 +62,7 @@ class Consignment extends React.PureComponent {
       totalMoney: 0,
       isLoadingTags: false,
       objectIdFoundUser: '',
-      birthday: moment().format('DD-MM-YYYY'),
+      birthday: '',
       isConsigning: false,
       isShowConfirmForm: false,
       isFoundUser: false,
@@ -189,7 +190,8 @@ class Consignment extends React.PureComponent {
             isNew: item.isNew || 'true',
             code: formData.consignmentId + '-' + timeGroupCode + '-' + productId,
             key: indexItem,
-            productId: productId
+            productId: productId,
+            rateNew: item.isNew ? 100 : 99
           })
         }
       }
@@ -235,7 +237,7 @@ class Consignment extends React.PureComponent {
               consignerIdCard: formData.consignerIdCard,
               mail: formData.mail,
               email: formData.mail || 'nothing@giveaway.com',
-              birthday: formData.birthday && formData.birthday.length > 0 && formData.birthday !== 'Invalid date' ? formData.birthday : moment().format('DD-MM-YYYY'),
+              birthday: formData.birthday && formData.birthday.length > 0 && formData.birthday !== 'Invalid date' ? formData.birthday : '',
               bankName: formData.bankName,
               bankId: formData.bankId
             }
@@ -264,7 +266,7 @@ class Consignment extends React.PureComponent {
           // email: formData.mail || 'nothing@giveaway.com',
           username: formData.phoneNumber,
           password: formData.consignerIdCard,
-          birthday: formData.birthday && formData.birthday.length > 0 && formData.birthday !== 'Invalid date' ? formData.birthday : moment().format('DD-MM-YYYY'),
+          birthday: formData.birthday && formData.birthday.length > 0 && formData.birthday !== 'Invalid date' ? formData.birthday : '',
           bankName: formData.bankName,
           bankId: formData.bankId
         }
@@ -357,13 +359,13 @@ class Consignment extends React.PureComponent {
           phoneNumber: phoneKey.target.value,
           consignerIdCard: '',
           mail: '',
-          birthday: moment().format('DD-MM-YYYY'),
+          birthday: '',
           bankName: '',
           bankId: '',
           consignmentId: ''
         },
         objectIdFoundUser: '',
-        birthday: moment().format('DD-MM-YYYY'),
+        birthday: '',
         isShowConfirmForm: false,
         isFoundUser: false
       })
@@ -376,13 +378,13 @@ class Consignment extends React.PureComponent {
           phoneNumber: phoneKey.target.value,
           consignerIdCard: '',
           mail: '',
-          birthday: moment().format('DD-MM-YYYY'),
+          birthday: '',
           bankName: '',
           bankId: '',
           consignmentId: ''
         },
         objectIdFoundUser: '',
-        birthday: moment().format('DD-MM-YYYY'),
+        birthday: '',
         isShowConfirmForm: false,
         isFoundUser: false
       })
@@ -417,7 +419,8 @@ class Consignment extends React.PureComponent {
           categoryId: '',
           subCategoryId: '',
           note: '---',
-          isNew: 'true'
+          isNew: 'true',
+          rateNew: 100
         }
       ],
       formData: {
@@ -426,12 +429,12 @@ class Consignment extends React.PureComponent {
         phoneNumber: '',
         consignerIdCard: '',
         mail: '',
-        birthday: moment(),
+        birthday: '',
         bankName: '',
         bankId: '',
         numberOfProducts: 1,
         consignmentId: '',
-        timeGetMoney: moment().format('DD-MM-YYYY'),
+        timeGetMoney: '',
         numberOfConsignmentTime: 0,
         numberOfConsignment: 0
       },
@@ -439,7 +442,7 @@ class Consignment extends React.PureComponent {
       totalMoney: 0,
       isLoadingTags: false,
       objectIdFoundUser: '',
-      birthday: moment().format('DD-MM-YYYY'),
+      birthday: '',
       isConsigning: false,
       isShowConfirmForm: false,
       isFoundUser: false,
@@ -451,9 +454,8 @@ class Consignment extends React.PureComponent {
 
   onChangeBirthday = (value) => {
     try {
-      const formatTime = moment(value).format('DD-MM-YYYY')
-      console.log(formatTime)
-      console.log(value)
+      // const formatTime = moment(value).format('DD-MM-YYYY')
+      const formatTime = value || ''
 
       this.setState({
         formData: {
@@ -522,8 +524,10 @@ class Consignment extends React.PureComponent {
       let moneyBackForFullSold = 0
       let totalMoney = 0
       productListTemp.map(item => {
-        moneyBackForFullSold += item.count * this.convertPriceAfterFee(Number(item.price)) * 1000
-        totalMoney += item.count * Number(item.price) * 1000
+        if (!item.isDeleted) {
+          moneyBackForFullSold += item.count * this.convertPriceAfterFee(Number(item.price)) * 1000
+          totalMoney += item.count * Number(item.price) * 1000
+        }
       })
 
       this.setState({
@@ -541,9 +545,11 @@ class Consignment extends React.PureComponent {
       let moneyBackForFullSold = 0
       let totalMoney = 0
       productListTemp.map(item => {
-        numberOfProducts += Number(item.count)
-        moneyBackForFullSold += item.count * this.convertPriceAfterFee(Number(item.price)) * 1000
-        totalMoney += item.count * Number(item.price) * 1000
+        if (!item.isDeleted) {
+          numberOfProducts += Number(item.count)
+          moneyBackForFullSold += item.count * this.convertPriceAfterFee(Number(item.price)) * 1000
+          totalMoney += item.count * Number(item.price) * 1000
+        }
       })
 
       this.setState({
@@ -588,7 +594,8 @@ class Consignment extends React.PureComponent {
           priceAfterFee: '',
           note: '---',
           productId: productList.length,
-          isNew: 'true'
+          isNew: 'true',
+          rateNew: 100
         },
         {
           categoryId: '',
@@ -600,7 +607,8 @@ class Consignment extends React.PureComponent {
           priceAfterFee: '',
           note: '---',
           productId: productList.length + 1,
-          isNew: 'true'
+          isNew: 'true',
+          rateNew: 100
         },
         {
           categoryId: '',
@@ -612,7 +620,8 @@ class Consignment extends React.PureComponent {
           priceAfterFee: '',
           note: '---',
           productId: productList.length + 2,
-          isNew: 'true'
+          isNew: 'true',
+          rateNew: 100
         }
       ],
       formData: {
@@ -642,43 +651,50 @@ class Consignment extends React.PureComponent {
 
     console.log(index)
 
-    if (index >= 0) {
-      let moneyBackTemp = moneyBackForFullSold - (this.convertPriceAfterFee(Number(productList[index].price)) * 1000 * Number(productList[index].count))
-      let totalMoneyTemp = totalMoney - Number(productList[index].price) * 1000 * Number(productList[index].count)
-      let productNumber = formData.numberOfProducts - productList[index].count
-      // delete productListTemp[index]
+    // if (index >= 0) {
+    let moneyBackTemp = moneyBackForFullSold - (this.convertPriceAfterFee(Number(productList[index].price)) * 1000 * Number(productList[index].count))
+    let totalMoneyTemp = totalMoney - Number(productList[index].price) * 1000 * Number(productList[index].count)
+    let productNumber = Number(formData.numberOfProducts) - Number(productList[index].count)
+    // delete productListTemp[index]
 
-      let productListTemp = []
-      let productId = -1
-      productList.map((itemProduct, itemProductIndex) => {
-        if (itemProductIndex !== index) {
-          productId += 1
-          productListTemp.push({
-            ...itemProduct,
-            productId: productId
-          })
-        } else {
-          productListTemp.push({
-            ...itemProduct,
-            productId: 0,
-            isDeleted: true
-          })
-        }
-      })
+    let productListTemp = []
+    let productId = -1
+    productList.map((itemProduct, itemProductIndex) => {
+      if (itemProductIndex !== index) {
+        productId += 1
+        productListTemp.push({
+          ...itemProduct,
+          productId: productId
+        })
+      } else {
+        productListTemp.push({
+          ...itemProduct,
+          productId: 0,
+          isDeleted: true
+        })
+      }
+    })
 
-      console.log(productListTemp)
-      console.log('onDeleteProductList end')
+    console.log(productListTemp)
+    console.log(productNumber)
+    console.log(moneyBackTemp)
+    console.log(totalMoneyTemp)
 
-      this.setState({
-        moneyBackForFullSold: moneyBackTemp,
-        totalMoney: totalMoneyTemp,
-        productList: productListTemp,
-        formData: {
-          ...formData,
-          numberOfProducts: productNumber
-        }
-      })
-    }
+    console.log('onDeleteProductList end')
+
+    this.setState({
+      moneyBackForFullSold: moneyBackTemp,
+      totalMoney: totalMoneyTemp,
+      productList: productListTemp,
+      formData: {
+        ...formData,
+        numberOfProducts: productNumber
+      }
+    }, () => {
+      console.log('onDeleteProductList end2')
+      console.log(this.state)
+    })
+    // }
   }
 
   convertPriceAfterFee = (productPrice = 0) => {
@@ -719,8 +735,10 @@ class Consignment extends React.PureComponent {
     let productListTemp = productList.slice()
     if (value[0] === 'new') {
       productListTemp[indexProduct].isNew = 'true'
+      productListTemp[indexProduct].rateNew = 100
     } else {
       productListTemp[indexProduct].isNew = 'false'
+      productListTemp[indexProduct].rateNew = 99
     }
 
     this.setState({
@@ -1219,7 +1237,7 @@ render () {
                 <Form.Item name='phoneNumber' rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]} label='Số điện thoại'>
                   <Col sm={24} md={12}>
                     {/* <Search placeholder="input search loading default" loading /> */}
-                    <Input value={formData.phoneNumber} minLength={10} maxLength={12} allowClear onChange={this.fetchUserByPhoneNumber} style={{ minWidth: 100 }} placeholder='...' suffix={isLoadingUser ? <LoadingOutlined /> : isFoundUser ? <CheckCircleFilled style={{ color: 'green ' }} /> : null} />
+                    <Input value={formData.phoneNumber} minLength={10} maxLength={11} allowClear onChange={this.fetchUserByPhoneNumber} style={{ minWidth: 100 }} placeholder='...' suffix={isLoadingUser ? <LoadingOutlined /> : isFoundUser ? <CheckCircleFilled style={{ color: 'green ' }} /> : null} />
                   </Col>
                 </Form.Item>
                 <Form.Item name='consignerName' rules={[{ required: !isFoundUser, message: 'Vui lòng nhập tên khách hàng' }]} label='Tên Khách Hàng'>
@@ -1249,7 +1267,7 @@ render () {
                 </Form.Item>
                 <Form.Item name='birthday' label='Sinh nhật'>
                   <Col sm={24} md={12}>
-                    <DatePicker allowClear={false} disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} id='birthday' key='birthday' defaultValue={moment()} value={moment(formData.birthday, dateFormat)} onChange={this.onChangeBirthday} format={dateFormat} placeholder={dateFormat} style={{ width: '100%' }} />
+                    <Input allowClear={false} disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} id='birthday' key='birthday' value={formData.birthday} onChange={this.onChangeBirthday} placeholder={dateFormat} style={{ width: '100%' }} />
                   </Col>
                 </Form.Item>
 

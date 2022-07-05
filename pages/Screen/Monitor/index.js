@@ -210,6 +210,8 @@ class Monitor extends React.PureComponent {
       { label: 'Trực tiếp', value: 'false' }
     ]
 
+    let indexProductActive = 0
+
     return (
       <div className='monitorPage-container'>
         {isLoadingMonitor ? <LoadingOutlined /> : !choosenMonitor.objectId ? (
@@ -230,9 +232,9 @@ class Monitor extends React.PureComponent {
                 name='consignment'
                 initialValues={monitorData.formData}
               >
-                <Row className='flex sell-card-form PT40 PB35' justify='center'>
+                <Row className='flex sell-card-form PT20 PB25' justify='center'>
                   <Form.Item name='phoneNumber' rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]} label='Số điện thoại'>
-                    <Col sm={24} md={12}>
+                    <Col sm={24} md={24}>
                       {/* <Search placeholder="input search loading default" loading /> */}
                       <Input value={monitorData.formData.phoneNumber} minLength={10} maxLength={12} style={{ minWidth: 100 }} placeholder='...' suffix={monitorData.isFoundUser ? <CheckCircleFilled style={{ color: 'green ' }} /> : null} />
                     </Col>
@@ -243,7 +245,7 @@ class Monitor extends React.PureComponent {
                     </Col>
                   </Form.Item>
                   <Form.Item name='consignerIdCard' rules={[{ required: !monitorData.isFoundUser, message: 'Vui lòng nhập chứng minh thư' }]} label='CMND'>
-                    <Col sm={24} md={12}>
+                    <Col sm={24} md={24}>
                       <Input value={monitorData.formData.consignerIdCard} id='consignerIdCard' key='consignerIdCard' onChange={this.changeData} placeholder='...' />
                     </Col>
                   </Form.Item>
@@ -258,13 +260,13 @@ class Monitor extends React.PureComponent {
                     </Col>
                   </Form.Item>
                   <Form.Item name='bankId' rules={[{ required: !monitorData.isFoundUser && monitorData.isTransferMoneyWithBank === 'true', message: 'Vui lòng nhập id ngân hàng' }]} label='ID Ngân hàng'>
-                    <Col sm={24} md={12}>
+                    <Col sm={24} md={24}>
                       <Input value={monitorData.formData.bankId} id='bankId' key='bankId' onChange={this.changeData} type={'number'} placeholder='...' />
                     </Col>
                   </Form.Item>
                   <Form.Item name='birthday' label='Sinh nhật'>
-                    <Col sm={24} md={12}>
-                      <DatePicker id='birthday' key='birthday' defaultValue={moment()} value={moment(monitorData.formData.birthday, dateFormat)} onChange={this.onChangeBirthday} format={dateFormat} placeholder={dateFormat} style={{ width: '100%' }} />
+                    <Col sm={24} md={24}>
+                      <Input id='birthday' key='birthday' value={monitorData.formData.birthday} onChange={this.onChangeBirthday} placeholder={dateFormat} style={{ width: '100%' }} />
                     </Col>
                   </Form.Item>
 
@@ -273,21 +275,29 @@ class Monitor extends React.PureComponent {
                   <Row className='productListBox'>
                     {monitorData.productList.map((item, indexItem) => {
                       if (!item.isDeleted) {
+                        indexProductActive += 1
                         return (
                           <div key={indexItem} className='product-box MB30'>
                             <div className='close-box MB5'>
-                              <span style={{ opacity: 0 }}>{indexItem + 1}</span>
+                              <span>{indexProductActive}</span>
                             </div>
-                            <div className='product-item-name'>
+                            {/* <div className='product-item-name'>
                               <Input style={{ width: '100%' }} prefix={<span>{`Tên: `}</span>} value={item.name} type={'text'} id='nameProduct' key='nameProduct' onChange={(value) => this.changeDataProduct(value, indexItem)} placeholder='Tên sản phẩm' />
-                            </div>
+                              <Input style={{ marginRight: '10px' }} suffix={<span>{`vnđ`}</span>} prefix={<span>{`Phí: `}</span>} value={numberWithCommas(`${Number(item.price * 1000)}`)} type={'string'} id='priceProduct' key='priceProduct' onChange={(value) => this.changeDataProduct(value, indexItem)} placeholder='Giá tiền' />
+                            </div> */}
+
                             <div className='product-item-value'>
-                              <Input style={{ marginRight: '10px' }} suffix={<span>{`vnđ`}</span>} prefix={<span>{`Giá: `}</span>} value={numberWithCommas(`${Number(item.price * 1000)}`)} type={'string'} id='priceProduct' key='priceProduct' onChange={(value) => this.changeDataProduct(value, indexItem)} placeholder='Giá tiền' />
+                              <Input style={{ marginRight: '10px' }} prefix={<span>{`Tên: `}</span>} value={item.name} type={'text'} id='nameProduct' key='nameProduct' onChange={(value) => this.changeDataProduct(value, indexItem)} placeholder='Tên sản phẩm' />
                               <Input value={item.count} prefix={<span>{`Số lượng: `}</span>} defaultValue={1} type={'number'} id='numberOfProducts' key='numberOfProducts' onChange={(value) => this.changeDataProduct(value, indexItem)} placeholder='Số lượng' />
                             </div>
 
+                            <div className='product-item-value'>
+                              <Input style={{ marginRight: '10px' }} suffix={<span>{`vnđ`}</span>} prefix={<span>{`Giá: `}</span>} value={numberWithCommas(`${Number(item.price * 1000)}`)} type={'string'} id='priceProduct' key='priceProduct' onChange={(value) => this.changeDataProduct(value, indexItem)} placeholder='Giá tiền' />
+                              <Input suffix={<span>{`vnđ`}</span>} prefix={<span>{`Phí: `}</span>} value={numberWithCommas(`${Number((item.price - item.priceAfterFee) * 1000)}`)} type={'string'} id='priceProduct' key='priceProduct' onChange={(value) => this.changeDataProduct(value, indexItem)} placeholder='Giá tiền' />
+                            </div>
+
                             <div className='product-item-note'>
-                              <TextArea placeholder='Ghi Chú' value={item.note || '---'} type={'number'} id='note' key='note' onChange={(value) => this.changeDataProduct(value, indexItem)} />
+                              <TextArea placeholder='Ghi Chú' value={'Tình trạng: ' + item.note || 'Tình trạng: ---'} type={'number'} id='note' key='note' onChange={(value) => this.changeDataProduct(value, indexItem)} />
                             </div>
                           </div>
                         )
@@ -299,17 +309,17 @@ class Monitor extends React.PureComponent {
 
                   <Divider />
 
-                  <Form.Item label='Tổng tiền sau thu phí'>
+                  <Form.Item label='Tổng tiền thực nhận'>
                     <Col sm={24} md={12}>
                       <Input suffix='vnđ' id='moneyBackForFullSold' key='moneyBackForFullSold' value={numberWithCommas(Math.round(monitorData.moneyBackForFullSold))} placeholder={'...000 vnd'} />
                     </Col>
                   </Form.Item>
 
-                  <Form.Item label='Tổng tiền trước thu phí'>
+                  {/* <Form.Item label='Tổng tiền trước thu phí'>
                     <Col sm={24} md={12}>
                       <Input suffix='vnđ' id='totalMoney' key='totalMoney' value={numberWithCommas(Math.round(monitorData.totalMoney))} placeholder={'...000 vnd'} />
                     </Col>
-                  </Form.Item>
+                  </Form.Item> */}
 
                   <Form.Item name='consignmentId' rules={[{ required: true, message: 'Vui lòng nhập mã ký gửi' }]} label='Mã ký gửi'>
                     <Col sm={24} md={12}>
