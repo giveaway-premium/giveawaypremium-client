@@ -63,7 +63,8 @@ class GiveAway extends App {
         { key: KEY_STORE.SET_CHANNEL_MONITOR, action: storageActions.setChannelMonitor, init: init.object },
         { key: KEY_STORE.SET_TRANSFER_DATA, action: storageActions.setTransferData, init: init.transferData },
         { key: KEY_STORE.SET_SETTING, action: storageActions.setSetting, init: init.setting },
-        { key: KEY_STORE.SET_CATEGORY, action: storageActions.setCategory, init: init.category }
+        { key: KEY_STORE.SET_CATEGORY, action: storageActions.setCategory, init: init.category },
+        { key: KEY_STORE.SET_TEMP_CONSIGNMENT, action: storageActions.setTempConsignment, init: init.object }
       ]
 
       const promiseArr = storageRedux.map((item) => {

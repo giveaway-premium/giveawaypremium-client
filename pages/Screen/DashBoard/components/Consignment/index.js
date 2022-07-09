@@ -5,7 +5,7 @@ import { Form, Row, Col, Input, Button, Descriptions, Divider, DatePicker, Selec
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
 import { numberWithCommas, showNotification, generateIdMix, toLowerCaseNonAccentVietnamese, debounce } from 'common/function'
-import { LoadingOutlined, CheckCircleFilled, PlusCircleFilled, PlusOneTwoTone, PlusOutlined, CloseOutlined, DollarCircleOutlined } from '@ant-design/icons'
+import { LoadingOutlined, CheckCircleFilled, PlusCircleFilled, PlusOneTwoTone, PlusOutlined, CloseOutlined, DollarCircleOutlined, ConsoleSqlOutlined } from '@ant-design/icons'
 import { Router } from 'common/routes'
 import { isMobile } from 'react-device-detect'
 import './style.scss'
@@ -14,6 +14,7 @@ import GapService from 'controller/Api/Services/Gap'
 import moment from 'moment'
 import successJson from 'static/Assets/Image/Lottie/success.json'
 import { EMAIL_TITLE, EMAIL_TYPE } from 'common/constants'
+import ReduxServices from 'common/redux'
 
 const { TextArea } = Input
 const { Option } = Select
@@ -78,8 +79,10 @@ class Consignment extends React.PureComponent {
   }
 
   componentDidMount () {
-    const { categoryRedux, channelMonitorRedux } = this.props
-
+    const { categoryRedux, channelMonitorRedux, tempConsignmentRedux } = this.props
+    if (tempConsignmentRedux) {
+      this.setState(tempConsignmentRedux)
+    }
     let categoryList = []
     if (categoryRedux) {
       categoryRedux.map((item, indexItem) => {
@@ -208,6 +211,9 @@ class Consignment extends React.PureComponent {
     } else if (!timeGroupId || timeGroupId.length === 0) {
       showNotification('Nhập thời gian tổng kết')
       return
+    } else if (formData && (formData.phoneNumber.length === 0 || formData.phoneNumber.length < 10)) {
+      showNotification('Nhập số điện thoại')
+      return
     }
 
     console.log(userData)
@@ -236,6 +242,7 @@ class Consignment extends React.PureComponent {
             isShowConfirmForm: true,
             isConsigning: false
           }, async () => {
+            ReduxServices.setTempConsignment(null)
             const customerFormData = {
               consignerName: formData.consignerName,
               phoneNumber: formData.phoneNumber,
@@ -291,6 +298,7 @@ class Consignment extends React.PureComponent {
               isShowConfirmForm: true,
               isConsigning: false
             })
+            ReduxServices.setTempConsignment(null)
             GapService.sendMail(customerFormData, formData, EMAIL_TYPE.CONSIGNMENT, EMAIL_TITLE.CONSIGNMENT, timeGroupCode, productListTemp)
           } else {
             // this.onRefeshAll()
@@ -407,8 +415,11 @@ class Consignment extends React.PureComponent {
     console.log(res)
   }
 
-  onRefeshAll = () => {
-    const { formData } = this.state
+  onRefeshAll = (isSetTempConsignment = false) => {
+    console.log('onRefeshAll', isSetTempConsignment)
+    if (isSetTempConsignment) {
+      ReduxServices.setTempConsignment(null)
+    }
     this.setState({
       isTransferMoneyWithBank: 'false',
       productList: [
@@ -1153,6 +1164,10 @@ render () {
     { label: 'Hàng đã sử dụng', value: 'old' }
   ]
 
+  ReduxServices.setTempConsignment(this.state)
+  console.log('tempConsignmentRedux')
+  console.log(this.props.tempConsignmentRedux)
+
   return (
     <div className='consignment-container'>
       {
@@ -1202,7 +1217,7 @@ render () {
                 })}
               </Col>
             </Row>
-            <Button className='MT20 MB20' onClick={this.onRefeshAll} >Quay lại</Button>
+            <Button className='MT20 MB20' onClick={() => this.onRefeshAll(true)} >Quay lại</Button>
             </>
           : <>
             <Form
@@ -1239,7 +1254,7 @@ render () {
             >
               <Row className='flex sell-card-form PT40 PB35' justify='center'>
                 <Button onClick={this.onOpenInputOnline} type='secondary' className='MB30'><DollarCircleOutlined /> Ký gửi online</Button>
-                <Form.Item name='phoneNumber' rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]} label='Số điện thoại'>
+                <Form.Item name='phoneNumber' rules={[{ required: !isFoundUser, message: 'Vui lòng nhập số điện thoại' }]} label='Số điện thoại'>
                   <Col sm={24} md={12}>
                     {/* <Search placeholder="input search loading default" loading /> */}
                     <Input value={formData.phoneNumber} minLength={10} maxLength={11} allowClear onChange={this.fetchUserByPhoneNumber} style={{ minWidth: 100 }} placeholder='...' suffix={isLoadingUser ? <LoadingOutlined /> : isFoundUser ? <CheckCircleFilled style={{ color: 'green ' }} /> : null} />
@@ -1415,7 +1430,7 @@ render () {
                   {channelMonitorRedux && channelMonitorRedux.objectId && (
                     <Button className='MR20' onClick={this.onUpdateMobitorData}>Cập nhật monitor</Button>
                   )}
-                  <Button className='MR20' onClick={this.onRefeshAll}>Khôi phục</Button>
+                  <Button className='MR20' onClick={() => this.onRefeshAll(true)}>Khôi phục</Button>
                   <Button disabled={isLoadingTags || isLoadingUser || !formData.phoneNumber} loading={isConsigning} type='primary' htmlType='submit'>Xác nhận</Button>
                 </Form.Item>
               </Row>
@@ -1432,7 +1447,8 @@ const mapStateToProps = (state) => ({
   channelMonitorRedux: state.channelMonitorRedux,
   locale: state.locale,
   categoryRedux: state.categoryRedux,
-  userData: state.userData
+  userData: state.userData,
+  tempConsignmentRedux: state.tempConsignmentRedux
 })
 
 export default withRouter(connect(mapStateToProps, null)(Consignment))

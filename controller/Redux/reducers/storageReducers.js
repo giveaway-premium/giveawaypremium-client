@@ -52,6 +52,12 @@ export const channelMonitorRedux = createReducer(initState.object, {
   }
 })
 
+export const tempConsignmentRedux = createReducer(initState.object, {
+  [KEY_STORE.SET_TEMP_CONSIGNMENT] (state, action) {
+    return action.payload
+  }
+})
+
 export const settingRedux = createReducer(initState.setting, {
   [KEY_STORE.SET_SETTING] (state, action) {
     return action.payload

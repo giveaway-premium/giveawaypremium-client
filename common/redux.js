@@ -113,6 +113,10 @@ export default class ReduxServices {
     }
   }
 
+  static setTempConsignment (result) {
+    ReduxServices.callDispatchAction(StorageActions.setTempConsignment(result))
+  }
+
   static deleteUserToken () {
     ReduxServices.callDispatchAction(StorageActions.setUserData({}))
   }

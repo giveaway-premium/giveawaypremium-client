@@ -42,6 +42,14 @@ export default class StorageActions {
     }
   }
 
+  static setTempConsignment (payload) {
+    saveDataLocal(KEY_STORE.SET_TEMP_CONSIGNMENT, payload)
+    return {
+      type: KEY_STORE.SET_TEMP_CONSIGNMENT,
+      payload
+    }
+  }
+
   static setSetting (payload) {
     saveDataLocal(KEY_STORE.SET_SETTING, payload)
     return {
