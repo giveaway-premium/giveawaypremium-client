@@ -10,7 +10,7 @@
     margin: 0 1em;
     min-width: 94vw;
     max-width: 1400px;
-    padding: 2vw;
+    padding: 1vw;
     position: relative;
     max-width: calc(100vw - 200px);
     border-radius: 15px;
@@ -66,6 +66,23 @@
             justify-content: flex-start;
             align-items: flex-start;
         }
+
+        .rowInfoBox {
+            width: 90%;
+            margin-bottom: 10px;
+            display: flex;
+        }
+
+        .rowInfo {
+            width: 50%;
+            .rowTitle {
+                color: #828282;
+                font-size: 17px;
+            }
+            .rowValue {
+
+            }
+        }
     
         .product-box {
             display: flex !important;
@@ -78,7 +95,8 @@
             }
     
             .close-box {
-                width: 100%;
+                // width: 100%;
+                margin-right: 10px;
                 display: flex !important;
                 flex-direction: row;
                 justify-content: space-between;
