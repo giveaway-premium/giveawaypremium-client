@@ -222,7 +222,12 @@ class Consignment extends React.PureComponent {
       console.log('onConsign')
       console.log(formData)
       console.log(this.state)
-      if (isFoundUser && objectIdFoundUser) { // for already user
+
+      const resUSer = await GapService.getCustomer(formData.phoneNumber)
+      console.log('fetchUserByPhoneNumber finish')
+      console.log(resUSer)
+      // if (res && res.results && res.results[0]) {
+      if (resUSer && resUSer.results && resUSer.results[0]) { // for already user
         console.log('for already user')
         const result = await GapService.setConsignment(formData, userData.objectId, objectIdFoundUser, timeGroupId, timeGroupCode, productListTemp, moneyBackForFullSold, totalMoney, isTransferMoneyWithBank)
         console.log(result)
