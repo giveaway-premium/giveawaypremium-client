@@ -8,7 +8,7 @@
     align-self: center;
     flex-basis: auto;
     margin: 0 1em;
-    min-width: 94vw;
+    min-width: 96vw;
     max-width: 1400px;
     padding: 1vw;
     position: relative;
@@ -20,10 +20,12 @@
     box-shadow: 0 1px 20px rgba(0, 0, 0, 0.2);
     margin-bottom: 10px;
     @media screen and (max-width: 567px) {
-        flex-basis: calc(100vw - 200px);
+        // flex-basis: calc(100vw - 200px);
         display: flex;
+        // flex-direction: row;
+
         justify-content: center;
-        flex-basis: calc(100vw - 55px);
+        // flex-basis: calc(100vw - 55px);
         padding: 0;
         max-width: calc(100vw - 55px);
     }
@@ -58,6 +60,7 @@
     .monitorBodyContentBox {
         pointer-events: none;
         display: flex;
+        flex-direction: column;
         width: 100%;
           .productListBox {
             display: flex !important;

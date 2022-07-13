@@ -233,8 +233,8 @@ class Monitor extends React.PureComponent {
         {
           choosenMonitor && choosenMonitor.objectId && (
           <>
-            <h2 className='text text-center text-color-0 txt-big-intro MB10'>Chi tiết đơn ký gửi</h2>
             <div className='monitorBodyContentBox'>
+              <h2 className='text text-center text-color-0 txt-big-intro MT10'>Chi tiết đơn ký gửi</h2>
               <Form
                 ref={this.formRef}
                 {...layout}
@@ -343,7 +343,7 @@ class Monitor extends React.PureComponent {
                   </div>
 
                   <div className='rowInfoBox'>
-                    <RowInfo title={`Hình thức nhận tiền: `} value={monitorData.isTransferMoneyWithBank ? 'Chuyển khoản' : 'Trực tiếp'} />
+                    <RowInfo title={`Hình thức nhận tiền: `} value={monitorData.isTransferMoneyWithBank === 'true' ? 'Chuyển khoản' : 'Trực tiếp'} />
                     <RowInfo title={`Ngày trả tiền: `} value={monitorData.formData.timeGetMoney} />
                   </div>
 

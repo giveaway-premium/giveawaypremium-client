@@ -259,19 +259,54 @@ export default class Gap {
     return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
 
-  static async getConsignment (page = 1, keyword = null, limit = 100, currentTagId) {
+  static async getConsignment (page = 1, selectedKeys = null, limit = 100, currentTagId) {
     console.log('getConsignment')
     console.log(page)
+    console.log(selectedKeys)
+
     let limited = limit || 100
     let skip = (limited * page) - limited
 
-    if (keyword) {
-      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"deleteAt":${null},"phoneNumber":{"$regex":"${keyword}"},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+    if (selectedKeys) {
+      console.log('getConsignment 1')
+      console.log(selectedKeys.phoneNumber)
+      let allSearchRegex = `"deleteAt":${null}`
+      if (selectedKeys.phoneNumber) {
+        console.log('getConsignment 2')
+
+        allSearchRegex += `,"phoneNumber":{"$regex":"${selectedKeys.phoneNumber}"}`
+        console.log('allSearchRegex', allSearchRegex)
+      }
+      if (selectedKeys.consignerName) {
+        allSearchRegex += `,"consignerName":{"$regex":"${selectedKeys.consignerName}"}`
+        console.log('allSearchRegex2', allSearchRegex)
+      }
+
+      if (selectedKeys.consignmentId) {
+        allSearchRegex += `,"consignmentId":{"$regex":"${selectedKeys.consignmentId}"}`
+        console.log('allSearchRegex2', allSearchRegex)
+      }
+
+      if (selectedKeys.isTransferMoneyWithBank) {
+        allSearchRegex += `,"isTransferMoneyWithBank":${selectedKeys.isTransferMoneyWithBank}`
+        console.log('allSearchRegex2', allSearchRegex)
+      }
+
+      if (selectedKeys.isGetMoney) {
+        allSearchRegex += `,"isGetMoney":${selectedKeys.isGetMoney}`
+        console.log('allSearchRegex2', allSearchRegex)
+      }
+      console.log('allSearchRegex')
+      console.log(allSearchRegex)
+
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={${allSearchRegex},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      console.log('customQuery')
+      console.log(customQuery)
       return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     } else {
+      console.log('getConsignment 3')
       // const customQuery = `count=1,where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
       const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"deleteAt":${null},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
-
       return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     }
   }
