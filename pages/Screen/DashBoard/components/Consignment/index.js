@@ -146,7 +146,7 @@ class Consignment extends React.PureComponent {
     })
   }
 
-  onConsign = () => {
+  onConsign = async () => {
     const { userData } = this.props
     const {
       isFoundUser, objectIdFoundUser, formData,
@@ -214,6 +214,16 @@ class Consignment extends React.PureComponent {
     } else if (formData && (formData.phoneNumber.length === 0 || formData.phoneNumber.length < 10)) {
       showNotification('Nhập số điện thoại')
       return
+    } else if (formData && (!formData.consignmentId || formData.consignmentId.length === 0)) {
+      showNotification('Nhập số mã ký gửi')
+      return
+    }
+    const resConsignment = await GapService.getConsignment(1, null, null, this.state.timeGroupId)
+    console.log('resConsignment 1')
+    console.log(resConsignment)
+    let newConsignmentId
+    if (resConsignment && resConsignment.count) {
+      newConsignmentId = `${resConsignment.count + 1}`
     }
 
     console.log(userData)
@@ -222,7 +232,8 @@ class Consignment extends React.PureComponent {
       productList: productListTemp,
       formData: {
         ...formData,
-        numberOfProducts: productCount
+        numberOfProducts: productCount,
+        consignmentId: newConsignmentId || this.state.formData.consignmentId
       }
     }, async () => {
       console.log('onConsign')
@@ -506,22 +517,49 @@ class Consignment extends React.PureComponent {
     })
   }
 
-  onChangeTimeGetMoney = (value) => {
+  onChangeTimeGetMoney = async (value) => {
     const { formData, allInfoTag } = this.state
 
     console.log('onChangeTimeGetMoney')
     console.log(value)
+    console.log(allInfoTag)
+
     const findTag = allInfoTag.filter(tag => tag.code === value)
+    console.log(findTag)
 
     if (findTag && findTag[0]) {
-      this.setState({
-        formData: {
-          ...formData,
-          timeGetMoney: moment(findTag[0].timeGetMoney).format('DD-MM-YYYY')
-        },
-        timeGroupCode: value,
-        timeGroupId: findTag[0].objectId
-      }, () => {
+      const resConsignment = await GapService.getConsignment(1, null, null, findTag[0].objectId)
+      console.log('resConsignment')
+      console.log(resConsignment)
+      let newState
+      if (resConsignment && resConsignment.count) {
+        let newConsignmentId = `${resConsignment.count + 1}`
+        console.log('newConsignmentId')
+        console.log(newConsignmentId)
+
+        newState = {
+          formData: {
+            ...formData,
+            timeGetMoney: moment(findTag[0].timeGetMoney).format('DD-MM-YYYY'),
+            consignmentId: newConsignmentId
+          },
+          timeGroupCode: value,
+          timeGroupId: findTag[0].objectId
+        }
+      } else {
+        newState = {
+          formData: {
+            ...formData,
+            timeGetMoney: moment(findTag[0].timeGetMoney).format('DD-MM-YYYY')
+          },
+          timeGroupCode: value,
+          timeGroupId: findTag[0].objectId
+        }
+      }
+      console.log('newState')
+      console.log(newState)
+
+      this.setState(newState, () => {
         console.log(this.state)
       })
     }
@@ -1384,12 +1422,6 @@ render () {
                     <Input suffix='vnđ' id='totalMoney' key='totalMoney' value={numberWithCommas(Math.round(totalMoney))} disabled placeholder={'...000 vnd'} />
                   </Col>
                 </Form.Item>
-
-                <Form.Item name='consignmentId' rules={[{ required: true, message: 'Vui lòng nhập mã ký gửi' }]} label='Mã ký gửi'>
-                  <Col sm={24} md={12}>
-                    <Input allowClear id='consignmentId' key='consignmentId' onChange={this.changeData} placeholder='...' />
-                  </Col>
-                </Form.Item>
                 <Form.Item name='numberOfProducts' label='Số lượng Hàng Hoá'>
                   <Col sm={24} md={12}>
                     <Input disabled defaultValue={1} value={formData.numberOfProducts} type={'number'} id='numberOfProducts' key='numberOfProducts' allowClear placeholder='...' />
@@ -1404,7 +1436,7 @@ render () {
 
                 <Form.Item label='Ngày trả tiền'>
                   <Input.Group compact>
-                    <Select onChange={this.onChangeTimeGetMoney} defaultValue={allInfoTag && allInfoTag[0] && allInfoTag[0].code} size='large' loading={isLoadingTags} id='timeGetMoney' key='timeGetMoney' placeholder='...'>
+                    <Select onChange={this.onChangeTimeGetMoney} value={this.state.timeGroupCode} defaultValue={this.state.timeGroupCode} size='large' loading={isLoadingTags} id='timeGetMoney' key='timeGetMoney' placeholder='...'>
                       {
                         isLoadingTags ? null
                           : allInfoTag.map(tag => {
@@ -1418,6 +1450,12 @@ render () {
                     </Select>
                     <Input disabled style={{ width: '50%' }} value={formData.timeGetMoney} defaultValue={moment().format('DD-MM-YYYY')} />
                   </Input.Group>
+                </Form.Item>
+
+                <Form.Item name='consignmentId' rules={[{ message: 'Vui lòng nhập mã ký gửi' }]} label='Mã ký gửi'>
+                  <Col sm={24} md={12}>
+                    <Input allowClear id='consignmentId' key='consignmentId' value={this.state.formData.consignmentId} onChange={this.changeData} placeholder='...' />
+                  </Col>
                 </Form.Item>
 
                 <Form.Item name='consigneeName' label='Tên Nhân Viên'>

@@ -270,25 +270,32 @@ export default class Gap {
     if (selectedKeys) {
       console.log('getConsignment 1')
       console.log(selectedKeys.phoneNumber)
+      console.log(selectedKeys.remainNumConsignment)
+
       let allSearchRegex = `"deleteAt":${null}`
       if (selectedKeys.phoneNumber) {
         console.log('getConsignment 2')
 
-        allSearchRegex += `,"phoneNumber":{"$regex":"${selectedKeys.phoneNumber}"}`
+        allSearchRegex += `,"phoneNumber":{"$regex":"${selectedKeys.phoneNumber.trim()}"}`
         console.log('allSearchRegex', allSearchRegex)
       }
       if (selectedKeys.consignerName) {
-        allSearchRegex += `,"consignerName":{"$regex":"${selectedKeys.consignerName}"}`
+        allSearchRegex += `,"consignerName":{"$text":{"$search":{"$term":"${selectedKeys.consignerName.trim()}"}}}`
         console.log('allSearchRegex2', allSearchRegex)
       }
 
       if (selectedKeys.consignmentId) {
-        allSearchRegex += `,"consignmentId":{"$regex":"${selectedKeys.consignmentId}"}`
+        allSearchRegex += `,"consignmentId":{"$text":{"$search":{"$term":"${selectedKeys.consignmentId.trim()}"}}}`
         console.log('allSearchRegex2', allSearchRegex)
       }
 
       if (selectedKeys.isTransferMoneyWithBank) {
         allSearchRegex += `,"isTransferMoneyWithBank":${selectedKeys.isTransferMoneyWithBank}`
+        console.log('allSearchRegex2', allSearchRegex)
+      }
+
+      if (selectedKeys.remainNumConsignment) {
+        allSearchRegex += `,"remainNumConsignment":${selectedKeys.remainNumConsignment.trim()}`
         console.log('allSearchRegex2', allSearchRegex)
       }
 

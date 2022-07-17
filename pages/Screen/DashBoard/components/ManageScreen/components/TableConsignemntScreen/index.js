@@ -146,7 +146,8 @@ class TableConsignemntScreen extends React.PureComponent {
         title: 'Còn lại',
         width: 120,
         dataIndex: 'remainNumConsignment',
-        key: '5'
+        key: '5',
+        ...this.getColumnSearchKeyProps('remainNumConsignment')
         // ...this.getColumnSearchTransferOrNot('remainNumConsignment')
         // ...this.getColumnSearchProps('remainNumConsignment')
       },
@@ -390,6 +391,7 @@ class TableConsignemntScreen extends React.PureComponent {
     filterDropdown: ({ confirm, clearFilters }) => (
       <div style={{ padding: 10 }}>
         <Input
+          autoFocus
           ref={node => {
             this.searchInput = node
           }}
@@ -440,15 +442,16 @@ class TableConsignemntScreen extends React.PureComponent {
       style={{ color:
         (this.state.selectedKeys?.phoneNumber?.length > 0 && keyColumn === 'phoneNumber') ||
         (this.state.selectedKeys?.consignerName?.length > 0 && keyColumn === 'consignerName') ||
-        (this.state.selectedKeys?.consignmentId?.length > 0 && keyColumn === 'consignmentId')
+        (this.state.selectedKeys?.consignmentId?.length > 0 && keyColumn === 'consignmentId') ||
+        (this.state.selectedKeys?.remainNumConsignment?.length > 0 && keyColumn === 'remainNumConsignment')
           ? '#1890ff' : undefined }}
-    />
+    />,
     // onFilter: (value, record) => record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-    // onFilterDropdownVisibleChange: visible => {
-    //   if (visible) {
-    //     setTimeout(() => this.searchInput.select(), 100)
-    //   }
-    // },
+    onFilterDropdownVisibleChange: visible => {
+      if (visible) {
+        setTimeout(() => this.searchInput.select(), 100)
+      }
+    }
     // render: text =>
     //   this.state.searchedColumn === dataIndex ? (
     //     <Highlighter
@@ -761,6 +764,7 @@ class TableConsignemntScreen extends React.PureComponent {
         selectedKeys.consignerName ||
         selectedKeys.consignerIdCard ||
         selectedKeys.isTransferMoneyWithBank ||
+        selectedKeys.remainNumConsignment ||
         selectedKeys.isGetMoney)) {
         res = await GapService.getConsignment(page, selectedKeys, null, currentTag)
       } else {
@@ -914,7 +918,7 @@ class TableConsignemntScreen extends React.PureComponent {
             pageSize: 100,
             onChange: this.paginationChange
           }}
-          scroll={{ x: 1900, y: '55vh' }}
+          scroll={{ x: 1900, y: '50vh' }}
         />
         <MyModal ref={this.myModal} />
       </div>

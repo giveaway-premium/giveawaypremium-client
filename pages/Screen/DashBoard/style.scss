@@ -13,7 +13,7 @@
             // margin-right: 15px;
             max-width: 180px;
             padding: 20px 10px 20px 10px;
-            height: 90vh;
+            height: 85vh;
             @media screen and (max-width: 567px) {
                 display: flex;
                 justify-content: center;
@@ -28,7 +28,7 @@
             // width: 100%;
             flex: 1;
             flex-basis: auto;
-            margin: 0 1em;
+            margin: 0 1em 0 0.5em;
             max-width: 1200px;
             position: relative;
             max-width: calc(100vw - 200px);
@@ -40,6 +40,7 @@
             @media screen and (max-width: 567px) {
                 flex-basis: calc(100vw - 200px);
                 display: flex;
+                margin: 0;
                 justify-content: center;
                 flex-basis: calc(100vw - 55px);
                 padding: 0;
