@@ -426,9 +426,18 @@ class Consignment extends React.PureComponent {
     console.log(res)
   }
 
-  onRefeshAll = (isSetTempConsignment = false) => {
+  onRefeshAll = async (isSetTempConsignment = false) => {
+    const { timeGroupId } = this.state
     console.log('onRefeshAll', isSetTempConsignment)
+    let consignmentId = ''
     if (isSetTempConsignment) {
+      // if (timeGroupId) {
+      //   const resConsignment = await GapService.getConsignment(1, null, null, timeGroupId)
+
+      //   if (resConsignment && resConsignment.count) {
+      //     consignmentId = `${resConsignment.count}`
+      //   }
+      // }
       ReduxServices.setTempConsignment(null)
     }
     this.setState({
@@ -460,7 +469,7 @@ class Consignment extends React.PureComponent {
         bankName: '',
         bankId: '',
         numberOfProducts: 1,
-        consignmentId: '',
+        consignmentId: consignmentId,
         timeGetMoney: '',
         numberOfConsignmentTime: 0,
         numberOfConsignment: 0
@@ -475,7 +484,9 @@ class Consignment extends React.PureComponent {
       isFoundUser: false,
       isLoadingUser: false,
       onlineCodeStringInput: '',
-      isErrorFormat: false
+      isErrorFormat: false,
+      timeGroupId: '',
+      timeGroupCode: ''
     })
   }
 
@@ -519,7 +530,6 @@ class Consignment extends React.PureComponent {
 
   onChangeTimeGetMoney = async (value) => {
     const { formData, allInfoTag } = this.state
-
 
     const findTag = allInfoTag.filter(tag => tag.code === value)
 
@@ -1125,7 +1135,6 @@ convertStringToConsignment = () => {
       }
 
       type = this.convertStringNameToObjectIdCategory(name)
-
 
       if (type && categoryListObjectTemp && categoryListObjectTemp[type]) {
         if (categoryListObjectTemp[type].isParentSelf) {
