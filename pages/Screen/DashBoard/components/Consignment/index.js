@@ -194,7 +194,7 @@ class Consignment extends React.PureComponent {
             code: formData.consignmentId + '-' + timeGroupCode + '-' + productId,
             key: indexItem,
             productId: productId,
-            rateNew: item.isNew ? 100 : 99
+            rateNew: item.isNew === 'true' ? 100 : 99
           })
         }
       }
@@ -520,12 +520,8 @@ class Consignment extends React.PureComponent {
   onChangeTimeGetMoney = async (value) => {
     const { formData, allInfoTag } = this.state
 
-    console.log('onChangeTimeGetMoney')
-    console.log(value)
-    console.log(allInfoTag)
 
     const findTag = allInfoTag.filter(tag => tag.code === value)
-    console.log(findTag)
 
     if (findTag && findTag[0]) {
       const resConsignment = await GapService.getConsignment(1, null, null, findTag[0].objectId)
@@ -1048,44 +1044,88 @@ convertStringToConsignment = () => {
     let subCategoryId
     let categoryId
     const stringCodeArr = item.trim().split('/')
-    console.log('stringCodeArr')
-    console.log(stringCodeArr)
 
     // if (isErrorFormat === false && stringCodeArr && (((stringCodeArr.length === 3 || stringCodeArr.length === 4) && Number(stringCodeArr[3].trim()) + 1 > 0) || stringCodeArr.length === 2) && Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', '')) + 1 > 0) {
     // type = stringCodeArr[0].trim().toLowerCase()
-    if (isErrorFormat === false && stringCodeArr && (((stringCodeArr.length === 4) && Number(stringCodeArr[3].trim()) + 1 > 0) || stringCodeArr.length === 3) && Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', '')) + 1 > 0) {
+    // if (isErrorFormat === false && stringCodeArr && (((stringCodeArr.length === 4) && Number(stringCodeArr[3].trim()) + 1 > 0) || stringCodeArr.length === 3) && Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', '')) + 1 > 0) {
+    if (isErrorFormat === false && stringCodeArr && Number(stringCodeArr[1] && stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', '')) + 1 > 0 &&
+    (
+      (
+        stringCodeArr.length === 4 &&
+          (
+            (
+              (stringCodeArr[2] && stringCodeArr[2] && stringCodeArr[2].trim().substr(0, 2) === 'tt') &&
+              (stringCodeArr[3] && stringCodeArr[3] && stringCodeArr[3].trim().substr(0, 2) === 'sl')) ||
+            (
+              (stringCodeArr[2] && stringCodeArr[2] && stringCodeArr[2].trim().substr(0, 2) === 'sl') &&
+              (stringCodeArr[3] && stringCodeArr[3] && stringCodeArr[3].trim().substr(0, 2) === 'tt')
+            )
+          )
+      ) ||
+      (
+        (stringCodeArr.length === 3) &&
+        (stringCodeArr[2] && stringCodeArr[2] && (stringCodeArr[2].trim().substr(0, 2) === 'tt' || stringCodeArr[2].trim().substr(0, 2) === 'sl'))
+      ) || stringCodeArr.length === 2
+    )
+    ) {
       switch (stringCodeArr.length) {
       case 4: {
         name = stringCodeArr[0].trim()
         price = Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', ''))
-        detail = stringCodeArr[2].trim() || '---'
-        amount = Number(stringCodeArr[3].trim()) || 1
+        if (stringCodeArr[2].trim().substr(0, 2) === 'tt') {
+          if (Number(stringCodeArr[3].trim().replace('sl', '').trim()) + 1 > 0) {
+            detail = stringCodeArr[2].trim().replace('tt', '').trim() || '---'
+            amount = Number(stringCodeArr[3].trim().replace('sl', '').trim()) || 1
+          } else {
+            console.log('isErrorFormat')
+            isErrorFormat = true
+          }
+        } else if (stringCodeArr[2].trim().substr(0, 2) === 'sl') {
+          if (Number(stringCodeArr[2].trim().replace('sl', '').trim()) + 1 > 0) {
+            amount = Number(stringCodeArr[2].trim().replace('sl', '').trim()) || 1
+            detail = stringCodeArr[3].trim().replace('tt', '').trim() || '---'
+          } else {
+            console.log('isErrorFormat')
+            isErrorFormat = true
+          }
+        } else {
+          console.log('isErrorFormat')
+          isErrorFormat = true
+        }
         break
       }
       case 3: {
         name = stringCodeArr[0].trim()
         price = Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', ''))
-        detail = stringCodeArr[2].trim() || '---'
-        amount = 1
+
+        if (stringCodeArr[2].trim().substr(0, 2) === 'tt') {
+          detail = stringCodeArr[2].trim().replace('tt', '').trim() || '---'
+          amount = 1
+        } else if (stringCodeArr[2].trim().substr(0, 2) === 'sl') {
+          if (Number(stringCodeArr[2].trim().replace('sl', '').trim()) + 1 > 0) {
+            amount = Number(stringCodeArr[2].trim().replace('sl', '').trim()) || 1
+            detail = '---'
+          } else {
+            console.log('isErrorFormat')
+            isErrorFormat = true
+          }
+        } else {
+          console.log('isErrorFormat')
+          isErrorFormat = true
+        }
         break
       }
-      // case 2: {
-      //   name = stringCodeArr[0].trim()
-      //   price = Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', ''))
-      //   amount = 1
-      //   detail = '---'
-      //   break
-      // }
+      case 2: {
+        name = stringCodeArr[0].trim()
+        price = Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', ''))
+        amount = 1
+        detail = '---'
+        break
+      }
       }
 
       type = this.convertStringNameToObjectIdCategory(name)
-      console.log('type')
-      console.log(type)
-      console.log(categoryListObjectTemp)
 
-      // váy da heo/ 4/ 33/ bị rách ở cổ tay
-      console.log(categoryListObjectTemp[type])
-      console.log(categoryListObjectTemp[type])
 
       if (type && categoryListObjectTemp && categoryListObjectTemp[type]) {
         if (categoryListObjectTemp[type].isParentSelf) {
@@ -1116,7 +1156,8 @@ convertStringToConsignment = () => {
           label: categoryListObjectTemp[type].name,
           value: categoryListObjectTemp[type].isParentSelf ? `${categoryId}+${subCategoryId}+${hashCode}` : `${subCategoryId}+${hashCode}`
         },
-        isNew: 'true'
+        rateNew: detail && detail.includes('new') ? 100 : 99,
+        isNew: detail && detail.includes('new') ? 'true' : 'false'
       })
       isErrorFormat = false
     } else {
