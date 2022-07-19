@@ -534,7 +534,7 @@ class Consignment extends React.PureComponent {
     const findTag = allInfoTag.filter(tag => tag.code === value)
 
     if (findTag && findTag[0]) {
-      const resConsignment = await GapService.getConsignment(1, null, null, findTag[0].objectId)
+      const resConsignment = await GapService.getConsignment(1, null, 1, findTag[0].objectId)
       console.log('resConsignment')
       console.log(resConsignment)
       let newState
