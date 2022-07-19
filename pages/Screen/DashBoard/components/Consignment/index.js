@@ -902,8 +902,11 @@ renderStringCodeBox = () => {
   return (
     <div>
       <p className='text text-title MB10'>Thông tin đơn ký gửi</p>
-      <p className='text'>Tên sản phẩm / giá tiền (k) / tình trạng / số lượng</p>
-      <p className='text MB10'>Tên sản phẩm / giá tiền (k) / tình trạng</p>
+      <p className='text'>Tên sản phẩm / giá tiền (k) /tt tình trạng /sl số lượng</p>
+      <p className='text'>Tên sản phẩm / giá tiền (k) /sl số lượng /tt tình trạng</p>
+      <p className='text'>Tên sản phẩm / giá tiền (k) /tt tình trạng</p>
+      <p className='text'>Tên sản phẩm / giá tiền (k) /sl số lượng</p>
+      <p className='text MB10'>Tên sản phẩm / giá tiền (k)</p>
 
       {isErrorFormat ? <span className='text text-color-6 MB10'>Sai Định dạng</span> : null}
       <div className='product-item-note MB20'>
