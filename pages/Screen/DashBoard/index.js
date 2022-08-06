@@ -22,13 +22,16 @@ import {
   ContainerOutlined,
   MailOutlined,
   WalletOutlined,
-  SettingOutlined
+  SettingOutlined,
+  MacCommandOutlined
 } from '@ant-design/icons'
 
 import Consignment from './components/Consignment'
 import ManageScreen from './components/ManageScreen'
 import SettingScreen from './components/SettingScreen'
 import * as Parse from 'parse'
+import { ShoppingBasket, ShoppingBasketOutlined } from '@material-ui/icons'
+import SaleScreen from './components/SaleScreen'
 
 class DashBoard extends React.PureComponent {
   static async getInitialProps ({ query }) {
@@ -39,14 +42,15 @@ class DashBoard extends React.PureComponent {
     this.state = {
       isLogin: false,
       isLoadingLogin: false,
-      numberPage: 4,
+      numberPage: 3,
       formData: {
         nameConsigner: '',
         nameConsignee: '',
         numConsignment: 1,
         bankNumber: '',
         bankName: ''
-      }
+      },
+      isFullScreen: false
     }
     this.myModal = React.createRef()
   }
@@ -204,13 +208,21 @@ class DashBoard extends React.PureComponent {
     case 4:
       return this.renderConsignment()
     case 5:
+      return this.renderSaleScreen()
+    case 6:
       return this.renderSetting()
     }
   }
 
   handleChoosePage = (page) => {
-    if (page && page.key) {
+    if (page && page.key === '5') {
       this.setState({
+        isFullScreen: true,
+        numberPage: Number(page.key)
+      })
+    } else if (page && page.key) {
+      this.setState({
+        isFullScreen: false,
         numberPage: Number(page.key)
       })
     }
@@ -234,6 +246,12 @@ class DashBoard extends React.PureComponent {
     )
   }
 
+  renderSaleScreen = () => {
+    return (
+      <SaleScreen />
+    )
+  }
+
   renderSetting = () => {
     return (
       <SettingScreen />
@@ -241,7 +259,7 @@ class DashBoard extends React.PureComponent {
   }
 
   render () {
-    const { numberPage } = this.state
+    const { numberPage, isFullScreen } = this.state
     return (
       <div className='dashboard-container'>
         <div className='dashboard-container-wrapper'>
@@ -257,8 +275,9 @@ class DashBoard extends React.PureComponent {
                 <Menu.Item key='2' onClick={this.handleChoosePage} ><DesktopOutlined /></Menu.Item>
                 <Menu.Item key='3' onClick={this.handleChoosePage} ><ContainerOutlined /></Menu.Item>
                 <Menu.Item key='4' onClick={this.handleChoosePage} ><MailOutlined /></Menu.Item>
-                <Menu.Item key='5' onClick={this.handleChoosePage} ><SettingOutlined /></Menu.Item>
-                <Menu.Item key='6' onClick={this.handleSignOut} ><WalletOutlined /></Menu.Item>
+                <Menu.Item key='5' onClick={this.handleChoosePage} ><MacCommandOutlined /></Menu.Item>
+                <Menu.Item key='6' onClick={this.handleChoosePage} ><SettingOutlined /></Menu.Item>
+                <Menu.Item key='7' onClick={this.handleSignOut} ><WalletOutlined /></Menu.Item>
               </Menu>
             )} />
             <Media query='(min-width: 568px)' render={() =>
@@ -269,16 +288,17 @@ class DashBoard extends React.PureComponent {
                 inlineCollapsed={this.state.collapsed}
                 selectedKeys={numberPage.toString()}
               >
-                <Menu.Item key='1' onClick={this.handleChoosePage} ><PieChartOutlined />Thống Kê</Menu.Item>
-                <Menu.Item key='2' onClick={this.handleChoosePage} ><DesktopOutlined />Ghi Chú</Menu.Item>
-                <Menu.Item key='3' onClick={this.handleChoosePage} ><ContainerOutlined />Quản lý</Menu.Item>
-                <Menu.Item key='4' onClick={this.handleChoosePage} ><MailOutlined />Ký gửi</Menu.Item>
-                <Menu.Item key='5' onClick={this.handleChoosePage} ><SettingOutlined />Cài đặt</Menu.Item>
-                <Menu.Item key='6' onClick={this.handleSignOut} ><WalletOutlined />Đăng xuất</Menu.Item>
+                <Menu.Item key='1' onClick={this.handleChoosePage} ><PieChartOutlined />{!isFullScreen && 'Thống Kê'}</Menu.Item>
+                <Menu.Item key='2' onClick={this.handleChoosePage} ><DesktopOutlined />{!isFullScreen && 'Ghi Chú'}</Menu.Item>
+                <Menu.Item key='3' onClick={this.handleChoosePage} ><ContainerOutlined />{!isFullScreen && 'Quản lý'}</Menu.Item>
+                <Menu.Item key='4' onClick={this.handleChoosePage} ><MailOutlined />{!isFullScreen && 'Ký gửi'}</Menu.Item>
+                <Menu.Item key='5' onClick={this.handleChoosePage} ><MacCommandOutlined />{!isFullScreen && 'Bán hàng'}</Menu.Item>
+                <Menu.Item key='6' onClick={this.handleChoosePage} ><SettingOutlined />{!isFullScreen && 'Cài đặt'}</Menu.Item>
+                <Menu.Item key='7' onClick={this.handleSignOut} ><WalletOutlined />{!isFullScreen && 'Đăng xuất'}</Menu.Item>
               </Menu>
             } />
           </div>
-          <div className='dashboard-content'>
+          <div className='dashboard-content' style={isFullScreen ? { maxWidth: `calc(100vw - 100px)` } : {}}>
             {this.detectRenderConent()}
           </div>
         </div>

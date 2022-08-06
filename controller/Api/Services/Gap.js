@@ -189,6 +189,15 @@ export default class Gap {
     }
   }
 
+  static async getProductWithCode (keyword) {
+    const customQuery = `include=medias&limit=${1}&count=1&where={"code":{"$regex":"${keyword}"}}`
+    return this.fetchData('/classes/Product', REQUEST_TYPE.GET, null, null, null, null, customQuery)
+  }
+
+  static async getProductWithObjectKey (objectId) {
+    return this.fetchData(`/classes/Product/${objectId}`, REQUEST_TYPE.GET, null)
+  }
+
   static async updateProduct (item) {
     try {
       const body = {
@@ -202,6 +211,112 @@ export default class Gap {
     } catch (e) {
       console.log(e)
       return false
+    }
+  }
+
+  // /////// Order
+
+  static async setOrder (dataOrder, consigneeData, consignerData) {
+    const body = {
+      phoneNumber: dataOrder.clientInfo.phoneNumber,
+      fullName: dataOrder.clientInfo.fullName,
+      consignerIdCard: dataOrder.clientInfo.consignerIdCard,
+      clientInfo: dataOrder.clientInfo,
+      consignee: { '__type': 'Pointer', 'className': '_User', 'objectId': consigneeData },
+      client: { '__type': 'Pointer', 'className': '_User', 'objectId': consignerData },
+      isTransferMoneyWithBank: dataOrder.isTransferWithBank === 'true',
+      productList: dataOrder.productList || [],
+      totalNumberOfProductForSale: `${dataOrder.totalNumberOfProductForSale}`,
+      totalMoneyForSale: `${dataOrder.totalMoneyForSale}`,
+      note: dataOrder.note,
+      isOnlineSale: dataOrder.isOnlineSale === 'true'
+    }
+    console.log('body setConsignment')
+    console.log(body)
+    return this.fetchData('/classes/Order', REQUEST_TYPE.POST, null, body)
+  }
+
+  // "createdAt": {
+  //   "$gte": {
+  //     "__type": "Date",
+  //     "iso": "2019-01-15"
+  //   },
+  //   "$lte": {
+  //     "__type": "Date",
+  //     "iso": "2019-07-15"
+  //   }
+  // }
+  static async getOrder (page = 1, selectedKeys = null, limit = 100, fromDateMoment, toDateMoment) {
+    console.log('getConsignment')
+    console.log(page)
+    console.log(selectedKeys)
+
+    let limited = limit || 100
+    let skip = (limited * page) - limited
+
+    // selectedKeys.phoneNumber ||
+    // selectedKeys.consignerName ||
+    // selectedKeys.objectId ||
+    // selectedKeys.isTransferMoneyWithBank ||
+    // selectedKeys.totalNumberOfProductForSale ||
+    // selectedKeys.isOnlineSale)) {
+
+    if (selectedKeys) {
+      console.log('getConsignment 1')
+      console.log(selectedKeys.phoneNumber)
+      console.log(selectedKeys.remainNumConsignment)
+      const fromDateFormated = moment(fromDateMoment, 'YYYY-MM-DD')
+      const toDateFormated = moment(toDateMoment, 'YYYY-MM-DD')
+      let allSearchRegex = `"deleteAt":${null}, "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"},"$lte": {"__type": "Date","iso": "${toDateFormated}"}}`
+      if (selectedKeys.phoneNumber) {
+        console.log('getConsignment 2')
+
+        allSearchRegex += `,"phoneNumber":{"$regex":"${selectedKeys.phoneNumber.trim()}"}`
+        console.log('allSearchRegex', allSearchRegex)
+      }
+      if (selectedKeys.fullName) {
+        // allSearchRegex += `,"fullName":{"$regex":"${selectedKeys.fullName.trim()}"}`
+
+        allSearchRegex += `,"fullName":{"$text":{"$search":{"$term":"${selectedKeys.fullName}"}}}`
+        console.log('allSearchRegex2', allSearchRegex)
+      }
+
+      if (selectedKeys.isTransferMoneyWithBank) {
+        allSearchRegex += `,"isTransferMoneyWithBank":${selectedKeys.isTransferMoneyWithBank}`
+        console.log('allSearchRegex2', allSearchRegex)
+      }
+
+      if (selectedKeys.totalNumberOfProductForSale) {
+        allSearchRegex += `,"totalNumberOfProductForSale":${selectedKeys.totalNumberOfProductForSale.trim()}`
+        console.log('allSearchRegex2', allSearchRegex)
+      }
+
+      if (selectedKeys.isOnlineSale) {
+        allSearchRegex += `,"isOnlineSale":${selectedKeys.isOnlineSale}`
+        console.log('allSearchRegex2', allSearchRegex)
+      }
+      console.log('allSearchRegex')
+      console.log(allSearchRegex)
+
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&include=client&where={${allSearchRegex}}`
+      console.log('customQuery')
+      console.log(customQuery)
+      const customQueryWithoutCondition = `include=client`
+
+      if (selectedKeys.objectId) {
+        return this.fetchData(`/classes/Order/${selectedKeys.objectId.trim()}`, REQUEST_TYPE.GET, null, null, null, null, customQueryWithoutCondition)
+      } else {
+        return this.fetchData('/classes/Order', REQUEST_TYPE.GET, null, null, null, null, customQuery)
+      }
+    } else {
+      console.log('getConsignment 3')
+      const fromDateFormated = moment(fromDateMoment, 'YYYY-MM-DD')
+      const toDateFormated = moment(toDateMoment, 'YYYY-MM-DD')
+      console.log('fromDateFormated', fromDateFormated)
+      console.log('toDateFormated', toDateFormated)
+
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&include=client&where={"deleteAt":${null}, "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"},"$lte": {"__type": "Date","iso": "${toDateFormated}"}}}`
+      return this.fetchData('/classes/Order', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     }
   }
 
@@ -431,6 +546,7 @@ export default class Gap {
         accNumber: formData.bankId
       }]
     }
+
     return this.fetchData('/classes/_User', REQUEST_TYPE.POST, null, body)
   }
 
@@ -461,6 +577,22 @@ export default class Gap {
         type: formData.bankName,
         accNumber: formData.bankId
       }]
+    }
+
+    // totalMoneyForSale: resUSer.results[0].totalMoneyForSale ? Number(resUSer.results[0].totalMoneyForSale || 0) + Number(dataOrder.totalMoneyForSale || 0) : Number(dataOrder.totalMoneyForSale || 0),
+    // numberOfSale: resUSer.results[0].numberOfSale ? Number(resUSer.results[0].numberOfSale || 0) + Number(dataOrder.totalMoneyForSale || 0) : Number(dataOrder.totalMoneyForSale || 0),
+    // totalProductForSale: resUSer.results[0].totalProductForSale ? Number(resUSer.results[0].totalProductForSale || 0) + Number(dataOrder.totalNumberOfProductForSale || 0) : Number(dataOrder.totalNumberOfProductForSale || 0)
+
+    if (formData.totalMoneyForSale) {
+      body.totalMoneyForSale = `${formData.totalMoneyForSale}`
+    }
+
+    if (formData.numberOfSale) {
+      body.numberOfSale = `${formData.numberOfSale}`
+    }
+
+    if (formData.totalProductForSale) {
+      body.totalProductForSale = `${formData.totalProductForSale}`
     }
 
     console.log('updateCustomer')

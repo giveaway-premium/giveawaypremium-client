@@ -40,7 +40,7 @@ class Consignment extends React.PureComponent {
           categoryId: '',
           subCategoryId: '',
           note: '---',
-          isNew: 'true',
+          isNew: 'false',
           rateNew: 100
         }
       ],
@@ -455,7 +455,7 @@ class Consignment extends React.PureComponent {
           categoryId: '',
           subCategoryId: '',
           note: '---',
-          isNew: 'true',
+          isNew: 'false',
           rateNew: 100
         }
       ],
@@ -654,7 +654,7 @@ class Consignment extends React.PureComponent {
           priceAfterFee: '',
           note: '---',
           productId: productList.length,
-          isNew: 'true',
+          isNew: 'false',
           rateNew: 100
         },
         {
@@ -667,7 +667,7 @@ class Consignment extends React.PureComponent {
           priceAfterFee: '',
           note: '---',
           productId: productList.length + 1,
-          isNew: 'true',
+          isNew: 'false',
           rateNew: 100
         },
         {
@@ -680,7 +680,7 @@ class Consignment extends React.PureComponent {
           priceAfterFee: '',
           note: '---',
           productId: productList.length + 2,
-          isNew: 'true',
+          isNew: 'false',
           rateNew: 100
         }
       ],
