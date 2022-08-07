@@ -16,6 +16,7 @@ services:
       - SKIP_PREFLIGHT_CHECK=true
       - REACT_APP_STATE=PRODUCTION
       - REACT_NEED_DEBUG=true
+      - GENERATE_SOURCEMAP=false
       - PORT = 3003
       - API_APP=https://giveaway-premium.herokuapp.com/api
       - APP_ID=EJKfA5jFxiC98aMbvir0vSAuDHO4NQ7x
