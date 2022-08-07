@@ -81,6 +81,10 @@ const SaleScreen = (props) => {
         consignerIdCard: '',
         mail: ''
       },
+      shippingInfo: {
+        addressFrom: '',
+        optionTransfer: '1'
+      },
       isTransferWithBank: 'false',
       productList: [
         // { amount: 1, name: ao da tron, code: ma-322-001}
@@ -95,6 +99,42 @@ const SaleScreen = (props) => {
     })
     setActiveKey(newActiveKey)
     setPanes(newPanes)
+  }
+
+  const resetData = () => {
+    const paneTemp = [...panes]
+    paneTemp[currentPaneIndex] = {
+      ...paneTemp[currentPaneIndex],
+      isOnlineSale: 'false',
+      clientInfo: {
+        objectId: '',
+        fullName: '',
+        phoneNumber: '',
+        birthday: '',
+        bankName: '',
+        bankId: '',
+        consignerIdCard: '',
+        mail: ''
+      },
+      shippingInfo: {
+        addressFrom: '',
+        optionTransfer: 1
+      },
+      isTransferWithBank: 'false',
+      productList: [
+        // { amount: 1, name: ao da tron, code: ma-322-001}
+      ],
+      inputText: '',
+      currentTag: 1,
+      shippingAddress: '',
+      isLoadingUser: false,
+      isFoundUser: false,
+      isCreatedSuccessfully: false,
+      totalNumberOfProductForSale: 0,
+      totalMoneyForSale: 0
+    }
+
+    setPanes(paneTemp)
   }
 
   const remove = (targetKey) => {
@@ -164,9 +204,20 @@ const SaleScreen = (props) => {
     { label: 'Online', value: 'true' }
   ]
 
+  const optionsTransferMoneyWithBank = [
+    { label: 'Trực tiếp', value: 'false', disabled: true },
+    { label: 'Chuyển khoản', value: 'true' }
+  ]
+
   const optionsTransferMoney = [
     { label: 'Trực tiếp', value: 'false' },
     { label: 'Chuyển khoản', value: 'true' }
+  ]
+
+  const optionsTransferOrder = [
+    { label: 'Giao hàng tiết kiệm', value: '1' },
+    { label: 'Hoả tốc', value: '2' },
+    { label: 'Lấy hàng trực tiếp', value: '3' }
   ]
 
   const onChangeRadioTransferMoney = (value) => {
@@ -180,10 +231,17 @@ const SaleScreen = (props) => {
     }
   }
 
+  const onChangeRadioTransferOrder = (value) => {
+    const paneTemp = [...panes]
+    paneTemp[currentPaneIndex].shippingInfo.optionTransfer = value[0]
+    setPanes(paneTemp)
+  }
+
   const onChangeRadioTypeOnlineSale = (value) => {
     const paneTemp = [...panes]
     if (value[0] === 'true') {
       paneTemp[currentPaneIndex].isOnlineSale = 'true'
+      paneTemp[currentPaneIndex].isTransferWithBank = 'true'
       setPanes(paneTemp)
     } else {
       paneTemp[currentPaneIndex].isOnlineSale = 'false'
@@ -470,36 +528,16 @@ const SaleScreen = (props) => {
     }
   }
 
-  const resetData = () => {
+  const onChangeDataShipping = (event, keyValue) => {
     const paneTemp = [...panes]
-    paneTemp[currentPaneIndex] = {
-      ...paneTemp[currentPaneIndex],
-      isOnlineSale: 'false',
-      clientInfo: {
-        objectId: '',
-        fullName: '',
-        phoneNumber: '',
-        birthday: '',
-        bankName: '',
-        bankId: '',
-        consignerIdCard: '',
-        mail: ''
-      },
-      isTransferWithBank: 'false',
-      productList: [
-        // { amount: 1, name: ao da tron, code: ma-322-001}
-      ],
-      inputText: '',
-      currentTag: 1,
-      shippingAddress: '',
-      isLoadingUser: false,
-      isFoundUser: false,
-      isCreatedSuccessfully: false,
-      totalNumberOfProductForSale: 0,
-      totalMoneyForSale: 0
-    }
 
-    setPanes(paneTemp)
+    if (keyValue === 'bankName') {
+      paneTemp[currentPaneIndex].shippingAddress = {
+        ...paneTemp[currentPaneIndex].clientInfo,
+        bankName: event.target.value ? event.target.value.trim() : ''
+      }
+      setPanes(paneTemp)
+    }
   }
 
   return (
@@ -608,7 +646,7 @@ const SaleScreen = (props) => {
 
               <div className='typeTranferBox'>
                 <span className='typeTranferTxt'>Hình thức trả tiền: </span>
-                <Checkbox.Group options={optionsTransferMoney} value={panes[currentPaneIndex].isTransferWithBank || 'false'} defaultValue={['false']} onChange={onChangeRadioTransferMoney} />
+                <Checkbox.Group options={panes[currentPaneIndex].isOnlineSale === 'true' ? optionsTransferMoneyWithBank : optionsTransferMoney} value={panes[currentPaneIndex].isTransferWithBank || 'false'} defaultValue={['false']} onChange={onChangeRadioTransferMoney} />
               </div>
 
               <div className='typeTranferBox'>
@@ -656,6 +694,24 @@ const SaleScreen = (props) => {
               </div>
             </div>
 
+            {
+              panes[currentPaneIndex].isOnlineSale === 'true'
+                ? <>
+                  <Divider style={{ margin: '15px 0' }} orientation='left'>Thông tin vận chuyển</Divider>
+                  <div className='customerInfoBox'>
+                    <div className='phoneBox'>
+                      <span className='phoneTxt'>Thành phố: </span>
+                      <Input value={panes[currentPaneIndex]?.shippingInfo?.addressFromInfo.pick_province} minLength={10} maxLength={11} allowClear onChange={(value) => onChangeDataShipping(value, 'pick_province')} placeholder='...'  />
+                    </div>
+
+                    <div className='typeTranferBox'>
+                      <span className='typeTranferTxt'>Hình thức trả tiền: </span>
+                      <Checkbox.Group options={optionsTransferOrder} value={panes[currentPaneIndex]?.shippingInfo?.optionTransfer || '1'} defaultValue={'1'} onChange={onChangeRadioTransferOrder} />
+                    </div>
+                  </div>
+                 </> : null
+
+            }
           </div>
         </div>
 

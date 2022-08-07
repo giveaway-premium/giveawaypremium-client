@@ -175,16 +175,72 @@ export default class Gap {
   }
 
   // Product
-  static async getProduct (page = 1, keyword = null, limit = 20, currentTagId) {
+  // static async getProduct (page = 1, keyword = null, limit = 20, currentTagId) {
+  //   let limited = limit || 100
+  //   let skip = (limited * page) - limited
+
+  //   if (keyword) {
+  //     const customQuery = `include=medias&skip=${skip}&limit=${limited}&count=1&where={"name":{"$regex":"${keyword}"},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+  //     return this.fetchData('/classes/Product', REQUEST_TYPE.GET, null, null, null, null, customQuery)
+  //   } else {
+  //     const customQuery = `include=medias&skip=${skip}&limit=${limited}&count=1&where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+
+  //     return this.fetchData('/classes/Product', REQUEST_TYPE.GET, null, null, null, null, customQuery)
+  //   }
+  // }
+
+  static async getProduct (page = 1, selectedKeys = null, limit = 100, currentTagId) {
+    console.log('getProduct')
+    console.log(page)
+    console.log(selectedKeys)
+
     let limited = limit || 100
     let skip = (limited * page) - limited
 
-    if (keyword) {
-      const customQuery = `include=medias&skip=${skip}&limit=${limited}&count=1&where={"name":{"$regex":"${keyword}"},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+    if (selectedKeys) {
+      console.log('getProduct 1')
+      console.log(selectedKeys)
+      console.log(selectedKeys.name)
+      console.log(selectedKeys.code)
+
+      let allSearchRegex = `"deleteAt":${null}`
+      if (selectedKeys?.name && selectedKeys?.name.length > 0) {
+        allSearchRegex += `,"name":{"$text":{"$search":{"$term":"${selectedKeys.name.trim()}"}}}`
+        console.log('allSearchRegex2', allSearchRegex)
+      }
+
+      if (selectedKeys?.code && selectedKeys?.code.length > 0) {
+        allSearchRegex += `,"code":{"$regex":"${selectedKeys?.code.trim()}"}`
+
+        // allSearchRegex += `,"code":{"$text":{"$search":{"$term":"${selectedKeys.code.trim()}"}}}`
+        console.log('allSearchRegex2', allSearchRegex)
+      }
+
+      if (selectedKeys?.soldNumberProduct && selectedKeys?.soldNumberProduct.length > 0) {
+        allSearchRegex += `,"soldNumberProduct":${Number(selectedKeys.soldNumberProduct.trim())}`
+        console.log('allSearchRegex2', allSearchRegex)
+      }
+
+      if (selectedKeys?.remainNumberProduct && selectedKeys?.remainNumberProduct.length > 0) {
+        allSearchRegex += `,"remainNumberProduct":${Number(selectedKeys.remainNumberProduct.trim())}`
+        console.log('allSearchRegex2', allSearchRegex)
+      }
+
+      // if (selectedKeys?.isGetMoney) {
+      //   allSearchRegex += `,"isGetMoney":${selectedKeys.isGetMoney}`
+      //   console.log('allSearchRegex2', allSearchRegex)
+      // }
+      console.log('allSearchRegex')
+      console.log(allSearchRegex)
+
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={${allSearchRegex},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      console.log('customQuery')
+      console.log(customQuery)
       return this.fetchData('/classes/Product', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     } else {
-      const customQuery = `include=medias&skip=${skip}&limit=${limited}&count=1&where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
-
+      console.log('getConsignment 3')
+      // const customQuery = `count=1,where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"deleteAt":${null},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
       return this.fetchData('/classes/Product', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     }
   }
@@ -388,18 +444,18 @@ export default class Gap {
       console.log(selectedKeys.remainNumConsignment)
 
       let allSearchRegex = `"deleteAt":${null}`
-      if (selectedKeys.phoneNumber) {
+      if (selectedKeys.phoneNumber && selectedKeys.phoneNumber.length > 0) {
         console.log('getConsignment 2')
 
         allSearchRegex += `,"phoneNumber":{"$regex":"${selectedKeys.phoneNumber.trim()}"}`
         console.log('allSearchRegex', allSearchRegex)
       }
-      if (selectedKeys.consignerName) {
+      if (selectedKeys.consignerName && selectedKeys.consignerName.length > 0) {
         allSearchRegex += `,"consignerName":{"$text":{"$search":{"$term":"${selectedKeys.consignerName.trim()}"}}}`
         console.log('allSearchRegex2', allSearchRegex)
       }
 
-      if (selectedKeys.consignmentId) {
+      if (selectedKeys.consignmentId && selectedKeys.consignmentId.length > 0) {
         allSearchRegex += `,"consignmentId":{"$text":{"$search":{"$term":"${selectedKeys.consignmentId.trim()}"}}}`
         console.log('allSearchRegex2', allSearchRegex)
       }
@@ -409,7 +465,7 @@ export default class Gap {
         console.log('allSearchRegex2', allSearchRegex)
       }
 
-      if (selectedKeys.remainNumConsignment) {
+      if (selectedKeys.remainNumConsignment && selectedKeys.remainNumConsignment.length > 0) {
         allSearchRegex += `,"remainNumConsignment":${selectedKeys.remainNumConsignment.trim()}`
         console.log('allSearchRegex2', allSearchRegex)
       }

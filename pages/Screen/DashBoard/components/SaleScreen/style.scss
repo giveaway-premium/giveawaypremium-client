@@ -193,7 +193,7 @@
                     // max-height: 33vh;
                     // overflow-y: scroll;
                     // flex: 1;
-                    max-height: 30vh;
+                    // max-height: 30vh;
     
 
                     .phoneBox {
@@ -203,6 +203,18 @@
                         align-items: center;
 
                         .phoneTxt {
+                            margin-top: 10px;
+                            width: 300px;
+                        }
+                    }
+
+                    .typeTranferBox {
+                        margin-top: 10px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+
+                        .typeTranferTxt {
                             margin-top: 10px;
                             width: 300px;
                         }
