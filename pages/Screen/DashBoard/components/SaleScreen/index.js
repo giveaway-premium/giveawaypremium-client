@@ -665,12 +665,12 @@ const SaleScreen = (props) => {
 
               <div className='phoneBox'>
                 <span className='phoneTxt'>Tên khách hàng: </span>
-                <Input value={panes[currentPaneIndex]?.clientInfo?.fullName} minLength={10} maxLength={11} allowClear nChange={(value) => onChangeDataClient(value, 'fullName')} placeholder='...' />
+                <Input value={panes[currentPaneIndex]?.clientInfo?.fullName} minLength={10} maxLength={11} allowClear onChange={(value) => onChangeDataClient(value, 'fullName')} placeholder='...' />
               </div>
 
               <div className='phoneBox'>
                 <span className='phoneTxt'>Chứng minh nhân dân: </span>
-                <Input value={panes[currentPaneIndex]?.clientInfo?.consignerIdCard} minLength={10} maxLength={11} allowClear nChange={(value) => onChangeDataClient(value, 'consignerIdCard')} placeholder='...' />
+                <Input value={panes[currentPaneIndex]?.clientInfo?.consignerIdCard} minLength={10} maxLength={11} allowClear onChange={(value) => onChangeDataClient(value, 'consignerIdCard')} placeholder='...' />
               </div>
 
               <div className='phoneBox'>
@@ -685,12 +685,12 @@ const SaleScreen = (props) => {
 
               <div className='phoneBox'>
                 <span className='phoneTxt'>ID ngân hàng: </span>
-                <Input value={panes[currentPaneIndex]?.clientInfo?.bankId} allowClear nChange={(value) => onChangeDataClient(value, 'bankId')} placeholder='...' />
+                <Input value={panes[currentPaneIndex]?.clientInfo?.bankId} allowClear onChange={(value) => onChangeDataClient(value, 'bankId')} placeholder='...' />
               </div>
 
               <div className='phoneBox'>
                 <span className='phoneTxt'>Sinh nhật: </span>
-                <Input value={panes[currentPaneIndex]?.clientInfo?.birthday} allowClear nChange={(value) => onChangeDataClient(value, 'birthday')} placeholder='...' />
+                <Input value={panes[currentPaneIndex]?.clientInfo?.birthday} allowClear onChange={(value) => onChangeDataClient(value, 'birthday')} placeholder='...' />
               </div>
             </div>
 
@@ -701,7 +701,7 @@ const SaleScreen = (props) => {
                   <div className='customerInfoBox'>
                     <div className='phoneBox'>
                       <span className='phoneTxt'>Thành phố: </span>
-                      <Input value={panes[currentPaneIndex]?.shippingInfo?.addressFromInfo.pick_province} minLength={10} maxLength={11} allowClear onChange={(value) => onChangeDataShipping(value, 'pick_province')} placeholder='...'  />
+                      <Input value={panes[currentPaneIndex]?.shippingInfo?.addressFromInfo?.pick_province} minLength={10} maxLength={11} allowClear onChange={(value) => onChangeDataShipping(value, 'pick_province')} placeholder='...'  />
                     </div>
 
                     <div className='typeTranferBox'>
