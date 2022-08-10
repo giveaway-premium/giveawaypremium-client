@@ -7,6 +7,7 @@ import { isMobile } from 'react-device-detect'
 import Header from './Header'
 import innerHeight from 'ios-inner-height'
 import './style.scss'
+import { withRouter } from 'next/router'
 const { Content } = Layout
 
 class BaseContainer extends PureComponent {
@@ -39,11 +40,12 @@ class BaseContainer extends PureComponent {
     }, 1000)
   }
   render () {
+    const isFullScreen = this.props.router.asPath === '/admin'
     return (
       <div className='main-base-container'>
         <div id='parallax' />
         <Header />
-        <div className='contentLayout' style={{ minHeight: isMobile && innerHeight }}>
+        <div className='contentLayout' style={isFullScreen ? { maxWidth: '100%', minHeight: isMobile && innerHeight } : { minHeight: isMobile && innerHeight }}>
           {this.props.children}
         </div>
         {/* <Row type='flex' justify='center'>
@@ -61,4 +63,4 @@ const mapStateToProps = (state) => ({
   locale: state.locale
 })
 
-export default connect(mapStateToProps)(BaseContainer)
+export default withRouter(connect(mapStateToProps)(BaseContainer))

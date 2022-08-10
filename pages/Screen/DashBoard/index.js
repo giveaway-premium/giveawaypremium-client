@@ -50,7 +50,7 @@ class DashBoard extends React.PureComponent {
         bankNumber: '',
         bankName: ''
       },
-      isFullScreen: false
+      isFullScreen: true
     }
     this.myModal = React.createRef()
   }
@@ -215,7 +215,7 @@ class DashBoard extends React.PureComponent {
   }
 
   handleChoosePage = (page) => {
-    if (page && page.key === '5') {
+    if (page && (page.key === '5' || page.key === '3')) {
       this.setState({
         isFullScreen: true,
         numberPage: Number(page.key)

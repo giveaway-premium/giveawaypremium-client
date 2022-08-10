@@ -90,7 +90,7 @@ class Header extends React.PureComponent {
   renderMainNav (mode = 'horizontal') {
     const { isShowAboutUs, isShowConsignment, isShowStore, isShowRightSideHeader, isShowRightSideHeaderAnimation } = this.state
     const { messages } = this.props.locale
-    const isHide = this.props.router.asPath === '/' || this.props.router.asPath === '/monitor'
+    const isHide = this.props.router.asPath === '/' || this.props.router.asPath === '/monitor' || this.props.router.asPath === '/admin'
 
     // if (isHomePage) {
     //   return null
@@ -221,7 +221,7 @@ class Header extends React.PureComponent {
     const { locale, userData } = this.props
     const { messages } = locale
     const isSigned = true
-    const isHide = this.props.router.asPath === '/' || this.props.router.asPath === '/monitor'
+    const isHide = this.props.router.asPath === '/' || this.props.router.asPath === '/monitor' || this.props.router.asPath === '/admin'
 
     return (
       <div className='wrapper'>
@@ -269,8 +269,8 @@ class Header extends React.PureComponent {
     )
   }
   render () {
-    const isMonitor = this.props.router.asPath === '/monitor'
-    if (isMonitor) {
+    const isHideHeader = this.props.router.asPath === '/' || this.props.router.asPath === '/monitor' || this.props.router.asPath === '/admin'
+    if (isHideHeader) {
       return null
     } else {
       return (
