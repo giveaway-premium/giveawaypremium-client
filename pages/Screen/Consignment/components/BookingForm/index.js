@@ -82,7 +82,7 @@ class ConsignmentScreen extends React.PureComponent {
   async componentDidMount () {
     const newSettingRedux = await ReduxServices.getSetting()
     const { settingRedux } = this.props
-    let dayBookingCount = ['', '', '', '', '', '', '', '', '', '', '', '', '', '']
+    let dayBookingCount = ['', '', '', '', '', '', '']
     let dayBookingTemp = []
     let bookingOptionEachDay = newSettingRedux.BOOKING_OPTION_EACH_DAY || BOOKING_OPTION_EACH_DAY_DATA_DEFAULT
 
@@ -394,9 +394,12 @@ class ConsignmentScreen extends React.PureComponent {
                   <div style={{ display: 'flex', flexDirection: 'column', width: '90%', justifyContent: 'center', alignItems: 'center' }}>
                     <img width={70} src={images.logoHeaderWhite} style={{ objectFit: 'contain' }} />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', width: '70%', margin: '30px 5% 0 5%' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', width: '85%', margin: '30px 5% 0 5%' }}>
                     <p className='text day-txt'>
               Hiện tại tính năng đặt lịch ký gửi trên website đang tạm khoá.
+                    </p>
+                    <p className='text day-txt'>
+              Sẽ tạm khoá đặt lịch 1 tuần, từ 28-08-2022 đến 0h00 04-9-2022
                     </p>
                     <p className='text day-txt'>
               Quý khách vui lòng gọi hotline 0703 334 443 để biết thêm thông tin.

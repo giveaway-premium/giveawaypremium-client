@@ -187,7 +187,8 @@ class TableProductScreen extends React.PureComponent {
       currentTag: '',
       mediaImage: [],
       imageUrl: false,
-      isUploading: false
+      isUploading: false,
+      currentPagination: 1
     }
     this.myModal = React.createRef()
   }
@@ -821,7 +822,10 @@ class TableProductScreen extends React.PureComponent {
             moneyBackProduct: Math.round(Number(item.soldNumberProduct || 0) * item.priceAfterFee || 0)
           })
         })
+        console.log(consignmentData)
+
         this.setState({
+          currentPagination: 1,
           total: res.count,
           consignmentData: consignmentData,
           isLoadingData: false
@@ -860,22 +864,27 @@ class TableProductScreen extends React.PureComponent {
   };
 
   paginationChange = (page) => {
-    console.log(page)
-    this.fetchTableData(page)
+    this.setState({
+      currentPagination: page || 1
+    }, () => {
+      this.fetchTableData(page)
+    })
   }
 
   onChangeTab = (tabKey) => {
     const { allInfoTag } = this.state
     this.setState({
+      // selectedKeys: {},
+      currentPagination: 1,
       currentTag: allInfoTag[tabKey].objectId
     }, () => {
-      this.fetchTableData()
+      this.fetchTableData(1)
     })
   }
 
   render () {
     const { userData } = this.props
-    const { isLoadingData, consignmentData, total, isLoadingTags, tags, allInfoTag } = this.state
+    const { isLoadingData, consignmentData, total, isLoadingTags, tags, allInfoTag, currentPagination } = this.state
 
     const components = {
       body: {
@@ -918,6 +927,7 @@ class TableProductScreen extends React.PureComponent {
           bordered
           expandable={{ expandedRowRender: (record) => this.expandedRowRender(record) }}
           pagination={{
+            current: currentPagination,
             total: total,
             pageSize: 100,
             onChange: this.paginationChange

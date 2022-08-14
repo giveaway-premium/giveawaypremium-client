@@ -75,7 +75,7 @@
             font-size: 50px;
 
             transform: translate(-150px, 0px);
-            transition: 0.7s all;
+            transition: 0.5s all;
 
             &.show {
                 pointer-events: unset;
@@ -99,12 +99,15 @@
         opacity: 0;
         // pointer-events: none;
         transform: translate(-100vw, 0px);
-        transition: 0.5s all;
+        transition: 0s all;
         position: fixed;
         &.show {
             position: relative;
             opacity: 1;
+            transition: 0.5s all;
             transform: translate(0);
+            // transform: translate(-100vw, 0px);
+
         }
     }
 }

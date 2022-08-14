@@ -537,6 +537,8 @@ class TableConsignemntScreen extends React.PureComponent {
 
     recordData && recordData.productList && recordData.productList.map((item, index) => {
       data.push({
+        ...item,
+        objectId: item.objectId || null,
         key: index,
         name: item.name,
         note: item.note,
@@ -598,13 +600,13 @@ class TableConsignemntScreen extends React.PureComponent {
   handleSaveNestTable = (row, record) => {
     console.log('row - handleSaveNestTable')
     console.log(row)
-    // console.log(record)
+    console.log(record)
 
     const newData = [...this.state.consignmentData]
     const index = newData.findIndex((item) => record.key === item.key)
     let item = newData[index]
 
-    item.productList[row.key] = {
+    const newProduct = {
       ...row,
       note: row.node || '---',
       code: row.code,
@@ -616,6 +618,8 @@ class TableConsignemntScreen extends React.PureComponent {
       remainNumberProduct: Number(row.count) - Number(row.soldNumberProduct || 0),
       moneyBackProduct: (Number(row.soldNumberProduct || 0) * Number(row.priceAfterFee))
     }
+
+    item.productList[row.key] = newProduct
 
     let newRemainNumConsignment = 0
     let newmoneyBack = 0
@@ -649,7 +653,13 @@ class TableConsignemntScreen extends React.PureComponent {
       consignmentData: newData
     }, async () => {
       console.log(newItem)
-      const res = await GapService.updateConsignment(newItem)
+      let res
+      if (row && row.objectId && row.objectId.length > 0) {
+        res = await GapService.updateProduct(newProduct)
+      } else {
+        res = await GapService.updateConsignment(newItem)
+      }
+
       console.log(res)
       if (res) {
         showNotification(`Cập nhật thành công ${item.phoneNumber}`)
@@ -657,7 +667,6 @@ class TableConsignemntScreen extends React.PureComponent {
         showNotification(`Cập nhật chưa được`)
       }
     })
-    // }
   };
 
   onDeleteButton = async (row) => {
@@ -812,6 +821,7 @@ class TableConsignemntScreen extends React.PureComponent {
           })
         })
         this.setState({
+          currentPagination: 1,
           total: res.count,
           consignmentData: consignmentData,
           isLoadingData: false
@@ -918,7 +928,7 @@ class TableConsignemntScreen extends React.PureComponent {
             pageSize: 100,
             onChange: this.paginationChange
           }}
-          scroll={{ x: 1900, y: '70vh' }}
+          scroll={{ x: 1900, y: '65vh' }}
         />
         <MyModal ref={this.myModal} />
       </div>

@@ -93,7 +93,7 @@ export default class Gap {
   static async getAppointmentWithPhone (phoneNumber, limit = 1, page = 1) {
     let limited = limit || 1
     let skip = (limited * page) - limited
-    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"deleteAt":${null},"phoneNumber":"${phoneNumber}"}`
+    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"deletedAt":${null},"phoneNumber":"${phoneNumber}"}`
     // const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"$or":[{"phoneNumber":"${keyword}"},{"consignerIdCard":"${keyword}"]}`
 
     return this.fetchData('/classes/AppointmentSchedule', REQUEST_TYPE.GET, null, null, null, null, customQuery)
@@ -103,7 +103,7 @@ export default class Gap {
     let limited = 300
     let skip = (limited * 1) - limited
 
-    const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"deleteAt":${null},"date":{"$in":[${[...dateArray]}]}}`
+    const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"deletedAt":${null},"date":{"$in":[${[...dateArray]}]}}`
     return this.fetchData('/classes/AppointmentSchedule', REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
 
@@ -117,7 +117,11 @@ export default class Gap {
 
     try {
       const body = {
-        deleteAt: moment()
+        deletedAt:
+        {
+          '__type': 'Date',
+          'iso': moment()
+        }
       }
 
       return this.fetchData(`/classes/AppointmentSchedule/${objectId}`, REQUEST_TYPE.PUT, null, body)
@@ -149,7 +153,7 @@ export default class Gap {
   // Consignment Group
 
   static async getConsignmentID () {
-    const customQuery = `where={"deleteAt":${null}}`
+    const customQuery = `where={"deletedAt":${null}}`
     return this.fetchData('/classes/ConsignmentGroup', REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
 
@@ -164,7 +168,10 @@ export default class Gap {
   static async deleteConsignmentID (objectId) {
     try {
       const body = {
-        deleteAt: moment()
+        deletedAt: {
+          '__type': 'Date',
+          'iso': moment()
+        }
       }
 
       return this.fetchData(`/classes/ConsignmentGroup/${objectId}`, REQUEST_TYPE.PUT, null, body)
@@ -190,57 +197,91 @@ export default class Gap {
   // }
 
   static async getProduct (page = 1, selectedKeys = null, limit = 100, currentTagId) {
-    console.log('getProduct')
-    console.log(page)
-    console.log(selectedKeys)
-
     let limited = limit || 100
     let skip = (limited * page) - limited
 
     if (selectedKeys) {
-      console.log('getProduct 1')
-      console.log(selectedKeys)
-      console.log(selectedKeys.name)
-      console.log(selectedKeys.code)
+      const whereUpperCase = {}
+      const whereLowerCase = {}
 
-      let allSearchRegex = `"deleteAt":${null}`
       if (selectedKeys?.name && selectedKeys?.name.length > 0) {
-        allSearchRegex += `,"name":{"$text":{"$search":{"$term":"${selectedKeys.name.trim()}"}}}`
-        console.log('allSearchRegex2', allSearchRegex)
+        whereUpperCase.name = { '$regex': selectedKeys?.name.trim() }
+        whereLowerCase.name = { '$regex': selectedKeys?.name.trim().toLowerCase() }
       }
 
       if (selectedKeys?.code && selectedKeys?.code.length > 0) {
-        allSearchRegex += `,"code":{"$regex":"${selectedKeys?.code.trim()}"}`
-
-        // allSearchRegex += `,"code":{"$text":{"$search":{"$term":"${selectedKeys.code.trim()}"}}}`
-        console.log('allSearchRegex2', allSearchRegex)
+        whereUpperCase.code = { '$regex': selectedKeys?.code.trim() }
+        whereLowerCase.code = { '$regex': selectedKeys?.code.trim().toLowerCase() }
       }
 
       if (selectedKeys?.soldNumberProduct && selectedKeys?.soldNumberProduct.length > 0) {
-        allSearchRegex += `,"soldNumberProduct":${Number(selectedKeys.soldNumberProduct.trim())}`
-        console.log('allSearchRegex2', allSearchRegex)
+        whereUpperCase.soldNumberProduct = Number(selectedKeys.soldNumberProduct.trim())
+        whereLowerCase.soldNumberProduct = Number(selectedKeys.soldNumberProduct.trim())
       }
 
       if (selectedKeys?.remainNumberProduct && selectedKeys?.remainNumberProduct.length > 0) {
-        allSearchRegex += `,"remainNumberProduct":${Number(selectedKeys.remainNumberProduct.trim())}`
-        console.log('allSearchRegex2', allSearchRegex)
+        whereUpperCase.remainNumberProduct = Number(selectedKeys.remainNumberProduct.trim())
+        whereLowerCase.remainNumberProduct = Number(selectedKeys.remainNumberProduct.trim())
+      }
+      whereUpperCase.deletedAt = { '$exists': false }
+      whereLowerCase.deletedAt = { '$exists': false }
+      whereLowerCase.group = {
+        '__type': 'Pointer',
+        'className': 'ConsignmentGroup',
+        'objectId': `${currentTagId}`
+      }
+      whereUpperCase.group = {
+        '__type': 'Pointer',
+        'className': 'ConsignmentGroup',
+        'objectId': `${currentTagId}`
       }
 
-      // if (selectedKeys?.isGetMoney) {
-      //   allSearchRegex += `,"isGetMoney":${selectedKeys.isGetMoney}`
+      const allSearchRegex = JSON.stringify({
+        '$or': [whereUpperCase, whereLowerCase]
+      })
+
+      // if (selectedKeys?.name && selectedKeys?.name.length > 0) {
+      //   // allSearchRegex += `,"name":{"$text":{"$search":{"$term":"${selectedKeys.name.trim()}"}}}`
+      //   allSearchRegex += `,"name":{"$or":[{"$regex":"${selectedKeys?.name.trim()}"}, {"$regex":"${selectedKeys?.name.trim().toLowerCase()}"}]}`
+
       //   console.log('allSearchRegex2', allSearchRegex)
       // }
-      console.log('allSearchRegex')
-      console.log(allSearchRegex)
 
-      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={${allSearchRegex},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      // if (selectedKeys?.code && selectedKeys?.code.length > 0) {
+      //   allSearchRegex += `,"code":{"$or":[{"$regex":"${selectedKeys?.code.trim()}"}, {"$regex":"${selectedKeys?.code.trim().toLowerCase()}"}]}`
+
+      //   // allSearchRegex += `,"code":{"$text":{"$search":{"$term":"${selectedKeys.code.trim()}"}}}`
+      //   console.log('allSearchRegex2', allSearchRegex)
+      // }
+
+      // if (selectedKeys?.soldNumberProduct && selectedKeys?.soldNumberProduct.length > 0) {
+      //   allSearchRegex += `,"soldNumberProduct":${Number(selectedKeys.soldNumberProduct.trim())}`
+      //   console.log('allSearchRegex2', allSearchRegex)
+      // }
+
+      // if (selectedKeys?.remainNumberProduct && selectedKeys?.remainNumberProduct.length > 0) {
+      //   allSearchRegex += `,"remainNumberProduct":${Number(selectedKeys.remainNumberProduct.trim())}`
+      //   console.log('allSearchRegex2', allSearchRegex)
+      // }
+
+      // // if (selectedKeys?.isGetMoney) {
+      // //   allSearchRegex += `,"isGetMoney":${selectedKeys.isGetMoney}`
+      // //   console.log('allSearchRegex2', allSearchRegex)
+      // // }
+      // console.log('allSearchRegex')
+      // console.log(allSearchRegex)
+
+      // const customQuery = `skip=${skip}&limit=${limited}&count=1&where=${whereStr}`
+      // const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"deletedAt":${null},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&where=${allSearchRegex}`
+
       console.log('customQuery')
       console.log(customQuery)
       return this.fetchData('/classes/Product', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     } else {
       console.log('getConsignment 3')
       // const customQuery = `count=1,where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
-      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"deleteAt":${null},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"deletedAt":${null},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
       return this.fetchData('/classes/Product', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     }
   }
@@ -255,9 +296,20 @@ export default class Gap {
   }
 
   static async updateProduct (item) {
+    console.log('updateProduct', item)
     try {
       const body = {
-        medias: item.medias
+        code: item.code,
+        name: item.name,
+        price: item.price,
+        priceAfterFee: item.priceAfterFee,
+        count: item.count,
+        soldNumberProduct: item.soldNumberProduct,
+        remainNumberProduct: item.remainNumberProduct
+      }
+
+      if (item.medias) {
+        body.medias = item.medias
       }
 
       console.log('body update product', body)
@@ -323,7 +375,7 @@ export default class Gap {
       console.log(selectedKeys.remainNumConsignment)
       const fromDateFormated = moment(fromDateMoment, 'YYYY-MM-DD')
       const toDateFormated = moment(toDateMoment, 'YYYY-MM-DD')
-      let allSearchRegex = `"deleteAt":${null}, "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"},"$lte": {"__type": "Date","iso": "${toDateFormated}"}}`
+      let allSearchRegex = `"deletedAt":${null}, "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"},"$lte": {"__type": "Date","iso": "${toDateFormated}"}}`
       if (selectedKeys.phoneNumber) {
         console.log('getConsignment 2')
 
@@ -371,7 +423,7 @@ export default class Gap {
       console.log('fromDateFormated', fromDateFormated)
       console.log('toDateFormated', toDateFormated)
 
-      const customQuery = `skip=${skip}&limit=${limited}&count=1&include=client&where={"deleteAt":${null}, "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"},"$lte": {"__type": "Date","iso": "${toDateFormated}"}}}`
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&include=client&where={"deletedAt":${null}, "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"},"$lte": {"__type": "Date","iso": "${toDateFormated}"}}}`
       return this.fetchData('/classes/Order', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     }
   }
@@ -401,13 +453,13 @@ export default class Gap {
     }
     console.log('body setConsignment')
     console.log(body)
-    return this.fetchData('/classes/Consignment', REQUEST_TYPE.POST, null, body)
+    return this.fetchData('/classes/Consignment', REQUEST_TYPE.POST, null, body, null, null, null, true)
   }
 
   static async getConsignmentWithPhone (page = 1, keyword = null, limit = 20) {
     let limited = limit || 100
     let skip = (limited * page) - limited
-    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"deleteAt":${null},"phoneNumber":"${keyword}"}`
+    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"deletedAt":${null},"phoneNumber":"${keyword}"}`
     // const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"$or":[{"phoneNumber":"${keyword}"},{"consignerIdCard":"${keyword}"]}`
 
     return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
@@ -416,7 +468,7 @@ export default class Gap {
   static async getConsignmentWithID (page = 1, keyword = null, limit = 20) {
     let limited = limit || 100
     let skip = (limited * page) - limited
-    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"deleteAt":${null},"consignerIdCard":"${keyword}"}`
+    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"deletedAt":${null},"consignerIdCard":"${keyword}"}`
     // const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"$or":[{"phoneNumber":"${keyword}"},{"consignerIdCard":"${keyword}"]}`
 
     return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
@@ -426,7 +478,7 @@ export default class Gap {
     let limited = limit || 100
     let skip = (limited * page) - limited
 
-    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"deleteAt":${null},"phoneNumber":{"$regex":"${keyword}"}}`
+    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"deletedAt":${null},"phoneNumber":{"$regex":"${keyword}"}}`
     return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
 
@@ -443,7 +495,7 @@ export default class Gap {
       console.log(selectedKeys.phoneNumber)
       console.log(selectedKeys.remainNumConsignment)
 
-      let allSearchRegex = `"deleteAt":${null}`
+      let allSearchRegex = `"deletedAt":${null}`
       if (selectedKeys.phoneNumber && selectedKeys.phoneNumber.length > 0) {
         console.log('getConsignment 2')
 
@@ -484,7 +536,7 @@ export default class Gap {
     } else {
       console.log('getConsignment 3')
       // const customQuery = `count=1,where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
-      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"deleteAt":${null},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"deletedAt":${null},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
       return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     }
   }
@@ -492,7 +544,10 @@ export default class Gap {
   static async deleteConsignment (objectId) {
     try {
       const body = {
-        deleteAt: moment()
+        deletedAt: {
+          '__type': 'Date',
+          'iso': moment()
+        }
       }
 
       return this.fetchData(`/classes/Consignment/${objectId}`, REQUEST_TYPE.PUT, null, body)
@@ -519,7 +574,7 @@ export default class Gap {
       console.log('body update consignment', body)
       console.log('item update consignment', item)
 
-      return this.fetchData(`/classes/Consignment/${item.objectId}`, REQUEST_TYPE.PUT, null, body)
+      return this.fetchData(`/classes/Consignment/${item.objectId}`, REQUEST_TYPE.PUT, null, body, null, null, null, true)
     } catch (e) {
       console.log(e)
       return false
@@ -536,7 +591,7 @@ export default class Gap {
   }
 
   static async getChannel () {
-    const customQuery = `where={"deleteAt":${null}}`
+    const customQuery = `where={"deletedAt":${null}}`
     return this.fetchData('/classes/Channel', REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
 
@@ -552,7 +607,10 @@ export default class Gap {
   static async deleteChannel (objectId) {
     try {
       const body = {
-        deleteAt: moment()
+        deletedAt: {
+          '__type': 'Date',
+          'iso': moment()
+        }
       }
 
       return this.fetchData(`/classes/Channel/${objectId}`, REQUEST_TYPE.PUT, null, body)
