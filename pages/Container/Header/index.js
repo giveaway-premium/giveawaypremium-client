@@ -90,7 +90,7 @@ class Header extends React.PureComponent {
   renderMainNav (mode = 'horizontal') {
     const { isShowAboutUs, isShowConsignment, isShowStore, isShowRightSideHeader, isShowRightSideHeaderAnimation } = this.state
     const { messages } = this.props.locale
-    const isHide = this.props.router.asPath === '/' || this.props.router.asPath === '/monitor' || this.props.router.asPath === '/admin'
+    const isHide = this.props.router.asPath === '/monitor' || this.props.router.asPath === '/admin'
 
     // if (isHomePage) {
     //   return null
@@ -185,7 +185,7 @@ class Header extends React.PureComponent {
   renderMainNavMobile (mode = 'horizontal') {
     const { isShowAboutUs, isShowConsignment, isShowStore, isShowRightSideHeader, isShowRightSideHeaderAnimation, isOpen } = this.state
     const { messages } = this.props.locale
-    const isHide = this.props.router.asPath === '/' || this.props.router.asPath === '/monitor'
+    const isHide = this.props.router.asPath === '/monitor'
 
     // if (isHomePage) {
     //   return null
@@ -269,7 +269,7 @@ class Header extends React.PureComponent {
     )
   }
   render () {
-    const isHideHeader = this.props.router.asPath === '/' || this.props.router.asPath === '/monitor' || this.props.router.asPath === '/admin'
+    const isHideHeader = this.props.router.asPath === '/monitor' || this.props.router.asPath === '/admin'
     if (isHideHeader) {
       return null
     } else {

@@ -82,7 +82,7 @@ class ConsignmentScreen extends React.PureComponent {
   async componentDidMount () {
     const newSettingRedux = await ReduxServices.getSetting()
     const { settingRedux } = this.props
-    let dayBookingCount = ['', '', '', '', '', '', '']
+    let dayBookingCount = ['', '', '', '', '', '', '', '', '', '', '', '', '', '']
     let dayBookingTemp = []
     let bookingOptionEachDay = newSettingRedux.BOOKING_OPTION_EACH_DAY || BOOKING_OPTION_EACH_DAY_DATA_DEFAULT
 

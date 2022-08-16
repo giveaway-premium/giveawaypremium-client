@@ -487,7 +487,7 @@ class TableAppointment extends React.Component {
             <div style={{ overflowX: 'hidden', overflowY: 'scroll', position: 'relative' }} className={'dayBooking-box show'}>
 
               {dayBooking.map((dayItem, dayIndex) => {
-                const isLast7Day = dayIndex >= 7
+                const isLast7Day = dayIndex >= 14
                 return (
                   <div
                     key={dayIndex}
