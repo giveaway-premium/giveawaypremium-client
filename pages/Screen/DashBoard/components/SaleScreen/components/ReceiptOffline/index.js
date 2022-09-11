@@ -105,7 +105,7 @@ class ReceiptOffline extends React.Component {
       <div className='BoxContainer'>
         <style type='text/css' media='print'>
           {'\
-   @page { size: landscape; }\
+   @page { size: portrait; }\
 '}
         </style>
         <div className='BoxTicket'>
