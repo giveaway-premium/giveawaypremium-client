@@ -1,5 +1,5 @@
 
-import { REQUEST_TYPE } from 'common/constants'
+import { ADDRESS_GET_ORDER_ARRAY, ADDRESS_STREET_GET_ORDER, REQUEST_TYPE } from 'common/constants'
 import ReduxService from 'common/redux'
 import QueryString from 'query-string'
 import moment from 'moment'
@@ -337,7 +337,8 @@ export default class Gap {
       totalNumberOfProductForSale: `${dataOrder.totalNumberOfProductForSale}`,
       totalMoneyForSale: `${dataOrder.totalMoneyForSale}`,
       note: dataOrder.note,
-      isOnlineSale: dataOrder.isOnlineSale === 'true'
+      isOnlineSale: dataOrder.isOnlineSale === 'true',
+      shippingInfo: dataOrder.shippingInfo
     }
     console.log('body setConsignment')
     console.log(body)
@@ -796,7 +797,35 @@ export default class Gap {
     return this.fetchData('/classes/Setting', REQUEST_TYPE.GET, null, null, null, null)
   }
 
-  //
+  // custom API server
+
+  static async getUnitAddress () {
+    return this.fetchData('/functions/administativeUnits', REQUEST_TYPE.POST, null, null)
+  }
+
+  static async getFeeForTransport (formData, isXteam = false) {
+    const body = {
+      service: 'giaohangtietkiem',
+      action: 'PRICE_ESTIMATE',
+      data: {
+        weight: 0.1,
+        serviceLevel: isXteam ? 'xteam' : 'none',
+        from: {
+          province: ADDRESS_GET_ORDER_ARRAY[0],
+          district: ADDRESS_GET_ORDER_ARRAY[1],
+          address: ADDRESS_GET_ORDER_ARRAY[2]
+        },
+        to: {
+          province: formData.orderAdressProvince,
+          district: formData.orderAdressDistrict,
+          address: formData.orderAdressWard
+        },
+        transport: 'road',
+        value: 0
+      }
+    }
+    return this.fetchData('/functions/transporter', REQUEST_TYPE.POST, null, body)
+  }
 
   static async fetchData (apiUrl, method, queryBody, postData, hostLink, authKey = '', customQuery = null, isUseAuthKey = false) {
     try {

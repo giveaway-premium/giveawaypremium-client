@@ -58,6 +58,14 @@ export default class StorageActions {
     }
   }
 
+  static setAddressInfoArray (payload) {
+    saveDataLocal(KEY_STORE.SET_ADDRESS_INFO_ARRAY, payload)
+    return {
+      type: KEY_STORE.SET_ADDRESS_INFO_ARRAY,
+      payload
+    }
+  }
+
   static setTransferData (payload) {
     saveDataLocal(KEY_STORE.SET_TRANSFER_DATA, payload)
     return {

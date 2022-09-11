@@ -4,7 +4,7 @@ import { withRouter } from 'next/router'
 import { connect } from 'react-redux'
 import {
   Form, Row, Col, Layout, Input, Button, Spin, Divider, List, Card, InputNumber,
-  Descriptions, Tabs, Table, Switch, Steps, Popover, Checkbox, Empty
+  Descriptions, Tabs, Table, Switch, Steps, Popover, Checkbox, Empty, Cascader, message
 } from 'antd'
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
@@ -15,8 +15,9 @@ import { isMobile } from 'react-device-detect'
 import './style.scss'
 import Lottie from 'react-lottie'
 import GapService from 'controller/Api/Services/Gap'
-import { Scanner, ScannerOutlined } from '@material-ui/icons'
+import { AssignmentReturnedSharp, Scanner, ScannerOutlined } from '@material-ui/icons'
 import { colors } from '@material-ui/core'
+import { ADDRESS_GET_ORDER_ARRAY, ADDRESS_STREET_GET_ORDER } from 'common/constants'
 const { Step } = Steps
 const { TextArea } = Input
 
@@ -26,14 +27,16 @@ const initialPanes = []
 let numPaneTemp = 0
 
 const SaleScreen = (props) => {
-  const { userData } = props
+  const { userData, addressInfoArrayRedux } = props
   const [panes, setPanes] = useState(initialPanes)
   const [currentPaneIndex, setCurrentPaneIndex] = useState(numPaneTemp)
   const [activeKey, setActiveKey] = useState(null)
+  const [optionsAddressArr, setOptionsAddressArr] = useState([])
   let searchInput
   useEffect(() => {
+    convertAddressOptionArray()
+    console.log('addressInfoArrayRedux', addressInfoArrayRedux)
     add()
-
     return () => {
       numPaneTemp = 0
     }
@@ -82,8 +85,7 @@ const SaleScreen = (props) => {
         mail: ''
       },
       shippingInfo: {
-        addressFrom: '',
-        optionTransfer: '1'
+        optionTransfer: 'tk'
       },
       isTransferWithBank: 'false',
       productList: [
@@ -97,7 +99,18 @@ const SaleScreen = (props) => {
       totalNumberOfProductForSale: 0,
       totalMoneyForSale: 0
     })
-    setActiveKey(newActiveKey)
+
+    let currenIndexName = 0
+    let activeKey
+    newPanes.map((item, index) => {
+      if (Number(item.key) === Number(newActiveKey)) {
+        currenIndexName = index
+        activeKey = Number(item.key)
+      }
+    })
+    searchInput && searchInput.focus()
+    setCurrentPaneIndex(currenIndexName)
+    setActiveKey(activeKey)
     setPanes(newPanes)
   }
 
@@ -117,8 +130,7 @@ const SaleScreen = (props) => {
         mail: ''
       },
       shippingInfo: {
-        addressFrom: '',
-        optionTransfer: 1
+        optionTransfer: 'tk'
       },
       isTransferWithBank: 'false',
       productList: [
@@ -215,9 +227,9 @@ const SaleScreen = (props) => {
   ]
 
   const optionsTransferOrder = [
-    { label: 'Giao hàng tiết kiệm', value: '1' },
-    { label: 'Hoả tốc', value: '2' },
-    { label: 'Lấy hàng trực tiếp', value: '3' }
+    { label: 'Giao hàng tiết kiệm', value: 'tk' },
+    { label: 'Hoả tốc', value: 'ht' },
+    { label: 'Lấy hàng trực tiếp', value: 'tt' }
   ]
 
   const onChangeRadioTransferMoney = (value) => {
@@ -231,10 +243,76 @@ const SaleScreen = (props) => {
     }
   }
 
-  const onChangeRadioTransferOrder = (value) => {
+  const onChangeRadioTransferOrder = async (value) => {
     const paneTemp = [...panes]
-    paneTemp[currentPaneIndex].shippingInfo.optionTransfer = value[0]
-    setPanes(paneTemp)
+    console.log('value[0]', value[0])
+    switch (value[0]) {
+    case 'tk':
+    {
+      if (paneTemp[currentPaneIndex].shippingInfo.optionTransfer === 'tk') {
+        return
+      }
+      paneTemp[currentPaneIndex].shippingInfo.optionTransfer = 'tk'
+      if (paneTemp[currentPaneIndex].shippingInfo.orderAdressProvince) {
+        message.loading('Đang lấy thông tin phí shipping...', 2)
+        const formDataFee = {
+          orderAdressProvince: paneTemp[currentPaneIndex].shippingInfo.orderAdressProvince,
+          orderAdressDistrict: paneTemp[currentPaneIndex].shippingInfo.orderAdressDistrict,
+          orderAdressWard: paneTemp[currentPaneIndex].shippingInfo.orderAdressWard
+        }
+        const resFee = await GapService.getFeeForTransport(formDataFee, paneTemp?.[currentPaneIndex]?.shippingInfo?.optionTransfer === 'ht')
+        console.log('resFee.result', resFee.result)
+        if (resFee && resFee.result) {
+          paneTemp[currentPaneIndex].shippingInfo.shippingFee = resFee.result
+          setPanes(paneTemp)
+          return
+        } else {
+          showNotification('Không thể ước tính phí hiện tại')
+          setPanes(paneTemp)
+          return
+        }
+      } else {
+        setPanes(paneTemp)
+        return
+      }
+    }
+
+    case 'ht': {
+      if (paneTemp[currentPaneIndex].shippingInfo.optionTransfer === 'ht') {
+        return
+      }
+      paneTemp[currentPaneIndex].shippingInfo.optionTransfer = 'ht'
+      if (paneTemp[currentPaneIndex].shippingInfo.orderAdressProvince) {
+        message.loading('Đang lấy thông tin phí shipping...', 2)
+        const formDataFee = {
+          orderAdressProvince: paneTemp[currentPaneIndex].shippingInfo.orderAdressProvince,
+          orderAdressDistrict: paneTemp[currentPaneIndex].shippingInfo.orderAdressDistrict,
+          orderAdressWard: paneTemp[currentPaneIndex].shippingInfo.orderAdressWard
+        }
+        const resFee = await GapService.getFeeForTransport(formDataFee, paneTemp?.[currentPaneIndex]?.shippingInfo?.optionTransfer === 'ht')
+        if (resFee && resFee.result) {
+          paneTemp[currentPaneIndex].shippingInfo.shippingFee = resFee.result
+          setPanes(paneTemp)
+          return
+        } else {
+          showNotification('Không thể ước tính phí hiện tại')
+          setPanes(paneTemp)
+          return
+        }
+      } else {
+        setPanes(paneTemp)
+        return
+      }
+    }
+    case 'tt': {
+      if (paneTemp[currentPaneIndex].shippingInfo.optionTransfer === 'tt') {
+        return
+      }
+      paneTemp[currentPaneIndex].shippingInfo.optionTransfer = 'tt'
+      paneTemp[currentPaneIndex].shippingInfo.shippingFee = 0
+      setPanes(paneTemp)
+    }
+    }
   }
 
   const onChangeRadioTypeOnlineSale = (value) => {
@@ -269,6 +347,14 @@ const SaleScreen = (props) => {
     if (productResArr?.results?.[0] && productResArr?.results?.[0].objectId) {
       const paneTemp = [...panes]
       let isExistProduct = false
+      console.log('Number(productResArr.results[0].remainNumberProduct) === 0', productResArr?.results?.[0].remainNumberProduct && Number(productResArr.results[0].remainNumberProduct) === 0)
+      if (productResArr?.results?.[0].remainNumberProduct && Number(productResArr.results[0].remainNumberProduct) === 0) {
+        showNotification('Sản phẩm này đã hết hàng')
+        paneTemp[currentPaneIndex].inputText = ''
+        setPanes(paneTemp)
+        return
+      }
+
       paneTemp[currentPaneIndex].productList.map(item => {
         if (item.objectId === productResArr?.results?.[0].objectId) {
           isExistProduct = true
@@ -354,6 +440,12 @@ const SaleScreen = (props) => {
     } else if (!paneTemp[currentPaneIndex].productList || paneTemp[currentPaneIndex]?.productList?.length === 0) {
       isError = true
       showNotification(`Chưa có sản phẩm nào`)
+    } else if (paneTemp[currentPaneIndex].isOnlineSale === 'true' && paneTemp[currentPaneIndex].shippingInfo && (!paneTemp[currentPaneIndex].shippingInfo?.orderAdressStreet || paneTemp[currentPaneIndex].shippingInfo?.orderAdressStreet.length === 0)) {
+      isError = true
+      showNotification(`Vui nhập thêm thông tin số nhà/tên đường nha`)
+    } else if (paneTemp[currentPaneIndex].isOnlineSale === 'true' && paneTemp[currentPaneIndex].shippingInfo && (!paneTemp[currentPaneIndex].shippingInfo.orderAdressWard || !paneTemp[currentPaneIndex].shippingInfo.orderAdressDistrict || !paneTemp[currentPaneIndex].shippingInfo.orderAdressProvince)) {
+      isError = true
+      showNotification(`Vui nhập thông tin: xã.phường / quận.huyện / tỉnh.thành phố`)
     }
 
     if (isError) {
@@ -364,6 +456,11 @@ const SaleScreen = (props) => {
     const dataOrder = {
       ...paneTemp[currentPaneIndex]
     }
+
+    paneTemp[currentPaneIndex].productList.map((item, itemIndex) => {
+      paneTemp[currentPaneIndex].productList[itemIndex].count = paneTemp[currentPaneIndex]?.productList[itemIndex]?.numberOfProductForSale || 1
+    })
+
     const resUSer = await GapService.getCustomer(paneTemp[currentPaneIndex].clientInfo.phoneNumber)
     if (resUSer && resUSer.results && resUSer.results[0]) { // for already user
       const customerFormData = {
@@ -425,10 +522,8 @@ const SaleScreen = (props) => {
 
   const fetchUserByPhoneNumber = async (phoneKey) => {
     if (phoneKey && phoneKey.target && phoneKey.target.value && phoneKey.target.value.length >= 10) {
+      message.loading('Đang lấy thông tin khách hàng...', 2)
       const paneTemp = [...panes]
-      // paneTemp[currentPaneIndex].isLoadingUser = true
-      // paneTemp[currentPaneIndex].isFoundUser = false
-      // setPanes(paneTemp)
       const res = await GapService.getCustomer(phoneKey.target.value)
       if (res && res.results && res.results[0]) {
         console.log('fetchUserByPhoneNumber set form', res.results[0])
@@ -540,12 +635,112 @@ const SaleScreen = (props) => {
     }
   }
 
+  const convertAddressOptionArray = () => {
+    // addressInfoArrayRedux
+    let PROVINCE = []
+    const addressInfoArrayReduxTemp = [...addressInfoArrayRedux]
+    PROVINCE = addressInfoArrayReduxTemp.map((optionAddress, optionAddressIndex) => (
+      {
+        value: optionAddress.name,
+        label: optionAddress.name,
+        children: optionAddress.districts.map((districtItem, districtItemIndex) => (
+          {
+            value: districtItem.name,
+            label: districtItem.name,
+            children: districtItem.wards.map((wardItem, wardItemIndex) => (
+              {
+                value: wardItem.name,
+                label: wardItem.name
+              }
+            ))
+          }
+        ))
+      }
+    ))
+    // addressInfoArrayReduxTemp.map((optionAddress, optionAddressIndex) => {
+    //   PROVINCE.push({
+    //     value: optionAddress.name,
+    //     label: optionAddress.name,
+    //     children: [optionAddress.districts.map((districtItem, districtItemIndex) => {
+    //       return {
+    //         value: districtItem.name,
+    //         label: districtItem.name,
+    //         children: [districtItem.wards.map((wardItem, wardItemIndex) => {
+    //           return {
+    //             value: wardItem.name,
+    //             label: wardItem.name
+    //           }
+    //         })]
+    //       }
+    //     })]
+    //   })
+    // })
+
+    console.log('PROVINCE', PROVINCE)
+    setOptionsAddressArr(PROVINCE)
+  }
+
+  const handleAreaClick = (
+    e,
+    label,
+    option
+  ) => {
+    e.stopPropagation()
+    console.log('clicked', label, option)
+  }
+
+  const displayRender = (labels, selectedOptions) =>
+    labels.map((label, i) => {
+      const option = selectedOptions[i]
+      if (i === labels.length - 1) {
+        return (
+          <span key={option.value}>
+            <a onClick={e => handleAreaClick(e, label, option)}>{label}</a>
+          </span>
+        )
+      }
+      return <span key={option.value}>{label} / </span>
+    })
+
+  const onChangeOrderAddressStreet = async (value) => {
+    console.log('onChangeCasacderSeller', value)
+    console.log('onChangeCasacderSeller', value?.target)
+    console.log('onChangeCasacderSeller', value?.target?.value)
+
+    const paneTemp = [...panes]
+    paneTemp[currentPaneIndex].shippingInfo.orderAdressStreet = value?.target?.value.trim() || ''
+    setPanes(paneTemp)
+  }
+
+  const onChangeCasacderSeller = async (value) => {
+    console.log('onChangeOrderAddressStreet', value)
+    const paneTemp = [...panes]
+    paneTemp[currentPaneIndex].shippingInfo.orderAdressProvince = value[0]
+    paneTemp[currentPaneIndex].shippingInfo.orderAdressDistrict = value[1]
+    paneTemp[currentPaneIndex].shippingInfo.orderAdressWard = value[2]
+    const formDataFee = {
+      orderAdressProvince: value[0],
+      orderAdressDistrict: value[1],
+      orderAdressWard: value[2]
+    }
+    message.loading('Đang lấy thông tin phí shipping...', 2)
+    const resFee = await GapService.getFeeForTransport(formDataFee, paneTemp?.[currentPaneIndex]?.shippingInfo?.optionTransfer === 'ht')
+    console.log('getFeeForTransport', resFee)
+
+    if (resFee && resFee.result) {
+      paneTemp[currentPaneIndex].shippingInfo.shippingFee = resFee.result
+      setPanes(paneTemp)
+    } else {
+      showNotification('Không thể ước tính phí ship')
+    }
+  }
+
   return (
     <div className='saleScreen-container'>
       <Tabs defaultActiveKey='0' activeKey={currentPaneIndex} type='editable-card' onChange={onChangeTab} onEdit={onEdit}>
         {panes.map((pane, indexPane) => (
           <TabPane
-            tab={currentPaneIndex === indexPane ? (
+            tab={Number(currentPaneIndex) === Number(indexPane) ? (
               <div className='choosenTagBox'>
                 <span className='choosenTagBoxTitle'>{pane.title}</span>
                 <span className='closeTag-icon' onClick={() => remove(pane.key)}>
@@ -696,20 +891,54 @@ const SaleScreen = (props) => {
 
             {
               panes[currentPaneIndex].isOnlineSale === 'true'
-                ? <>
+                ? <div style={{ marginBottom: '2em' }}>
                   <Divider style={{ margin: '15px 0' }} orientation='left'>Thông tin vận chuyển</Divider>
                   <div className='customerInfoBox'>
                     <div className='phoneBox'>
-                      <span className='phoneTxt'>Thành phố: </span>
-                      <Input value={panes[currentPaneIndex]?.shippingInfo?.addressFromInfo?.pick_province} minLength={10} maxLength={11} allowClear onChange={(value) => onChangeDataShipping(value, 'pick_province')} placeholder='...'  />
+                      <span className='phoneTxt'>Địa chi lấy hàng: </span>
+                      <Input disabled={panes[currentPaneIndex].shippingInfo.optionTransfer === 'tt'} value={ADDRESS_STREET_GET_ORDER} allowClear placeholder='...' />
+                    </div>
+                    <div className='phoneBox'>
+                      <Cascader
+                        disabled={panes[currentPaneIndex].shippingInfo.optionTransfer === 'tt'}
+                        options={optionsAddressArr}
+                        value={ADDRESS_GET_ORDER_ARRAY}
+                        defaultValue={ADDRESS_GET_ORDER_ARRAY}
+                        displayRender={displayRender}
+                        style={{ width: '100%' }}
+                      />
+                    </div>
+                    <div className='phoneBox'>
+                      <span className='phoneTxt'>Địa chỉ giao hàng: </span>
+                      <Input disabled={panes[currentPaneIndex].shippingInfo.optionTransfer === 'tt'} onChange={onChangeOrderAddressStreet} value={panes[currentPaneIndex]?.shippingInfo?.orderAdressStreet} allowClear placeholder='Số nhà - đường' />
+                      {/* <Input value={panes[currentPaneIndex]?.shippingInfo?.addressFromInfo?.pick_province} minLength={10} maxLength={11} allowClear onChange={(value) => onChangeDataShipping(value, 'pick_province')} placeholder='...'  /> */}
+                    </div>
+                    <div className='phoneBox'>
+                      <Cascader
+                        disabled={panes[currentPaneIndex].shippingInfo.optionTransfer === 'tt'}
+                        placeholder='Thành phố/Tỉnh - Quận/Huyện - Xã/Phường'
+                        options={optionsAddressArr}
+                        defaultValue={[]}
+                        displayRender={displayRender}
+                        style={{ width: '100%' }}
+                        onChange={onChangeCasacderSeller}
+                      />
                     </div>
 
                     <div className='typeTranferBox'>
                       <span className='typeTranferTxt'>Hình thức trả tiền: </span>
-                      <Checkbox.Group options={optionsTransferOrder} value={panes[currentPaneIndex]?.shippingInfo?.optionTransfer || '1'} defaultValue={'1'} onChange={onChangeRadioTransferOrder} />
+                      <Checkbox.Group options={optionsTransferOrder} value={panes[currentPaneIndex].shippingInfo.optionTransfer || 'tk'} defaultValue={['tk']} onChange={onChangeRadioTransferOrder} />
+                    </div>
+
+                    <div className='phoneBox'>
+                      <span className='phoneTxt'>Phí giao hàng </span>
+
+                      <span className='phoneTxt'>{panes[currentPaneIndex]?.shippingInfo?.shippingFee} vnd</span>
+
+                      {/* <Input suffix={<span>vnđ</span>} defaultValue={0} value={panes[currentPaneIndex]?.shippingInfo?.shippingFee} placeholder='0' /> */}
                     </div>
                   </div>
-                 </> : null
+                </div> : null
 
             }
           </div>
@@ -742,7 +971,8 @@ const SaleScreen = (props) => {
 
 const mapStateToProps = (state) => ({
   locale: state.locale,
-  userData: state.userData
+  userData: state.userData,
+  addressInfoArrayRedux: state.addressInfoArrayRedux
 })
 
 export default withRouter(connect(mapStateToProps, null)(SaleScreen))

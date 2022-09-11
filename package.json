@@ -82,6 +82,7 @@
     "react-sortable-hoc": "^2.0.0",
     "react-swipeable-views": "0.13.9",
     "react-tagsinput": "3.19.0",
+    "react-to-print": "^2.14.7",
     "react-typing-effect": "^2.0.5",
     "react-typist": "^2.0.5",
     "redux": "^4.0.1",
@@ -118,7 +119,7 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "browser":{
+  "browser": {
     "child_process": false
-  }  
+  }
 }

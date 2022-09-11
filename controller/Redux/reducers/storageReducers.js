@@ -64,6 +64,12 @@ export const settingRedux = createReducer(initState.setting, {
   }
 })
 
+export const addressInfoArrayRedux = createReducer(initState.array, {
+  [KEY_STORE.SET_ADDRESS_INFO_ARRAY] (state, action) {
+    return action.payload
+  }
+})
+
 export const transferDataRedux = createReducer(initState.transferData, {
   [KEY_STORE.SET_TRANSFER_DATA] (state, action) {
     return action.payload

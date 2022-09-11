@@ -178,6 +178,20 @@ export default class ReduxServices {
     }
   }
 
+  static async getUnitAddress () {
+    const { userData } = storeRedux.getState()
+    console.log('userData', userData)
+    console.log('userData check token', userData && userData.token)
+
+    if (userData && userData.token) {
+      const res = await GapService.getUnitAddress()
+      console.log('resssssss', res.result)
+      if (res && res.result && res.result.length > 0) {
+        ReduxServices.callDispatchAction(StorageActions.setAddressInfoArray(res.result))
+      }
+    }
+  }
+
   static async checkIpHash () {
     const { IPHASHData, userData } = storeRedux.getState()
 

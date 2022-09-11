@@ -1256,8 +1256,8 @@ render () {
   ]
 
   ReduxServices.setTempConsignment(this.state)
-  console.log('tempConsignmentRedux')
-  console.log(this.props.tempConsignmentRedux)
+  // console.log('tempConsignmentRedux')
+  // console.log(this.props.tempConsignmentRedux)
 
   return (
     <div className='consignment-container'>

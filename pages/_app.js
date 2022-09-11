@@ -75,7 +75,8 @@ class GiveAway extends App {
       const initDataPromiseArr = [
         ReduxServices.getCategory(),
         ReduxServices.getSetting(),
-        ReduxServices.checkIpHash()
+        ReduxServices.checkIpHash(),
+        ReduxServices.getUnitAddress()
       ]
 
       const IPhash = getDataLocal(KEY_STORE.SET_IP_HASH)

@@ -12,7 +12,8 @@ export const KEY_STORE = {
   SET_CATEGORY: 'SET_CATEGORY',
   SET_IP_HASH: 'SET_IP_HASH',
   SET_CHANNEL_MONITOR: 'SET_CHANNEL_MONITOR',
-  SET_TEMP_CONSIGNMENT: 'SET_TEMP_CONSIGNMENT'
+  SET_TEMP_CONSIGNMENT: 'SET_TEMP_CONSIGNMENT',
+  SET_ADDRESS_INFO_ARRAY: 'SET_ADDRESS_INFO_ARRAY'
 }
 
 export const REQUEST_TYPE = {
@@ -387,3 +388,7 @@ export const linkSupport = {
   PANTOGRAPH_NFT_SCAN: 'pantograph://nft-card/xxxxxxx',
   KEYRING: 'https://keyring.app/wc?uri='
 }
+
+export const ADDRESS_GET_ORDER_ARRAY = ['Hồ Chí Minh', '1', 'Nguyễn Thái Bình']
+
+export const ADDRESS_STREET_GET_ORDER = '1 Phó Đức Chính'

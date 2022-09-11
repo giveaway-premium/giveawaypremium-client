@@ -9,6 +9,7 @@ var initState = {
   isloading: true,
   setting: {},
   transferData: {},
+  array: [],
   network: 1,
   tokens: [],
   gasPrice: {},
