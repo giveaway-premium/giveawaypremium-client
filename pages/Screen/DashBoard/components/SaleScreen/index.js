@@ -18,6 +18,10 @@ import GapService from 'controller/Api/Services/Gap'
 import { AssignmentReturnedSharp, Scanner, ScannerOutlined } from '@material-ui/icons'
 import { colors } from '@material-ui/core'
 import { ADDRESS_GET_ORDER_ARRAY, ADDRESS_STREET_GET_ORDER } from 'common/constants'
+import ReceiptOffline from './components/ReceiptOffline'
+import ReactToPrint from 'react-to-print'
+import QRCode from 'qrcode'
+
 const { Step } = Steps
 const { TextArea } = Input
 
@@ -27,12 +31,16 @@ const initialPanes = []
 let numPaneTemp = 0
 
 const SaleScreen = (props) => {
+  let componentRef = useRef()
+  const [svg, setSvg] = useState('')
+
   const { userData, addressInfoArrayRedux } = props
   const [panes, setPanes] = useState(initialPanes)
   const [currentPaneIndex, setCurrentPaneIndex] = useState(numPaneTemp)
   const [activeKey, setActiveKey] = useState(null)
   const [optionsAddressArr, setOptionsAddressArr] = useState([])
   let searchInput
+  
   useEffect(() => {
     convertAddressOptionArray()
     console.log('addressInfoArrayRedux', addressInfoArrayRedux)
@@ -41,6 +49,21 @@ const SaleScreen = (props) => {
       numPaneTemp = 0
     }
   }, [])
+
+  async function formatQRCodeImage (data) {
+    let result = ''
+    const dataString = await QRCode.toString(data, { margin: 0, type: 'svg', width: 300, height: 300 })
+    if (typeof dataString === 'string') {
+      result = dataString.replace('<svg', `<svg class="walletconnect-qrcode__image"`)
+    }
+    return result
+  }
+
+  useEffect(() => {
+    (async () => {
+      setSvg(await formatQRCodeImage('231-123123-001'))
+    })()
+  })
 
   useEffect(() => {
     console.log('useEffect - panes - ', panes)
@@ -426,6 +449,32 @@ const SaleScreen = (props) => {
       paneTemp[currentPaneIndex].totalMoneyForSale = totalMoneyForSale
       setPanes(paneTemp)
     }
+  }
+
+  const reactToPrintContent = React.useCallback(() => {
+    return componentRef.current
+  }, [componentRef.current])
+
+  const reactToPrintTrigger = React.useCallback(() => {
+    // NOTE: could just as easily return <SomeComponent />. Do NOT pass an `onClick` prop
+    // to the root node of the returned component as it will be overwritten.
+
+    // Bad: the `onClick` here will be overwritten by `react-to-print`
+    // return <button onClick={() => alert('This will not work')}>Print this out!</button>;
+
+    // Good
+    return <button>Print using a Functional Component</button>
+  }, [])
+
+  const printWithId = (idDom) => {
+    var printContents = document.getElementById(idDom).innerHTML
+    var originalContents = document.body.innerHTML
+
+    document.body.innerHTML = printContents
+
+    window.print()
+
+    document.body.innerHTML = originalContents
   }
 
   const onHandleCreateOrder = async () => {
@@ -965,6 +1014,27 @@ const SaleScreen = (props) => {
           <Button className='createNewButton' onClick={resetData}>Tạo mới</Button>
         </div>
       ) : null}
+
+      {/* <ReactToPrint
+        content={reactToPrintContent}
+        removeAfterPrint
+        trigger={reactToPrintTrigger}
+        // content={() => componentRef}
+      /> */}
+      <button onClick={() => printWithId('BoxContainer')}>Print offline bill</button>
+
+      {/* <div id='BoxContainer' style={{ display: 'none' }}> */}
+      <div id='BoxContainer'>
+        <ReceiptOffline ref={(el) => (componentRef = el)} />
+      </div>
+
+      <button onClick={() => printWithId('qrcode')}>Print qrcode</button>
+
+
+      <div id='qrcode'>
+        <div dangerouslySetInnerHTML={{ __html: svg }} />
+      </div>
+
     </div>
   )
 }
