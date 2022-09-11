@@ -1,7 +1,8 @@
 @media print {
     html, body {
         width: 45mm;
-        height: 80mm;        
+        height: 80mm; 
+        // background: #ffffff;       
     }
 }
 
@@ -19,6 +20,8 @@
   
     // padding: 50px 0;
     box-sizing: border-box;
+
+    transform: rotate(-90deg);
 }
 
 .BoxTicket {
@@ -34,7 +37,6 @@
     text-align: center;
     padding: 0px 17px;
     line-height: 0.5rem;
-    text-shadow: 0px 0px 1px #000;
     p:nth-child(1) {
       font-size: 17px;
       font-weight: 900;
