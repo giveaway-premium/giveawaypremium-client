@@ -475,7 +475,7 @@ const SaleScreen = (props) => {
     // newWindow.focus()
     // newWindow.print()
     // newWindow.close()
-    // window.print()
+    window.print()
 
     document.body.innerHTML = originalContents
   }
