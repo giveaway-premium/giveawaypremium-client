@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import React, { useContext, useState, useEffect, useRef } from 'react'
-import { withRouter } from 'next/router'
+import router, { withRouter } from 'next/router'
 import { connect } from 'react-redux'
 import {
   Form, Row, Col, Layout, Input, Button, Spin, Divider, List, Card, InputNumber,
@@ -468,16 +468,48 @@ const SaleScreen = (props) => {
 
   const printWithId = (idDom) => {
     var printContents = document.getElementById(idDom).innerHTML
-    var originalContents = document.body.innerHTML
+    // var originalContents = document.body.innerHTML
 
-    document.body.innerHTML = printContents
+    // document.body.innerHTML = printContents
     // var newWindow = window.open('redir2.html')
     // newWindow.focus()
     // newWindow.print()
     // newWindow.close()
-    window.print()
 
-    document.body.innerHTML = originalContents
+    var win = window.open('', 'PrintWindow')
+    win.document.write(printContents)
+
+    var beforePrint = function () {
+      console.log('Functionality to run before printing.')
+    }
+    var afterPrint = function () {
+      // router.reload()
+      console.log('Functionality to run after printing')
+    }
+
+    if (window.matchMedia) {
+      var mediaQueryList = window.matchMedia('print')
+      mediaQueryList.addListener(function (mql) {
+        if (mql.matches) {
+          beforePrint()
+        } else {
+          afterPrint()
+        }
+      })
+    }
+
+    setTimeout(function () {
+      win.document.close()
+      win.focus()
+      win.print()
+      win.close()
+    }, 1000)
+
+    // win.onbeforeprint = beforePrint
+    // win.onafterprint = afterPrint
+    // win.print()
+
+    // document.body.innerHTML = originalContents
   }
 
   const onHandleCreateOrder = async () => {
@@ -1018,9 +1050,6 @@ const SaleScreen = (props) => {
                   </Steps>
                 </>
           }
-          <div id='BoxContainer'>
-            <ReceiptOffline data={panes[currentPaneIndex]} ref={(el) => (componentRef = el)} />
-          </div>
 
           <div style={{ display: 'flex' }}>
             <Button className='createNewButton' onClick={resetData}>Tạo mới</Button>
@@ -1036,14 +1065,22 @@ const SaleScreen = (props) => {
         trigger={reactToPrintTrigger}
         // content={() => componentRef}
       /> */}
-      {/* <button onClick={() => printWithId('BoxContainer')}>Print offline bill</button> */}
+      <button onClick={() => printWithId('BoxContainer')}>Print offline bill</button>
 
       {/* <div id='BoxContainer' style={{ display: 'none' }}> */}
-      {/* <div id='BoxContainer'>
+      <div id='BoxContainer'>
         <ReceiptOffline data={panes[currentPaneIndex]} ref={(el) => (componentRef = el)} />
-      </div> */}
+      </div>
 
       <button onClick={() => printWithId('qrcode')}>Print qrcode</button>
+
+      {
+        panes && panes[currentPaneIndex] && panes[currentPaneIndex]?.isCreatedSuccessfully && (
+          <div id='BoxContainer'>
+            <ReceiptOffline data={panes[currentPaneIndex]} ref={(el) => (componentRef = el)} />
+          </div>
+        )
+      }
 
       <div id='qrcode'>
         <style type='text/css' media='print'>
