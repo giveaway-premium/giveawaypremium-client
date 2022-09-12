@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { withRouter } from 'next/router'
 import { connect } from 'react-redux'
 import './styles.scss'
+import moment from 'moment'
 
 const BoxContainer = styled.div`
   display: flex;
@@ -97,9 +98,13 @@ const LegalCopy = styled.div`
   margin: 15px 0;
 `
 
-class ReceiptOffline extends React.Component {
+class ReceiptOffline extends React.PureComponent {
   render () {
-    // const { userData } = this.props
+    const { data = {} } = this.props
+    const { productList = [] } = data
+    console.log('data', data)
+
+    console.log('productList', productList)
 
     return (
       <div className='BoxContainer'>
@@ -118,62 +123,52 @@ class ReceiptOffline extends React.Component {
           </div>
           <div className='BoxContent'>
             <div className='BoxCol'>
-              <p>Invoice#</p>
-              <p>INV-17</p>
+              <p>Mã đơn hàng:</p>
+              <p>{data.objectIdOrder || '#'}</p>
             </div>
             <div className='BoxCol'>
-              <p>Date</p>
-              <p>20-20-2020</p>
-            </div>
-            <div className='BoxCol'>
-              <p>Due Date</p>
-              <p>20-20-2022</p>
+              <p>Ngày:</p>
+              <p>{moment().format('DD-MM-YYYY HH:mm:ss')}</p>
             </div>
             <table className='MainTable'>
               <tbody>
                 <tr className='header'>
-                  <td># Item</td>
-                  <td>Qty</td>
-                  <td>Rate</td>
-                  <td>Totlal</td>
+                  <td>#</td>
+                  <td>Sản phẩm</td>
+                  <td>SL</td>
+                  <td>Tổng</td>
                 </tr>
-                <tr>
-                  <td>Design</td>
-                  <td>1.00</td>
-                  <td>300.00</td>
-                  <td>300.00</td>
-                </tr>
-                <tr>
-                  <td>web dev</td>
-                  <td>1.00</td>
-                  <td>300.00</td>
-                  <td>300.00</td>
-                </tr>
-                <tr>
-                  <td>EMI/EMC</td>
-                  <td>1.00</td>
-                  <td>300.00</td>
-                  <td>300.00</td>
-                </tr>
+                {
+                  productList && productList.map((item, itemIndex) => {
+                    return (
+                      <tr key={itemIndex} className='header'>
+                        <td>{itemIndex + 1}</td>
+                        <td>{item.name}</td>
+                        <td>{item.count}</td>
+                        <td>{item.price || 0}.000đ</td>
+                      </tr>
+                    )
+                  })
+                }
               </tbody>
             </table>
             <table className='SubTable'>
               <tbody>
                 <tr>
-                  <th>SubTotal:</th>
-                  <td>100.00</td>
+                  <th>Tổng sản phẩm:</th>
+                  <td>{data.totalNumberOfProductForSale}</td>
                 </tr>
                 <tr>
-                  <th>Total:</th>
-                  <td>200.00</td>
+                  <th>Tổng tiền:</th>
+                  <td>{data.totalMoneyForSale || 0}.000đ</td>
                 </tr>
               </tbody>
             </table>
             <div className='LegalCopy'>
+              <strong>Lưu ý:</strong>
               <p>
-                <strong>Terms & Conditions:</strong>
-                  Your company's Terms and Conditions will be displayed here. You
-                  can add it in the Invoice Preferences page under Settings.
+                  HÀNG ĐÃ MUA KHÔNG ĐỔI TRẢ
+                  Cảm ơn và hẹn gặp lại quý khách!
               </p>
             </div>
           </div>

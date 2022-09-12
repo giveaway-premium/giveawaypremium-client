@@ -40,7 +40,7 @@ const SaleScreen = (props) => {
   const [activeKey, setActiveKey] = useState(null)
   const [optionsAddressArr, setOptionsAddressArr] = useState([])
   let searchInput
-  
+
   useEffect(() => {
     convertAddressOptionArray()
     console.log('addressInfoArrayRedux', addressInfoArrayRedux)
@@ -52,7 +52,7 @@ const SaleScreen = (props) => {
 
   async function formatQRCodeImage (data) {
     let result = ''
-    const dataString = await QRCode.toString(data, { margin: 0, type: 'svg', width: 300, height: 300 })
+    const dataString = await QRCode.toString(data, { margin: 0, type: 'svg', width: 65, height: 22 })
     if (typeof dataString === 'string') {
       result = dataString.replace('<svg', `<svg class="walletconnect-qrcode__image"`)
     }
@@ -471,8 +471,11 @@ const SaleScreen = (props) => {
     var originalContents = document.body.innerHTML
 
     document.body.innerHTML = printContents
-
-    window.print()
+    // var newWindow = window.open('redir2.html')
+    // newWindow.focus()
+    // newWindow.print()
+    // newWindow.close()
+    // window.print()
 
     document.body.innerHTML = originalContents
   }
@@ -531,6 +534,7 @@ const SaleScreen = (props) => {
         const result = await GapService.setOrder(dataOrder, userData.objectId, resUSer.results[0].objectId)
 
         if (result && result.objectId) {
+          paneTemp[currentPaneIndex].objectIdOrder = result.objectId
           showNotification('Tạo Đơn hàng thành công')
           paneTemp[currentPaneIndex].isCreatedSuccessfully = true
           setPanes(paneTemp)
@@ -571,10 +575,12 @@ const SaleScreen = (props) => {
 
   const fetchUserByPhoneNumber = async (phoneKey) => {
     if (phoneKey && phoneKey.target && phoneKey.target.value && phoneKey.target.value.length >= 10) {
-      message.loading('Đang lấy thông tin khách hàng...', 2)
       const paneTemp = [...panes]
+      message.loading('Đang lấy thông tin phí khách hàng...', 3)
+
       const res = await GapService.getCustomer(phoneKey.target.value)
       if (res && res.results && res.results[0]) {
+        message.success('Thông tin khách hàng đã tồn tại', 2)
         console.log('fetchUserByPhoneNumber set form', res.results[0])
         paneTemp[currentPaneIndex].isLoadingUser = false
         paneTemp[currentPaneIndex].isFoundUser = true
@@ -591,6 +597,7 @@ const SaleScreen = (props) => {
         console.log('paneTemp', paneTemp)
         setPanes(paneTemp)
       } else {
+        message.error('Thông tin khách hàng chưa tồn tại', 2)
         paneTemp[currentPaneIndex].isLoadingUser = false
         paneTemp[currentPaneIndex].isFoundUser = false
         setPanes(paneTemp)
@@ -1011,7 +1018,15 @@ const SaleScreen = (props) => {
                   </Steps>
                 </>
           }
-          <Button className='createNewButton' onClick={resetData}>Tạo mới</Button>
+          <div id='BoxContainer'>
+            <ReceiptOffline data={panes[currentPaneIndex]} ref={(el) => (componentRef = el)} />
+          </div>
+
+          <div style={{ display: 'flex' }}>
+            <Button className='createNewButton' onClick={resetData}>Tạo mới</Button>
+            <Button className='createNewButton' onClick={() => printWithId('BoxContainer')}>In hoá đơn</Button>
+          </div>
+
         </div>
       ) : null}
 
@@ -1021,18 +1036,25 @@ const SaleScreen = (props) => {
         trigger={reactToPrintTrigger}
         // content={() => componentRef}
       /> */}
-      <button onClick={() => printWithId('BoxContainer')}>Print offline bill</button>
+      {/* <button onClick={() => printWithId('BoxContainer')}>Print offline bill</button> */}
 
       {/* <div id='BoxContainer' style={{ display: 'none' }}> */}
-      <div id='BoxContainer'>
-        <ReceiptOffline ref={(el) => (componentRef = el)} />
-      </div>
+      {/* <div id='BoxContainer'>
+        <ReceiptOffline data={panes[currentPaneIndex]} ref={(el) => (componentRef = el)} />
+      </div> */}
 
       <button onClick={() => printWithId('qrcode')}>Print qrcode</button>
 
-
       <div id='qrcode'>
+        <style type='text/css' media='print'>
+          {'\
+   @page { size: portrait; }\
+'}
+        </style>
         <div dangerouslySetInnerHTML={{ __html: svg }} />
+        <p style={{ fontSize: '10px', width: '65px', wordBreak: 'break-all', margin: '0px' }}>123-432-1</p>
+        <p style={{ fontSize: '10px', width: '65px', wordBreak: 'break-all', margin: '0px' }}>100.000đ</p>
+        <p style={{ fontSize: '10px', width: '65px', wordBreak: 'break-all', margin: '0px' }}>Đầm đỏ balenca</p>
       </div>
 
     </div>
