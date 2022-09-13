@@ -385,8 +385,7 @@ const SaleScreen = (props) => {
     if (productResArr?.results?.[0] && productResArr?.results?.[0].objectId) {
       const paneTemp = [...panes]
       let isExistProduct = false
-      console.log('Number(productResArr.results[0].remainNumberProduct) === 0', productResArr?.results?.[0].remainNumberProduct && Number(productResArr.results[0].remainNumberProduct) === 0)
-      if (productResArr?.results?.[0].remainNumberProduct && Number(productResArr.results[0].remainNumberProduct) === 0) {
+      if (productResArr?.results?.[0].remainNumberProduct !== undefined && (Number(productResArr?.results[0]?.remainNumberProduct) === 0)) {
         showNotification('Sản phẩm này đã hết hàng')
         paneTemp[currentPaneIndex].inputText = ''
         setPanes(paneTemp)
@@ -493,7 +492,7 @@ const SaleScreen = (props) => {
 
     var win = window.open('', 'PrintWindow')
 
-    win.document.write(`<html><head><title>' + title + '</title><link rel="stylesheet" type="text/css" href="./components/ReceiptOffline/styles.scss"></head><body>`)
+    win.document.write(`<html><head><title>' + title + '</title><link type="text/css" href="./components/ReceiptOffline/styles.css"></head><body>`)
     win.document.write(printContents)
     win.document.write('</body></html>')
     // win.document.writeln(printContents)

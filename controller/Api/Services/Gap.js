@@ -210,8 +210,8 @@ export default class Gap {
       }
 
       if (selectedKeys?.code && selectedKeys?.code.length > 0) {
-        whereUpperCase.code = { '$regex': selectedKeys?.code.trim() }
-        whereLowerCase.code = { '$regex': selectedKeys?.code.trim().toLowerCase() }
+        whereUpperCase.code = selectedKeys?.code.trim()
+        whereLowerCase.code = selectedKeys?.code.trim().toLowerCase()
       }
 
       if (selectedKeys?.soldNumberProduct && selectedKeys?.soldNumberProduct.length > 0) {

@@ -825,7 +825,7 @@ class TableProductScreen extends React.PureComponent {
         console.log(consignmentData)
 
         this.setState({
-          currentPagination: 1,
+          currentPagination: page || 1,
           total: res.count,
           consignmentData: consignmentData,
           isLoadingData: false
@@ -872,6 +872,7 @@ class TableProductScreen extends React.PureComponent {
   }
 
   onChangeTab = (tabKey) => {
+
     const { allInfoTag } = this.state
     this.setState({
       // selectedKeys: {},

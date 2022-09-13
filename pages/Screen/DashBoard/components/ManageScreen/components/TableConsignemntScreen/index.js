@@ -821,7 +821,7 @@ class TableConsignemntScreen extends React.PureComponent {
           })
         })
         this.setState({
-          currentPagination: 1,
+          currentPagination: page || 1,
           total: res.count,
           consignmentData: consignmentData,
           isLoadingData: false
@@ -860,6 +860,8 @@ class TableConsignemntScreen extends React.PureComponent {
   };
 
   paginationChange = (page) => {
+    console.log('page', page)
+
     this.setState({
       currentPagination: page || 1
     }, () => {
@@ -869,6 +871,8 @@ class TableConsignemntScreen extends React.PureComponent {
 
   onChangeTab = (tabKey) => {
     const { allInfoTag } = this.state
+    console.log('tabKey', tabKey)
+
     this.setState({
       // selectedKeys: {},
       currentPagination: 1,

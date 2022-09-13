@@ -712,6 +712,7 @@ class TableOrderScreen extends React.PureComponent {
           })
         })
         this.setState({
+          currentPagination: page || 1,
           total: res.count,
           orderData: orderData,
           isLoadingData: false
