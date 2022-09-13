@@ -327,10 +327,25 @@ export const getBase64FromBlob = (blob) => {
   })
 }
 
+export const base64toBlob = (data) => {
+  // Cut the prefix `data:application/pdf;base64` from the raw base 64
+  const base64WithoutPrefix = data.substr('data:application/pdf;base64,'.length)
+
+  const bytes = Buffer.from(base64WithoutPrefix, 'base64')
+  let length = bytes.length
+  let out = new Uint8Array(length)
+
+  while (length--) {
+    out[length] = bytes.charCodeAt(length)
+  }
+
+  return new Blob([out], { type: 'application/pdf' })
+}
+
 export const dataURLToBlob = (dataURL) => {
   var parts = dataURL.split(';base64,')
   var contentType = parts[0].split(':')[1]
-  var raw = window.atob(parts[1])
+  var raw = Buffer.from(parts[1], 'base64')
   var rawLength = raw.length
   var uInt8Array = new Uint8Array(rawLength)
 

@@ -8,7 +8,7 @@ import {
 } from 'antd'
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
-import { numberWithCommas, showNotification } from 'common/function'
+import { base64toBlob, dataURLToBlob, numberWithCommas, showNotification } from 'common/function'
 import { CheckCircleFilled, CloseCircleFilled, CloseCircleOutlined, DeleteOutlined, EditOutlined, EllipsisOutlined, LoadingOutlined, QrcodeOutlined, SettingOutlined } from '@ant-design/icons'
 import { Router } from 'common/routes'
 import { isMobile } from 'react-device-detect'
@@ -39,9 +39,11 @@ const SaleScreen = (props) => {
   const [currentPaneIndex, setCurrentPaneIndex] = useState(numPaneTemp)
   const [activeKey, setActiveKey] = useState(null)
   const [optionsAddressArr, setOptionsAddressArr] = useState([])
+  const [base64, setBase64] = useState(null)
   let searchInput
 
   useEffect(() => {
+    fetcDefaultLabel()
     convertAddressOptionArray()
     console.log('addressInfoArrayRedux', addressInfoArrayRedux)
     add()
@@ -69,6 +71,19 @@ const SaleScreen = (props) => {
     console.log('useEffect - panes - ', panes)
     setCurrentPaneIndex(currentPaneIndex)
   }, [panes])
+
+  const fetcDefaultLabel = async () => {
+    const labelBas64 = await GapService.getLabelTransform()
+    console.log('labelBas64', labelBas64)
+    // const img = dataURLToBlob(labelBas64.result)
+    const base64String = `data:application/pdf;base64,${labelBas64}`
+    // console.log('labelBas64', labelBas64)
+    // const blob = base64toBlob(base64String)
+    // const url = URL.createObjectURL(blob)
+    if (labelBas64) {
+      setBase64(labelBas64.result)
+    }
+  }
 
   /// ////////////////////////////////////////////////// Tabs - TabPane -- START /////////////////////////////////////////////////////
   const onChangeTab = (newActiveKey) => {
@@ -477,7 +492,11 @@ const SaleScreen = (props) => {
     // newWindow.close()
 
     var win = window.open('', 'PrintWindow')
+
+    win.document.write(`<html><head><title>' + title + '</title><link rel="stylesheet" type="text/css" href="./components/ReceiptOffline/styles.scss"></head><body>`)
     win.document.write(printContents)
+    win.document.write('</body></html>')
+    // win.document.writeln(printContents)
 
     var beforePrint = function () {
       console.log('Functionality to run before printing.')
@@ -581,11 +600,15 @@ const SaleScreen = (props) => {
         consignerName: paneTemp[currentPaneIndex].clientInfo.fullName,
         phoneNumber: paneTemp[currentPaneIndex].clientInfo.phoneNumber,
         consignerIdCard: paneTemp[currentPaneIndex].clientInfo.consignerIdCard,
-        mail: paneTemp[currentPaneIndex].clientInfo.mail,
+        mail: paneTemp[currentPaneIndex].clientInfo.mail || 'example@gmail.com',
         birthday: paneTemp[currentPaneIndex].clientInfo.birthday && paneTemp[currentPaneIndex].clientInfo.birthday.length > 0 && paneTemp[currentPaneIndex].clientInfo.birthday !== 'Invalid date' ? paneTemp[currentPaneIndex].clientInfo.birthday : '',
         bankName: paneTemp[currentPaneIndex].clientInfo.bankName,
-        bankId: paneTemp[currentPaneIndex].clientInfo.bankId
+        bankId: paneTemp[currentPaneIndex].clientInfo.bankId,
+
+        username: paneTemp[currentPaneIndex].clientInfo.phoneNumber,
+        password: paneTemp[currentPaneIndex].clientInfo.phoneNumber
       }
+
       const resCus = await GapService.setCustomer(customerFormData)
       if (resCus && resCus.objectId) {
         showNotification('Thêm khách hàng thành công')
@@ -606,6 +629,7 @@ const SaleScreen = (props) => {
   }
 
   const fetchUserByPhoneNumber = async (phoneKey) => {
+    const valueInput = phoneKey?.target?.value || ''
     if (phoneKey && phoneKey.target && phoneKey.target.value && phoneKey.target.value.length >= 10) {
       const paneTemp = [...panes]
       message.loading('Đang lấy thông tin phí khách hàng...', 3)
@@ -632,6 +656,16 @@ const SaleScreen = (props) => {
         message.error('Thông tin khách hàng chưa tồn tại', 2)
         paneTemp[currentPaneIndex].isLoadingUser = false
         paneTemp[currentPaneIndex].isFoundUser = false
+        paneTemp[currentPaneIndex].clientInfo = {
+          objectId: '',
+          fullName: '',
+          phoneNumber: valueInput,
+          birthday: '',
+          bankName: '',
+          bankId: '',
+          consignerIdCard: '',
+          mail: ''
+        }
         setPanes(paneTemp)
       }
     } else if (phoneKey && phoneKey.target && phoneKey.target.value && phoneKey.target.value.length < 10) {
@@ -1081,6 +1115,17 @@ const SaleScreen = (props) => {
           </div>
         )
       }
+
+      <div className='img64'>
+
+        <img src={base64} style={{ width: '100px', height: '100px' }} />
+      </div>
+
+      <div>
+        <object>
+          <embed id='pdfID' type='text/html' width='1200' height='600' src={`data:application/pdf;base64,${base64}`} />
+        </object>
+      </div>
 
       <div id='qrcode'>
         <style type='text/css' media='print'>

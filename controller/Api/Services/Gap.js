@@ -654,7 +654,7 @@ export default class Gap {
       mail: formData.mail,
       // email: formData.mail || 'nothing@giveaway.com',
       birthday: formData.birthday,
-      username: formData.username,
+      username: formData.username || formData.phoneNumber,
       password: formData.password,
       banks: [{
         type: formData.bankName,
@@ -822,6 +822,17 @@ export default class Gap {
         },
         transport: 'road',
         value: 0
+      }
+    }
+    return this.fetchData('/functions/transporter', REQUEST_TYPE.POST, null, body)
+  }
+
+  static async getLabelTransform (orderId) {
+    const body = {
+      service: 'giaohangtietkiem',
+      action: 'GET_ORDER_LABEL',
+      data: {
+        'orderId': orderId || 'cNsUAuEO96'
       }
     }
     return this.fetchData('/functions/transporter', REQUEST_TYPE.POST, null, body)
