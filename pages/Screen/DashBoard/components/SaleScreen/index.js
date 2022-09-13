@@ -410,6 +410,8 @@ const SaleScreen = (props) => {
       paneTemp[currentPaneIndex].totalNumberOfProductForSale = (paneTemp[currentPaneIndex].totalNumberOfProductForSale || 0) + 1
       paneTemp[currentPaneIndex].totalMoneyForSale = (paneTemp[currentPaneIndex].totalMoneyForSale || 0) + productRes.price
       setPanes(paneTemp)
+    } else {
+      showNotification('Sản phẩm không tồn tại')
     }
   }
 

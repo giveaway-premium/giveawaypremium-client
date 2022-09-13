@@ -287,7 +287,7 @@ export default class Gap {
   }
 
   static async getProductWithCode (keyword) {
-    const customQuery = `include=medias&limit=${1}&count=1&where={"code":{"$regex":"${keyword}"}}`
+    const customQuery = `include=medias&limit=${1}&count=1&where={"code":"${keyword}"}`
     return this.fetchData('/classes/Product', REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
 
