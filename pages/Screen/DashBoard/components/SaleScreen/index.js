@@ -18,7 +18,7 @@ import GapService from 'controller/Api/Services/Gap'
 import { AssignmentReturnedSharp, Scanner, ScannerOutlined } from '@material-ui/icons'
 import { colors } from '@material-ui/core'
 import { ADDRESS_GET_ORDER_ARRAY, ADDRESS_STREET_GET_ORDER } from 'common/constants'
-import { ReceiptOffline } from './components/ReceiptOffline'
+import ReceiptOffline from './components/ReceiptOffline'
 import ReactToPrint from 'react-to-print'
 import QRCode from 'qrcode'
 
