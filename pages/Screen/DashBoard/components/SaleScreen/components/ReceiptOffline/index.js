@@ -20,7 +20,7 @@ import { numberWithCommas } from 'common/function'
 //   box-sizing: border-box;
 // `
 
-export class ReceiptOffline extends React.PureComponent {
+export default class ReceiptOffline extends React.PureComponent {
   render () {
     const { data = {} } = this.props
     const { productList = [] } = data
