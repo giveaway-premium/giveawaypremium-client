@@ -18,7 +18,7 @@ import GapService from 'controller/Api/Services/Gap'
 import { AssignmentReturnedSharp, Scanner, ScannerOutlined } from '@material-ui/icons'
 import { colors } from '@material-ui/core'
 import { ADDRESS_GET_ORDER_ARRAY, ADDRESS_STREET_GET_ORDER } from 'common/constants'
-import ReceiptOffline from './components/ReceiptOffline'
+import { ReceiptOffline } from './components/ReceiptOffline'
 import ReactToPrint from 'react-to-print'
 import QRCode from 'qrcode'
 
@@ -31,7 +31,9 @@ const initialPanes = []
 let numPaneTemp = 0
 
 const SaleScreen = (props) => {
-  let componentRef = useRef()
+  let componentRef = useRef(null)
+  const onBeforeGetContentResolve = React.useRef(null)
+
   const [svg, setSvg] = useState('')
 
   const { userData, addressInfoArrayRedux } = props
@@ -43,7 +45,7 @@ const SaleScreen = (props) => {
   let searchInput
 
   useEffect(() => {
-    fetcDefaultLabel()
+    // fetcDefaultLabel()
     convertAddressOptionArray()
     console.log('addressInfoArrayRedux', addressInfoArrayRedux)
     add()
@@ -379,9 +381,11 @@ const SaleScreen = (props) => {
       return
     }
 
+    message.loading('Đang tìm kiếm thông tin sản phẩm')
+
     // const productRes = await GapService.getProductWithObjectKey('hCDoylb0Z4')
     const productResArr = await GapService.getProductWithCode(value.target.value.trim())
-
+    message.destroy()
     if (productResArr?.results?.[0] && productResArr?.results?.[0].objectId) {
       const paneTemp = [...panes]
       let isExistProduct = false
@@ -479,7 +483,7 @@ const SaleScreen = (props) => {
     // return <button onClick={() => alert('This will not work')}>Print this out!</button>;
 
     // Good
-    return <button>Print using a Functional Component</button>
+    return <button className='createNewButton'>In hoá đơn</button>
   }, [])
 
   const printWithId = (idDom) => {
@@ -556,6 +560,7 @@ const SaleScreen = (props) => {
       // do not thing
       return null
     }
+    message.loading('Đang xử lý thông tin đơn hàng')
 
     const dataOrder = {
       ...paneTemp[currentPaneIndex]
@@ -579,8 +584,9 @@ const SaleScreen = (props) => {
         numberOfSale: resUSer.results[0].numberOfSale ? Number(resUSer.results[0].numberOfSale || 0) + 1 : 1,
         totalProductForSale: resUSer.results[0].totalProductForSale ? Number(resUSer.results[0].totalProductForSale || 0) + Number(dataOrder.totalNumberOfProductForSale || 0) : Number(dataOrder.totalNumberOfProductForSale || 0)
       }
+      message.destroy()
+      message.loading('Đang cập nhật thông tin khách hàng')
       const resCustomer = await GapService.updateCustomer(customerFormData, resUSer.results[0].objectId)
-
       if (resCustomer && resCustomer.updatedAt) {
         showNotification('Cập nhật khách hàng thành công')
         const result = await GapService.setOrder(dataOrder, userData.objectId, resUSer.results[0].objectId)
@@ -609,12 +615,14 @@ const SaleScreen = (props) => {
         username: paneTemp[currentPaneIndex].clientInfo.phoneNumber,
         password: paneTemp[currentPaneIndex].clientInfo.phoneNumber
       }
+      message.destroy()
+      message.loading('Đang lưu thông tin khách hàng')
 
       const resCus = await GapService.setCustomer(customerFormData)
       if (resCus && resCus.objectId) {
         showNotification('Thêm khách hàng thành công')
         const result = await GapService.setOrder(dataOrder, userData.objectId, resCus.objectId)
-
+        message.destroy()
         if (result && result.objectId) {
           showNotification('Tạo Đơn hàng thành công')
           paneTemp[currentPaneIndex].isCreatedSuccessfully = true
@@ -623,6 +631,7 @@ const SaleScreen = (props) => {
           showNotification('Tạo Đơn hàng thất bại')
         }
       } else {
+        message.destroy()
         showNotification('Tạo khách hàng thất bại')
       }
       //
@@ -633,9 +642,10 @@ const SaleScreen = (props) => {
     const valueInput = phoneKey?.target?.value || ''
     if (phoneKey && phoneKey.target && phoneKey.target.value && phoneKey.target.value.length >= 10) {
       const paneTemp = [...panes]
-      message.loading('Đang lấy thông tin phí khách hàng...', 3)
+      message.loading('Đang lấy thông tin khách hàng...', 3)
 
       const res = await GapService.getCustomer(phoneKey.target.value)
+      message.destroy()
       if (res && res.results && res.results[0]) {
         message.success('Thông tin khách hàng đã tồn tại', 2)
         console.log('fetchUserByPhoneNumber set form', res.results[0])
@@ -881,7 +891,7 @@ const SaleScreen = (props) => {
               )
             }
             key={pane.key}
-            closable={pane.closable}
+            closable={false}
             className={{ color: 'red' }} />
         ))}
       </Tabs>
@@ -969,7 +979,7 @@ const SaleScreen = (props) => {
 
               <div className='typeTranferBox'>
                 <span className='typeTranferTxt'>Lưu ý: </span>
-                <TextArea placeholder='Ghi Chú' value={panes[currentPaneIndex].note || '---'} type={'number'} id='note' key='note' onChange={onHanleChangeTextNote} />
+                <TextArea placeholder='Ghi Chú' value={panes[currentPaneIndex].note || ''} type={'number'} id='note' key='note' onChange={onHanleChangeTextNote} />
               </div>
             </div>
 
@@ -1038,6 +1048,8 @@ const SaleScreen = (props) => {
                     </div>
                     <div className='phoneBox'>
                       <Cascader
+                        allowClear
+                        showSearch
                         disabled={panes[currentPaneIndex].shippingInfo.optionTransfer === 'tt'}
                         placeholder='Thành phố/Tỉnh - Quận/Huyện - Xã/Phường'
                         options={optionsAddressArr}
@@ -1087,47 +1099,46 @@ const SaleScreen = (props) => {
           }
 
           <div style={{ display: 'flex' }}>
+            <ReactToPrint
+              content={reactToPrintContent}
+              // onAfterPrint={handleAfterPrint}
+              // onBeforeGetContent={handleOnBeforeGetContent}
+              // onBeforePrint={handleBeforePrint}
+              removeAfterPrint
+              trigger={reactToPrintTrigger}
+            />
             <Button className='createNewButton' onClick={resetData}>Tạo mới</Button>
-            <Button className='createNewButton' onClick={() => printWithId('BoxContainer')}>In hoá đơn</Button>
           </div>
 
+          <div id='BoxContainer' style={{ marginTop: '20px' }}>
+            <ReceiptOffline data={panes[currentPaneIndex]} ref={componentRef} />
+          </div>
         </div>
       ) : null}
 
-      {/* <ReactToPrint
-        content={reactToPrintContent}
-        removeAfterPrint
-        trigger={reactToPrintTrigger}
-        // content={() => componentRef}
-      /> */}
-      <button onClick={() => printWithId('BoxContainer')}>Print offline bill</button>
+      {/* <button onClick={() => printWithId('qrcode')}>Print qrcode</button> */}
 
-      {/* <div id='BoxContainer' style={{ display: 'none' }}> */}
-      <div id='BoxContainer'>
-        <ReceiptOffline data={panes[currentPaneIndex]} ref={(el) => (componentRef = el)} />
-      </div>
-
-      <button onClick={() => printWithId('qrcode')}>Print qrcode</button>
-
-      {
+      {/* {
         panes && panes[currentPaneIndex] && panes[currentPaneIndex]?.isCreatedSuccessfully && (
-          <div id='BoxContainer'>
-            <ReceiptOffline data={panes[currentPaneIndex]} ref={(el) => (componentRef = el)} />
-          </div>
+          <>
+            <div id='BoxContainer'>
+              <ReceiptOffline data={panes[currentPaneIndex]} ref={(el) => (componentRef = el)} />
+            </div>
+          </>
+
         )
-      }
+      } */}
 
-      <div className='img64'>
+      {/* <div id='BoxContainer'>
+        <ReceiptOffline data={panes[currentPaneIndex]} ref={(el) => (componentRef = el)} />
+      </div> */}
 
-        <img src={base64} style={{ width: '100px', height: '100px' }} />
-      </div>
-
-      <div>
+      {/* <div>
         <object>
           <embed id='pdfID' type='text/html' width='1200' height='600' src={`data:application/pdf;base64,${base64}`} />
         </object>
-      </div>
-
+      </div> */}
+      {/*
       <div id='qrcode'>
         <style type='text/css' media='print'>
           {'\
@@ -1138,7 +1149,7 @@ const SaleScreen = (props) => {
         <p style={{ fontSize: '10px', width: '65px', wordBreak: 'break-all', margin: '0px' }}>123-432-1</p>
         <p style={{ fontSize: '10px', width: '65px', wordBreak: 'break-all', margin: '0px' }}>100.000đ</p>
         <p style={{ fontSize: '10px', width: '65px', wordBreak: 'break-all', margin: '0px' }}>Đầm đỏ balenca</p>
-      </div>
+      </div> */}
 
     </div>
   )

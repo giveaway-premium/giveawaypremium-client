@@ -7,9 +7,9 @@
     display: flex;
     flex-direction: column;
     // align-items: flex-start;
-    .ant-tabs-nav-container {
-        height: 100px !important;
-    }
+    // .ant-tabs-nav-container {
+    //     height: 100px !important;
+    // }
     .ant-tabs-new-tab {
         width: 36px !important;
         height: 36px !important;
@@ -237,6 +237,7 @@
         align-items: center;
         justify-content: center;
         .createNewButton {
+            margin-left: 10px;
             min-width: 200px;
             align-self: center;
         }

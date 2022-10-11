@@ -399,9 +399,6 @@ class ConsignmentScreen extends React.PureComponent {
               Hiện tại tính năng đặt lịch ký gửi trên website đang tạm khoá.
                     </p>
                     <p className='text day-txt'>
-              Sẽ tạm khoá đặt lịch 1 tuần, từ 28-08-2022 đến 0h00 04-9-2022
-                    </p>
-                    <p className='text day-txt'>
               Quý khách vui lòng gọi hotline 0703 334 443 để biết thêm thông tin.
                     </p>
                     <p className='text day-txt'>
