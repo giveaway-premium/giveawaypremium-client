@@ -413,6 +413,7 @@ const SaleScreen = (props) => {
       paneTemp[currentPaneIndex].inputText = ''
       paneTemp[currentPaneIndex].totalNumberOfProductForSale = (paneTemp[currentPaneIndex].totalNumberOfProductForSale || 0) + 1
       paneTemp[currentPaneIndex].totalMoneyForSale = (paneTemp[currentPaneIndex].totalMoneyForSale || 0) + productRes.price
+      paneTemp[currentPaneIndex].totalMoneyForSaleAfterFee = (paneTemp[currentPaneIndex].totalMoneyForSaleAfterFee || 0) + productRes.priceAfterFee
       setPanes(paneTemp)
     } else {
       showNotification('Sản phẩm không tồn tại')
@@ -442,12 +443,15 @@ const SaleScreen = (props) => {
     paneTemp[currentPaneIndex].productList = paneTemp[currentPaneIndex].productList.filter((item, index) => itemIndex !== index)
     let totalNumberOfProductForSale = 0
     let totalMoneyForSale = 0
+    let totalMoneyForSaleAfterFee = 0
     paneTemp[currentPaneIndex].productList.map(item => {
       totalNumberOfProductForSale += item.numberOfProductForSale || 1
       totalMoneyForSale += (item.numberOfProductForSale || 1) * item.price
+      totalMoneyForSaleAfterFee += (item.numberOfProductForSale || 1) * item.priceAfterFee
     })
     paneTemp[currentPaneIndex].totalNumberOfProductForSale = totalNumberOfProductForSale
     paneTemp[currentPaneIndex].totalMoneyForSale = totalMoneyForSale
+    paneTemp[currentPaneIndex].totalMoneyForSaleAfterFee = totalMoneyForSaleAfterFee
     setPanes(paneTemp)
   }
 
@@ -461,12 +465,15 @@ const SaleScreen = (props) => {
       paneTemp[currentPaneIndex].productList[itemIndex].numberOfProductForSale = value
       let totalNumberOfProductForSale = 0
       let totalMoneyForSale = 0
+      let totalMoneyForSaleAfterFee = 0
       paneTemp[currentPaneIndex].productList.map(item => {
         totalNumberOfProductForSale += item.numberOfProductForSale || 1
         totalMoneyForSale += (item.numberOfProductForSale || 1) * item.price
+        totalMoneyForSaleAfterFee += (item.numberOfProductForSale || 1) * item.priceAfterFee
       })
       paneTemp[currentPaneIndex].totalNumberOfProductForSale = totalNumberOfProductForSale
       paneTemp[currentPaneIndex].totalMoneyForSale = totalMoneyForSale
+      paneTemp[currentPaneIndex].totalMoneyForSaleAfterFee = totalMoneyForSaleAfterFee
       setPanes(paneTemp)
     }
   }

@@ -109,15 +109,15 @@ class TableOrderScreen extends React.PureComponent {
         title: 'Mã đơn hàng',
         dataIndex: 'objectId',
         key: '0',
-        width: 180,
+        width: 140,
         // editable: true,
         ...this.getColumnSearchKeyProps('objectId')
       },
       {
         title: 'Tên khách hàng',
         dataIndex: 'fullName',
-        key: '1'
-        // width: 250,
+        key: '1',
+        width: 220
         // ...this.getColumnSearchKeyProps('fullName')
         // ...this.getColumnSearchProps('consignerName')
         // ...this.getColumnSearchPropsConsignmentName('consignerName')
@@ -131,7 +131,7 @@ class TableOrderScreen extends React.PureComponent {
       },
       {
         title: 'Số lượng',
-        width: 100,
+        width: 80,
         dataIndex: 'totalNumberOfProductForSale',
         key: '3'
         // editable: true
@@ -140,43 +140,60 @@ class TableOrderScreen extends React.PureComponent {
         title: 'Tổng tiền',
         dataIndex: 'totalMoneyForSale',
         key: '4',
+        width: 140,
         // editable: true,
         render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
       },
       {
         title: 'Thanh toán',
         dataIndex: 'isTransferMoneyWithBank',
+        width: 120,
         key: '5',
         ...this.getColumnSearchTransferOrNot('isTransferMoneyWithBank')
       },
       {
         title: 'Hình thức',
         dataIndex: 'isOnlineSale',
+        width: 120,
         key: '6',
         ...this.getColumnSearchOnlineOrNot('isOnlineSale')
       },
       {
         title: 'Thời gian tạo đơn',
         dataIndex: 'createdAt',
+        width: 120,
         key: '7'
       },
       {
+        title: 'Thời gian nhận tiền',
+        dataIndex: 'timeConfirmGetMoney',
+        width: 120,
+        key: '8'
+      },
+      {
         title: '',
-        key: '8',
+        key: '9',
         width: 120,
         // fixed: 'right',
         render: (value) => (<Button style={{ width: '100%' }} onClick={() => this.onDeleteButton(value)}>Xoá</Button>)
       },
       {
+        title: 'GHTK',
+        key: '10',
+        width: 170,
+        // fixed: 'right',
+        render: (value) => value.isOnlineSale === 'Online' ? (<Button style={{ width: '100%' }} onClick={() => this.onPushOrderToGHTK(value)}>Tạo đơn GHTK</Button>) : null
+      },
+      {
         title: 'Nhận tiền',
-        key: '9',
+        key: '11',
         width: 90,
         fixed: 'right',
         // ...this.getColumnSearchIsGetMoney('isGetMoney'),
         render: (value) =>
           this.state.orderData.length >= 1 ? (
             <Popconfirm title='Xác nhận' onConfirm={() => this.onChangeRadioIsGetMoney(value)}>
-              <Radio.Button className={value.isGetMoney ? 'radio-true-isGetMoney' : 'radio-false-isGetMoney'} value={value.isGetMoney}>{value.isGetMoney ? 'Rồi' : 'Chưa'}</Radio.Button>
+              <Radio.Button disabled={value.isOnlineSale === 'Offline'} className={value.isGetMoney ? 'radio-true-isGetMoney' : 'radio-false-isGetMoney'} value={value.isGetMoney}>{value.isGetMoney ? 'Rồi' : 'Chưa'}</Radio.Button>
             </Popconfirm>
           ) : null
       }
@@ -207,6 +224,100 @@ class TableOrderScreen extends React.PureComponent {
   componentDidUpdate () {
 
   }
+
+  expandedRowRender = (recordData) => {
+    const components = {
+      body: {
+        row: EditableRow,
+        cell: EditableCell
+      }
+    }
+
+    const columns = [
+      {
+        title: 'Mã SP',
+        dataIndex: 'code',
+        key: 'code'
+        // editable: true,
+        // width: 180
+      },
+      {
+        title: 'Tên SP',
+        dataIndex: 'name',
+        key: 'name'
+        // editable: true,
+        // width: 250
+      },
+      {
+        title: 'Giá',
+        dataIndex: 'price',
+        key: 'price',
+        // editable: true,
+        render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
+      },
+      {
+        title: 'Số lượng',
+        dataIndex: 'count',
+        key: 'count'
+        // editable: true,
+        // width: 100
+      },
+      {
+        title: 'Tổng tiền',
+        dataIndex: 'totalMoney',
+        key: 'moneyBackProduct',
+        render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
+      }
+    ]
+
+    const data = []
+
+    console.log('item')
+    console.log(recordData)
+
+    recordData && recordData.productList && recordData.productList.map((item, index) => {
+      data.push({
+        key: index,
+        name: item.name,
+        note: item.note,
+        categoryId: item.categoryId,
+        code: item.code || '',
+        price: Number(item.price) || 0,
+        count: Number(item.count) || 0,
+        priceAfterFee: Number(item.priceAfterFee) || 0,
+        soldNumberProduct: Number(item.soldNumberProduct) || 0,
+        remainNumberProduct: Number(item.count) - Number(item.soldNumberProduct || 0),
+        moneyBackProduct: Number(item.soldNumberProduct || 0) * Number(item.priceAfterFee),
+        totalMoney: (Number(item.count) || 0) * Number(item.price) || 0,
+        shippingInfo: item.shippingInfo
+      })
+    })
+
+    const formatedColumns = columns.map((col) => {
+      if (!col.editable) {
+        return col
+      }
+
+      return {
+        ...col,
+        onCell: (record) => ({
+          record,
+          editable: col.editable,
+          dataIndex: col.dataIndex,
+          title: col.title,
+          handleSave: (row) => this.handleSaveNestTable(row, recordData)
+        })
+      }
+    })
+
+    return <Table
+      scroll={{ x: 800, y: '55vh' }}
+      components={components}
+      columns={formatedColumns}
+      dataSource={data}
+      pagination={false}
+    />
+  };
 
   convertDataIndexToName = (dataIndex) => {
     console.log('dataIndex')
@@ -251,6 +362,59 @@ class TableOrderScreen extends React.PureComponent {
       })
     }
   };
+
+  onPushOrderToGHTK = async (row) => {
+    console.log('row - onPushOrderToGHTK', row)
+    const res = await GapService.pushOrderToGHTK(row)
+
+    console.log('res - onPushOrderToGHTK', res)
+  }
+
+  onChangeRadioIsGetMoney = async (row) => {
+    console.log('onChangeRadioIsGetMoney')
+    console.log(row)
+
+    const newData = [...this.state.orderData]
+    const index = newData.findIndex((item) => row.objectId === item.objectId)
+    const item = newData[index]
+    let newItem = { ...item, ...row, isGetMoney: !item.isGetMoney }
+
+    if (newItem && newItem.isGetMoney === true) {
+      newItem = { ...item, ...row, isGetMoney: !item.isGetMoney, timeConfirmGetMoney: moment().format('DD-MM-YYYY HH:mm') }
+    }
+
+    if (!isEqual(newItem, item)) {
+      newData.splice(index, 1, newItem)
+      console.log('row')
+      this.setState({
+        orderData: newData
+      }, async () => {
+        console.log(newItem)
+        // const customerFormData = {
+        //   consignerName: row.consignerName,
+        //   phoneNumber: row.phoneNumber,
+        //   numberOfProducts: row.numberOfProducts,
+        //   consignerIdCard: row.consignerIdCard,
+        //   mail: row.email,
+        //   bankName: row.bankName,
+        //   bankId: row.bankId,
+        //   timeConfirmGetMoney: row.timeConfirmGetMoney
+        // }
+
+        // if (newItem && newItem.isGetMoney && newItem.email && newItem.email.length > 0) {
+        //   GapService.sendMail(customerFormData, row, EMAIL_TYPE.PAYMENT, EMAIL_TITLE.PAYMENT)
+        // }
+
+        const res = await GapService.updateOrder(newItem)
+        console.log(res)
+        if (res) {
+          showNotification(`Cập nhật thành công ${item.phoneNumber}`)
+        } else {
+          showNotification(`Cập nhật chưa được`)
+        }
+      })
+    }
+  }
 
   onChangeRadioSearch = (value, clearFilters) => {
     console.log('onChangeRadioSearch')
@@ -448,101 +612,8 @@ class TableOrderScreen extends React.PureComponent {
     //   )
   });
 
-  expandedRowRender = (recordData) => {
-    const components = {
-      body: {
-        row: EditableRow,
-        cell: EditableCell
-      }
-    }
-
-    const columns = [
-      {
-        title: 'Mã SP',
-        dataIndex: 'code',
-        key: 'code'
-        // editable: true,
-        // width: 180
-      },
-      {
-        title: 'Tên SP',
-        dataIndex: 'name',
-        key: 'name'
-        // editable: true,
-        // width: 250
-      },
-      {
-        title: 'Giá',
-        dataIndex: 'price',
-        key: 'price',
-        // editable: true,
-        render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
-      },
-      {
-        title: 'Số lượng',
-        dataIndex: 'count',
-        key: 'count'
-        // editable: true,
-        // width: 100
-      },
-      {
-        title: 'Tổng tiền',
-        dataIndex: 'totalMoney',
-        key: 'moneyBackProduct',
-        render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
-      }
-    ]
-
-    const data = []
-
-    console.log('item')
-    console.log(recordData)
-
-    recordData && recordData.productList && recordData.productList.map((item, index) => {
-      data.push({
-        key: index,
-        name: item.name,
-        note: item.note,
-        categoryId: item.categoryId,
-        code: item.code || '',
-        price: Number(item.price) || 0,
-        count: Number(item.count) || 0,
-        priceAfterFee: Number(item.priceAfterFee) || 0,
-        soldNumberProduct: Number(item.soldNumberProduct) || 0,
-        remainNumberProduct: Number(item.count) - Number(item.soldNumberProduct || 0),
-        moneyBackProduct: Number(item.soldNumberProduct || 0) * Number(item.priceAfterFee),
-        totalMoney: (Number(item.count) || 0) * Number(item.price) || 0
-      })
-    })
-
-    const formatedColumns = columns.map((col) => {
-      if (!col.editable) {
-        return col
-      }
-
-      return {
-        ...col,
-        onCell: (record) => ({
-          record,
-          editable: col.editable,
-          dataIndex: col.dataIndex,
-          title: col.title,
-          handleSave: (row) => this.handleSaveNestTable(row, recordData)
-        })
-      }
-    })
-
-    return <Table
-      scroll={{ x: 800, y: '55vh' }}
-      components={components}
-      columns={formatedColumns}
-      dataSource={data}
-      pagination={false}
-    />
-  };
-
   convertPriceAfterFee = (productPrice = 0) => {
-    let moneyBackForFullSold = productPrice
+    let moneyBackForFullSold = Number(productPrice)
 
     if (productPrice > 0) {
       if (productPrice < 1000) {
@@ -654,6 +725,24 @@ class TableOrderScreen extends React.PureComponent {
     }, () => this.fetchTableData())
   }
 
+  convertPriceAfterFee = (productPrice = 0) => {
+    let moneyBackForFullSold = productPrice
+
+    if (productPrice > 0) {
+      if (productPrice < 1000) {
+        moneyBackForFullSold = productPrice * 74 / 100
+      } else if (productPrice >= 1000 && productPrice <= 10000) {
+        moneyBackForFullSold = productPrice * 77 / 100
+      } else if (productPrice > 10000) {
+        moneyBackForFullSold = productPrice * 80 / 100
+      }
+
+      return moneyBackForFullSold
+    } else {
+      return 0
+    }
+  }
+
   fetchTableData = async (page = 1) => {
     const { selectedKeys, fromDateMoment, toDateMoment } = this.state
     this.setState({
@@ -694,21 +783,24 @@ class TableOrderScreen extends React.PureComponent {
             totalNumberOfProductForSale: `${Number(item.totalNumberOfProductForSale)}`,
             isTransferMoneyWithBank: item.isTransferMoneyWithBank ? 'Chuyển khoản' : 'Trực tiếp',
             totalMoneyForSale: item.totalMoneyForSale ? `${item.totalMoneyForSale}` : 0,
-            createdAt: moment(item.createdAt).format('DD-MM-YYYY'),
+            totalMoneyForSaleAfterFee: (item.totalMoneyForSaleAfterFee ? `${item.totalMoneyForSaleAfterFee}` : `${this.convertPriceAfterFee(item.totalMoneyForSaleAfterFee)}`) || 0,
+            createdAt: moment(item.createdAt).format('DD-MM-YYYY hh:mm'),
             note: item.note || '---',
             isOnlineSale: item.isOnlineSale ? 'Online' : 'Offline',
+            shippingInfo: item.shippingInfo,
+            clientInfo: item.client || item.clientInfo,
 
-            numSoldConsignment: `${Number(item.numSoldConsignment || 0)}`,
-            remainNumConsignment: `${Number(item.numberOfProducts) - Number(item.numSoldConsignment || 0)}`,
-            bankName: item.banks && item.banks[0] ? item.banks[0].type : '',
-            bankId: item.banks && item.banks[0] ? item.banks[0].accNumber : '',
+            // numSoldConsignment: `${Number(item.numSoldConsignment || 0)}`,
+            // remainNumConsignment: `${Number(item.numberOfProducts) - Number(item.numSoldConsignment || 0)}`,
+            // bankName: item.banks && item.banks[0] ? item.banks[0].type : '',
+            // bankId: item.banks && item.banks[0] ? item.banks[0].accNumber : '',
             moneyBackForFullSold: item.moneyBackForFullSold ? `${item.moneyBackForFullSold}` : 0,
-            totalMoney: item.totalMoney ? `${item.totalMoney}` : 0,
-            timeConfirmGetMoney: item.timeConfirmGetMoney || 'Chưa',
-            email: item.mail,
-            birthday: item.birthday,
+            // totalMoney: item.totalMoney ? `${item.totalMoney}` : 0,
+            timeConfirmGetMoney: item.timeConfirmGetMoney || moment(item.createdAt).format('DD-MM-YYYY hh:mm'),
+            // email: item.mail,
+            // birthday: item.birthday,
             productList: item.productList,
-            isGetMoney: item.isGetMoney
+            isGetMoney: item.isOnlineSale ? (item.isGetMoney || false) : true
           })
         })
         this.setState({
@@ -829,7 +921,7 @@ class TableOrderScreen extends React.PureComponent {
             pageSize: 100,
             onChange: this.paginationChange
           }}
-          scroll={{ x: 1400, y: '70vh' }}
+          scroll={{ x: 1700, y: '70vh' }}
         />
         <MyModal ref={this.myModal} />
       </div>

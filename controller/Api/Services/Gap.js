@@ -336,6 +336,7 @@ export default class Gap {
       productList: dataOrder.productList || [],
       totalNumberOfProductForSale: `${dataOrder.totalNumberOfProductForSale}`,
       totalMoneyForSale: `${dataOrder.totalMoneyForSale}`,
+      totalMoneyForSaleAfterFee: `${dataOrder.totalMoneyForSaleAfterFee}`,
       note: dataOrder.note,
       isOnlineSale: dataOrder.isOnlineSale === 'true',
       shippingInfo: dataOrder.shippingInfo
@@ -343,6 +344,26 @@ export default class Gap {
     console.log('body setConsignment')
     console.log(body)
     return this.fetchData('/classes/Order', REQUEST_TYPE.POST, null, body)
+  }
+
+  static async updateOrder (item) {
+    try {
+      const body = {
+        isGetMoney: item.isGetMoney || false
+      }
+
+      if (item && item.timeConfirmGetMoney) {
+        body.timeConfirmGetMoney = item.timeConfirmGetMoney
+      }
+
+      console.log('body update updateOrder', body)
+      console.log('item update updateOrder', item)
+
+      return this.fetchData(`/classes/Order/${item.objectId}`, REQUEST_TYPE.PUT, null, body, null, null, null, true)
+    } catch (e) {
+      console.log(e)
+      return false
+    }
   }
 
   // "createdAt": {
@@ -824,6 +845,56 @@ export default class Gap {
         value: 0
       }
     }
+    return this.fetchData('/functions/transporter', REQUEST_TYPE.POST, null, body)
+  }
+
+  static async pushOrderToGHTK (formData) {
+    const body = {
+      service: 'giaohangtietkiem',
+      action: 'CREATE_ORDER',
+      data: {
+        from: {
+          province: ADDRESS_GET_ORDER_ARRAY[0],
+          district: ADDRESS_GET_ORDER_ARRAY[1],
+          address: '1 Phó Đức Chính',
+          ward: ADDRESS_GET_ORDER_ARRAY[2],
+          name: 'Giveaway Premium store',
+          phone: '0703334443'
+        },
+        to: {
+          province: formData.shippingInfo.orderAdressProvince,
+          district: formData.shippingInfo.orderAdressDistrict,
+          address: formData.shippingInfo.orderAdressStreet,
+          ward: formData.shippingInfo.orderAdressWard,
+          name: formData.clientInfo.fullName,
+          phone: formData.clientInfo.phoneNumber
+        },
+        orderId: formData.objectId,
+        codMoney: 0,
+        isFreeShipping: false,
+        transport: 'road',
+        value: Number(formData.totalMoneyForSale) * 1000,
+        items: []
+      }
+    }
+
+    if (formData.productList && formData.productList.length > 0) {
+      formData.productList.map((item, indexItem) => {
+        body.data.items.push({
+          name: item.name,
+          weight: 0.2,
+          quantity: Number(item.numberOfProductForSale)
+        })
+      })
+    }
+
+    if (formData?.shippingInfo?.optionTransfer === 'ht') {
+      body.data.pick_option = 'cod'
+      body.data.deliver_option = 'xteam'
+      body.data.pick_session = 2
+    }
+
+    console.log('body GHTK', body)
     return this.fetchData('/functions/transporter', REQUEST_TYPE.POST, null, body)
   }
 
