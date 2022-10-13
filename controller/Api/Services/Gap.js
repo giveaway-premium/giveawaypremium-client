@@ -366,6 +366,22 @@ export default class Gap {
     }
   }
 
+  static async deleteOrder (objectId) {
+    try {
+      const body = {
+        deletedAt: {
+          '__type': 'Date',
+          'iso': moment()
+        }
+      }
+
+      return this.fetchData(`/classes/Order/${objectId}`, REQUEST_TYPE.PUT, null, body)
+    } catch (e) {
+      console.log(e)
+      return false
+    }
+  }
+
   // "createdAt": {
   //   "$gte": {
   //     "__type": "Date",
@@ -428,10 +444,10 @@ export default class Gap {
       console.log('allSearchRegex')
       console.log(allSearchRegex)
 
-      const customQuery = `skip=${skip}&limit=${limited}&count=1&include=client&where={${allSearchRegex}}`
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&include=client,transporter&where={${allSearchRegex}}`
       console.log('customQuery')
       console.log(customQuery)
-      const customQueryWithoutCondition = `include=client`
+      const customQueryWithoutCondition = `include=client,transporter`
 
       if (selectedKeys.objectId) {
         return this.fetchData(`/classes/Order/${selectedKeys.objectId.trim()}`, REQUEST_TYPE.GET, null, null, null, null, customQueryWithoutCondition)
@@ -445,7 +461,7 @@ export default class Gap {
       console.log('fromDateFormated', fromDateFormated)
       console.log('toDateFormated', toDateFormated)
 
-      const customQuery = `skip=${skip}&limit=${limited}&count=1&include=client&where={"deletedAt":${null}, "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"},"$lte": {"__type": "Date","iso": "${toDateFormated}"}}}`
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&include=client,transporter&where={"deletedAt":${null}, "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"},"$lte": {"__type": "Date","iso": "${toDateFormated}"}}}`
       return this.fetchData('/classes/Order', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     }
   }
@@ -872,8 +888,8 @@ export default class Gap {
         orderId: formData.objectId,
         codMoney: 0,
         isFreeShipping: false,
-        transport: 'road',
-        value: Number(formData.totalMoneyForSale) * 1000,
+        serviceLevel: 'road',
+        value: Number(formData.totalMoneyForSale) * 1000 >= 20000 ? 20000 : Number(formData.totalMoneyForSale) * 1000,
         items: []
       }
     }

@@ -182,7 +182,7 @@ class TableOrderScreen extends React.PureComponent {
         key: '10',
         width: 170,
         // fixed: 'right',
-        render: (value) => value.isOnlineSale === 'Online' ? (<Button style={{ width: '100%' }} onClick={() => this.onPushOrderToGHTK(value)}>Tạo đơn GHTK</Button>) : null
+        render: (value) => value.isOnlineSale === 'Online' ? this.ghtkActionView(value) : null
       },
       {
         title: 'Nhận tiền',
@@ -223,6 +223,43 @@ class TableOrderScreen extends React.PureComponent {
 
   componentDidUpdate () {
 
+  }
+
+  translateStatusName = (value) => {
+    switch (value.transporter.status) {
+    case 'WAITING_PICK_UP':
+      return 'Đang chờ lấy hàng'
+    case 'DELIVERING':
+      return 'Đang vận chuyển'
+    case 'DELIVERED':
+      return 'Đã chuyển tới khách'
+    case 'FAILED':
+      return 'Đơn hàng bị lỗi'
+    case 'RETURNING_BACK':
+      return 'Đang trả hàng về'
+    case 'RETURNED_BACK':
+      return 'Đã trả về'
+    case 'CANCELLED':
+      return 'Đã huỷ đơn hàng'
+    }
+  }
+
+  ghtkActionView = (value) => {
+    if (!value) {
+      return null
+    }    
+    if (value && !value.transporter) {
+      return (
+        <Button style={{ width: '100%' }} onClick={() => this.onPushOrderToGHTK(value)}>Tạo đơn GHTK</Button>
+      )
+    } else if (value.transporter.success) {
+      return (
+        <>
+          <Button style={{ width: '100%', marginBottom: '5px' }} onClick={() => this.onOpenGHTKDetailModal(value)}>Xem đơn GHTK</Button>
+          <p>Tình trạng: {this.translateStatusName(value)}</p>
+        </>
+      )
+    }
   }
 
   expandedRowRender = (recordData) => {
@@ -289,7 +326,8 @@ class TableOrderScreen extends React.PureComponent {
         remainNumberProduct: Number(item.count) - Number(item.soldNumberProduct || 0),
         moneyBackProduct: Number(item.soldNumberProduct || 0) * Number(item.priceAfterFee),
         totalMoney: (Number(item.count) || 0) * Number(item.price) || 0,
-        shippingInfo: item.shippingInfo
+        shippingInfo: item.shippingInfo,
+        transporter: item.transporter
       })
     })
 
@@ -363,9 +401,53 @@ class TableOrderScreen extends React.PureComponent {
     }
   };
 
+  onOpenGHTKDetailModal = (value) => {
+    if (value && value?.transporter?.res?.order) {
+      this.myModal.current.openModal(this.renderDetailGHTKBox(value), { closable: true })
+    }
+  }
+
+  cancelOrder = (value) => {
+    showNotification('Chưa làm')
+  }
+
+  renderDetailGHTKBox = (value) => {
+    const shipData = value && value?.transporter?.res?.order
+    return (
+      <div>
+        <p className='text text-title MB10'>Giao hàng tiết kiệm</p>
+        <p>ID đơn hàng trên GHTK: {shipData.label_id}</p>
+        <p>ID đơn hàng kho GAP: {shipData.partner_id}</p>
+
+        <p>Tình trạng: {shipData.status_text}</p>
+        <p>Tên khách hàng: {shipData.customer_fullname}</p>
+        <p>SĐT khách hàng: {shipData.customer_tel}</p>
+        <p>Ngày dự kiến: {shipData.deliver_date}</p>
+        <p>Ngày nhận hàng: {shipData.pick_date}</p>
+        <p>Phí giao hàng: {numberWithCommas(shipData.ship_money)} vnđ</p>
+        <p>Địa chỉ giao hàng: {shipData.address}</p>
+
+        <Button className='MT10' onClick={() => this.cancelOrder(value)}>Huỷ Đơn Hàng</Button>
+      </div>
+    )
+  }
+
   onPushOrderToGHTK = async (row) => {
+    if (row && !row.isGetMoney) {
+      showNotification(`Vui lòng xác nhận Nhận Tiền trước`)
+      return
+    }
     console.log('row - onPushOrderToGHTK', row)
     const res = await GapService.pushOrderToGHTK(row)
+
+    if (res) {
+      if (res.error) {
+        showNotification(res.error || 'Cập nhật GHTK chưa được')
+        return
+      }
+    } else {
+      showNotification(`Cập nhật GHTK chưa được`)
+    }
 
     console.log('res - onPushOrderToGHTK', res)
   }
@@ -701,7 +783,7 @@ class TableOrderScreen extends React.PureComponent {
     const item = newData[index]
     console.log(item)
 
-    const res = await GapService.deleteConsignment(row.objectId)
+    const res = await GapService.deleteOrder(row.objectId)
     console.log(res)
     if (res) {
       newData.splice(index, 1)
@@ -789,6 +871,7 @@ class TableOrderScreen extends React.PureComponent {
             isOnlineSale: item.isOnlineSale ? 'Online' : 'Offline',
             shippingInfo: item.shippingInfo,
             clientInfo: item.client || item.clientInfo,
+            transporter: item.transporter,
 
             // numSoldConsignment: `${Number(item.numSoldConsignment || 0)}`,
             // remainNumConsignment: `${Number(item.numberOfProducts) - Number(item.numSoldConsignment || 0)}`,
