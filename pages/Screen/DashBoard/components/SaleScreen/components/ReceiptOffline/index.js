@@ -67,7 +67,7 @@ export default class ReceiptOffline extends React.PureComponent {
                         <td>{itemIndex + 1}</td>
                         <td>{item.name}</td>
                         <td>{item.count}</td>
-                        <td>{numberWithCommas(item.price || '0') || 0},000vnđ</td>
+                        <td>{numberWithCommas(item.price || '0') || 0},000đ</td>
                       </tr>
                     )
                   })
@@ -82,7 +82,7 @@ export default class ReceiptOffline extends React.PureComponent {
                 </tr>
                 <tr>
                   <th>Tổng tiền:</th>
-                  <td>{numberWithCommas(data.totalMoneyForSale || '0') || 0},000vnđ</td>
+                  <td>{numberWithCommas(data.totalMoneyForSale || '0') || 0},000đ</td>
                 </tr>
               </tbody>
             </table>
