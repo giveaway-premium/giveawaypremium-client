@@ -919,7 +919,7 @@ export default class Gap {
       service: 'giaohangtietkiem',
       action: 'GET_ORDER_LABEL',
       data: {
-        'orderId': orderId || 'cNsUAuEO96'
+        'orderId': orderId
       }
     }
     return this.fetchData('/functions/transporter', REQUEST_TYPE.POST, null, body)

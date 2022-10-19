@@ -1117,7 +1117,7 @@ const SaleScreen = (props) => {
             <Button className='createNewButton' onClick={resetData}>Tạo mới</Button>
           </div>
 
-          <div id='BoxContainer' style={{ marginTop: '20px' }}>
+          <div id='BoxContainer'>
             <ReceiptOffline data={panes[currentPaneIndex]} ref={componentRef} />
           </div>
         </div>

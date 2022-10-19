@@ -16,6 +16,7 @@ import { filter, isEqual } from 'lodash'
 import Highlighter from 'react-highlight-words'
 import { EMAIL_TITLE, EMAIL_TYPE } from 'common/constants'
 import moment from 'moment'
+import BillOrderGHTK from './components/BillOrderGHTK'
 const { RangePicker } = DatePicker
 const { TabPane } = Tabs
 
@@ -411,6 +412,12 @@ class TableOrderScreen extends React.PureComponent {
     showNotification('Chưa làm')
   }
 
+  printOrder = (orderId) => {
+    if (orderId) {
+      this.myModal.current.openModal(<BillOrderGHTK orderId={orderId} />, { closable: true, modalWidth: '50vh' })
+    }
+  }
+
   renderDetailGHTKBox = (value) => {
     const shipData = value && value?.transporter?.res?.order
     return (
@@ -428,6 +435,7 @@ class TableOrderScreen extends React.PureComponent {
         <p>Địa chỉ giao hàng: {shipData.address}</p>
 
         <Button className='MT10' onClick={() => this.cancelOrder(value)}>Huỷ Đơn Hàng</Button>
+        <Button className='MT10 ML10' onClick={() => this.printOrder(shipData.partner_id)}>In Đơn Hàng</Button>
       </div>
     )
   }
@@ -951,6 +959,19 @@ class TableOrderScreen extends React.PureComponent {
       isLoadingTags: false
     }, () => this.fetchTableData())
   }
+
+  // fetcDefaultLabel = async () => {
+  //   const labelBas64 = await GapService.getLabelTransform()
+  //   console.log('labelBas64', labelBas64)
+  //   // const img = dataURLToBlob(labelBas64.result)
+  //   const base64String = `data:application/pdf;base64,${labelBas64}`
+  //   // console.log('labelBas64', labelBas64)
+  //   // const blob = base64toBlob(base64String)
+  //   // const url = URL.createObjectURL(blob)
+  //   if (labelBas64) {
+  //     setBase64(labelBas64.result)
+  //   }
+  // }
 
   render () {
     const { userData } = this.props
