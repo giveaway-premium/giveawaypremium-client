@@ -597,6 +597,12 @@ export default class Gap {
 
   static async updateConsignment (item) {
     try {
+      const productListTemp = [...item.productList]
+      productListTemp.map((item, itemIndex) => {
+        if (!productListTemp[itemIndex].note) {
+          productListTemp[itemIndex].note = '---'
+        }
+      })
       const body = {
         consignmentId: item.consignmentId,
         numberOfProducts: Number(item.numberOfProducts),
@@ -605,7 +611,7 @@ export default class Gap {
         moneyBack: Number(item.moneyBack) || 0,
         moneyBackForFullSold: Number(item.moneyBackForFullSold) || 0,
         isGetMoney: item.isGetMoney || false,
-        productList: item.productList,
+        productList: productListTemp,
         timeConfirmGetMoney: item.timeConfirmGetMoney
       }
 
