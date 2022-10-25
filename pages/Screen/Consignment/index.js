@@ -107,15 +107,15 @@ class ConsignmentScreen extends React.PureComponent {
 
     return (
       <div>
-        {/* <p className='text text-title MB10'>Hướng dẫn ký gửi</p>
+        <p className='text text-title MB10'>Hướng dẫn ký gửi</p>
         <p className='text'>Sau khi truy cập Zalo, vui lòng nhấn Quan tâm/Follow để GAP có thể ghi nhận thông tin ký gửi từ anh/chị nhé!</p>
         <img className='MR10 cursor-pointer MB10 MT10' src={images.kyguiZalo} style={{ objectFit: 'contain', height: '100%', width: '100%' }} />
 
-        <Button className='MT10' onClick={onContinue}>Tiếp tục</Button> */}
+        <Button className='MT10' onClick={onContinue}>Tiếp tục</Button>
 
-        <p className='text text-title MB10 MT20'>Thông báo tạm ngưng dịch vụ ký gửi online</p>
+        {/* <p className='text text-title MB10 MT20'>Thông báo tạm ngưng dịch vụ ký gửi online</p>
         <p className='text'>Xin chào Quý Khách, GAP rất tiếc xin thông báo rằng số lượng đơn ký gửi online đang trong tình trạng quá tải, GAP xin phép tạm ngưng dịch vụ ký gửi online từ ngày 21/10/2022 đến ngày 24/10/2022</p>
-        <p className='text'>Chân thành xin lỗi Quý Khách vì sự bất tiện này.</p>
+        <p className='text'>Chân thành xin lỗi Quý Khách vì sự bất tiện này.</p> */}
 
         {/* <img className='MR10 cursor-pointer MB10 MT10' src={images.kyguiZalo} style={{ objectFit: 'contain', height: '100%', width: '100%' }} />
 
