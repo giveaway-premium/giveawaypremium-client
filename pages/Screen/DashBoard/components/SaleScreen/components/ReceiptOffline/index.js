@@ -38,11 +38,12 @@ export default class ReceiptOffline extends React.PureComponent {
         <div className={'BoxTicket'}>
           <div className={'BoxHeader'}>
             <p>GIVE AWAY PREMIUM QUẬN 1</p>
-            <p>Địa chỉ: 01 Phó Đức Chính</p>
-            <p>phường Nguyễn Thái Bình, Q1</p>
+            <p style={{ marginBottom: '0px' }}>Địa chỉ: 01 Phó Đức Chính</p>
+            <p>phường Nguyễn Thái Bình, Q1, HCM</p>
+            {/* <p>phường Nguyễn Thái Bình, Q1</p> */}
             <p>Hotline: 0703.334.443</p>
-            <p>Facebook: Give Away Premium Quận 1</p>
-            <p>Instagram: @giveawaypremiumquan1</p>
+            <p style={{ marginBottom: '0px' }}>Facebook: Give Away Premium Quận 1</p>
+            <p>Instagram: @giveawaypremium_quan1</p>
           </div>
           <div className={'BoxContent'}>
             <div className={'BoxCol'}>

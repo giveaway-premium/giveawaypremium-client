@@ -32,6 +32,7 @@ import SettingScreen from './components/SettingScreen'
 import * as Parse from 'parse'
 import { ShoppingBasket, ShoppingBasketOutlined } from '@material-ui/icons'
 import SaleScreen from './components/SaleScreen'
+import SummaryScreen from './components/SummaryScreen'
 
 class DashBoard extends React.PureComponent {
   static async getInitialProps ({ query }) {
@@ -42,7 +43,7 @@ class DashBoard extends React.PureComponent {
     this.state = {
       isLogin: false,
       isLoadingLogin: false,
-      numberPage: 3,
+      numberPage: 1,
       formData: {
         nameConsigner: '',
         nameConsignee: '',
@@ -215,7 +216,7 @@ class DashBoard extends React.PureComponent {
   }
 
   handleChoosePage = (page) => {
-    if (page && (page.key === '5' || page.key === '3')) {
+    if (page && (page.key === '5' || page.key === '3' || page.key === '1')) {
       this.setState({
         isFullScreen: true,
         numberPage: Number(page.key)
@@ -230,7 +231,7 @@ class DashBoard extends React.PureComponent {
 
   renderSummarize = () => {
     return (
-      <div />
+      <SummaryScreen />
     )
   }
 

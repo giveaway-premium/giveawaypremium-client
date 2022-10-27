@@ -1145,8 +1145,8 @@ const SaleScreen = (props) => {
           <embed id='pdfID' type='text/html' width='1200' height='600' src={`data:application/pdf;base64,${base64}`} />
         </object>
       </div> */}
-      {/*
-      <div id='qrcode'>
+      
+      {/* <div id='qrcode'>
         <style type='text/css' media='print'>
           {'\
    @page { size: portrait; }\
