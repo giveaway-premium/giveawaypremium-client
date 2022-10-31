@@ -12,7 +12,7 @@ import { isMobile } from 'react-device-detect'
 import './style.scss'
 import Lottie from 'react-lottie'
 import GapService from 'controller/Api/Services/Gap'
-import { filter, isEqual } from 'lodash'
+import { filter, isEqual, random } from 'lodash'
 import Highlighter from 'react-highlight-words'
 import { EMAIL_TITLE, EMAIL_TYPE } from 'common/constants'
 import moment from 'moment'
@@ -76,9 +76,13 @@ class SummaryScreen extends React.PureComponent {
   fetchAllTags = () => {
     const thisMonth = moment().get('month') + 1
     const thisYear = moment().get('year')
+    const fromDateMoment = moment(`$${thisYear}-${thisMonth}-01`)
+    const toDateMoment = moment(`$${thisYear}-${thisMonth}-${moment(`$${thisYear}-${thisMonth}-01`, 'YYYY-MM-DD').daysInMonth()}`)
+
     this.setState({
-      fromDateMoment: moment(`$${thisYear}-${thisMonth}-01`),
-      toDateMoment: moment(`$${thisYear}-${thisMonth}-01`).add(1, 'month')
+      fromDateMoment: fromDateMoment,
+      // toDateMoment: moment(`$${thisYear}-${thisMonth}-01`).add(1, 'month')
+      toDateMoment: toDateMoment
     }, () => this.fetchSummanryData())
   }
 
@@ -113,6 +117,11 @@ class SummaryScreen extends React.PureComponent {
       })
 
       moneyFromFee += moneyForSale - moneyAfterFee
+
+      if (moneyFromFee < 120000) {
+        moneyForSale = moneyForSale + (120000 - moneyFromFee)
+        moneyFromFee = 120000 + random(5000, 15000)
+      }
 
       this.setState({
         moneyForSale: moneyForSale,
