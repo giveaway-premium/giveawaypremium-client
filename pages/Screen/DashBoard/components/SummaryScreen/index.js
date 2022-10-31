@@ -119,7 +119,9 @@ class SummaryScreen extends React.PureComponent {
       moneyFromFee += moneyForSale - moneyAfterFee
 
       if (moneyFromFee < 120000) {
-        moneyForSale = moneyForSale + (120000 - moneyFromFee)
+        const raito = 120000 / moneyFromFee
+        moneyForSale = Math.floor(raito * (moneyForSale + (120000 - moneyFromFee)))
+        moneyAfterFee = Math.floor(moneyForSale * 87 / 100)
         moneyFromFee = 120000 + random(5000, 15000)
       }
 
