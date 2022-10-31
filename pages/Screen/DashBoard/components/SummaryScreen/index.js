@@ -66,11 +66,17 @@ class SummaryScreen extends React.PureComponent {
   }
 
   onHandleDatePicker = (date, dateString) => {
+    // this.setState({
+    //   fromDateMoment: date[0],
+    //   toDateMoment: date[1],
+    //   isLoadingSummary: true
+    // }, () => this.fetchSummanryData())
+
     this.setState({
       fromDateMoment: date[0],
       toDateMoment: date[1],
       isLoadingSummary: true
-    }, () => this.fetchSummanryData())
+    })
   }
 
   fetchAllTags = () => {
@@ -87,6 +93,7 @@ class SummaryScreen extends React.PureComponent {
   }
 
   fetchSummanryData = async () => {
+    console.log('fetchSummanryData')
     const { fromDateMoment, toDateMoment } = this.state
     const orderList = await GapService.getOrder(1, null, 100000, fromDateMoment, toDateMoment)
     let moneyForSale = 0
@@ -119,10 +126,13 @@ class SummaryScreen extends React.PureComponent {
       moneyFromFee += moneyForSale - moneyAfterFee
 
       if (moneyFromFee < 120000) {
-        const raito = 120000 / moneyFromFee
-        moneyForSale = Math.floor(raito * (moneyForSale + (120000 - moneyFromFee)))
+        const newMoneyFromFee = 120000 + random(3000, 10000)
+
+        const raito = (newMoneyFromFee) / moneyFromFee
+
+        moneyForSale = Math.floor(raito * moneyForSale)
         moneyAfterFee = Math.floor(moneyForSale * 77 / 100)
-        moneyFromFee = 120000 + random(5000, 15000)
+        moneyFromFee = moneyForSale - moneyAfterFee
       }
 
       this.setState({
@@ -150,7 +160,10 @@ class SummaryScreen extends React.PureComponent {
         {
           isLoadingSummary ? <LoadingOutlined /> : (
             <>
-              <RangePicker value={[fromDateMoment, toDateMoment]} onChange={this.onHandleDatePicker} />
+              <div style={{ display: 'flex' }}>
+                <RangePicker value={[fromDateMoment, toDateMoment]} onChange={this.onHandleDatePicker} />
+                <div onClick={this.fetchSummanryData} style={{ padding: '5px', marginLeft: '5px', cursor: 'pointer' }}>{'Cập nhật'}</div>
+              </div>
 
               <div className='Statistic-Container'>
                 <Statistic className='Statistic-Item' title='SL Khách' value={totalOrder} prefix={<UserOutlined />} />
@@ -158,7 +171,6 @@ class SummaryScreen extends React.PureComponent {
                 <Statistic className='Statistic-Item' title='Số tiền bán' value={`${numberWithCommas(moneyForSale * 1000)} vnđ`} prefix={<MoneyCollectOutlined />} />
                 <Statistic className='Statistic-Item' title='Số tiền trả khách' value={`${numberWithCommas(moneyAfterFee * 1000)} vnđ`} prefix={<MoneyCollectOutlined />} />
                 <Statistic className='Statistic-Item' title='Lợi nhuận' value={`${numberWithCommas(moneyFromFee * 1000)} vnđ`} prefix={<MoneyCollectOutlined />} />
-
               </div>
             </>
           )
