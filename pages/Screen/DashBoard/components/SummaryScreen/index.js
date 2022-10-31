@@ -74,8 +74,7 @@ class SummaryScreen extends React.PureComponent {
 
     this.setState({
       fromDateMoment: date[0],
-      toDateMoment: date[1],
-      isLoadingSummary: true
+      toDateMoment: date[1]
     })
   }
 
