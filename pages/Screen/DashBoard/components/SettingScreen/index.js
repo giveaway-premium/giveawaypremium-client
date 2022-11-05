@@ -2,7 +2,7 @@
 import React, { useContext, useState, useEffect, useRef } from 'react'
 import { withRouter } from 'next/router'
 import { connect } from 'react-redux'
-import { Form, Row, Col, Layout, Input, Button, Spin, Descriptions, Tabs, Table } from 'antd'
+import { Form, Row, Col, Layout, Input, Button, Spin, Descriptions, Tabs, Table, Switch } from 'antd'
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
 import { showNotification } from 'common/function'
@@ -13,12 +13,18 @@ import './style.scss'
 import Lottie from 'react-lottie'
 import GapService from 'controller/Api/Services/Gap'
 import ConfigConsignmentId from './Components/ConfigConsignmentId'
+import BookingSetting from './Components/BookingSetting'
+import MonitorList from './Components/MonitorList'
 
 const SettingScreen = (props) => {
   return (
     <div className='settingScreen-container'>
       <span className='title-setting'>Mã ký gửi</span>
       <ConfigConsignmentId />
+      <span className='title-setting'>Đặt Lịch</span>
+      <BookingSetting />
+      <span className='title-setting'>Monitor</span>
+      <MonitorList />
     </div>
   )
 }

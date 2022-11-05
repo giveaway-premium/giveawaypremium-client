@@ -141,7 +141,7 @@
       }
     }
     .txt-big-intro {
-      font-size: 4.5vw;
+      font-size: 52px;
       line-height: 60px;
       font-weight: 600;
       white-space: pre-line;
@@ -185,6 +185,10 @@
         width: 100%;
         justify-content: space-between;
         align-items: center;
+        @media screen and (min-width: 1440px) {
+          max-width: 1000px;       
+        }
+      
 
         .info-fee-box-left {
           padding: 0 0 0 0;

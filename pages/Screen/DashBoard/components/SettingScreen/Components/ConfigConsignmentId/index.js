@@ -138,7 +138,6 @@ class ConfigConsignmentId extends React.Component {
   onChangeTimeGetMoney = (value) => {
     try {
       const formatTime = moment(value).format()
-
       this.setState({
         timeGetMoney: formatTime
       }, () => {
@@ -186,7 +185,7 @@ class ConfigConsignmentId extends React.Component {
             <br />
             <p className='MT10'>Đến: </p>
             <br />
-            <DatePicker disabled placeholder='DD-MM-YYYY' format='DD-MM-YYYY' value={moment(timeGetMoney, 'DD-MM-YYYY').add(10, 'days')} defaultValue={moment()} style={{ width: 200, height: 40, maxWidth: '50%' }} />
+            <DatePicker disabled placeholder='DD-MM-YYYY' format='DD-MM-YYYY' value={moment(timeGetMoney).add(10, 'days')} defaultValue={moment()} style={{ width: 200, height: 40, maxWidth: '50%' }} />
           </Input.Group>
           <Button onClick={this.handleInputConfirm} className='MT20'>Thêm</Button>
         </>

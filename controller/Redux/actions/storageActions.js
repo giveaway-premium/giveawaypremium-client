@@ -26,10 +26,42 @@ export default class StorageActions {
     }
   }
 
+  static setIPHASH (payload) {
+    saveDataLocal(KEY_STORE.SET_IP_HASH, payload)
+    return {
+      type: KEY_STORE.SET_IP_HASH,
+      payload
+    }
+  }
+
+  static setChannelMonitor (payload) {
+    saveDataLocal(KEY_STORE.SET_CHANNEL_MONITOR, payload)
+    return {
+      type: KEY_STORE.SET_CHANNEL_MONITOR,
+      payload
+    }
+  }
+
+  static setTempConsignment (payload) {
+    saveDataLocal(KEY_STORE.SET_TEMP_CONSIGNMENT, payload)
+    return {
+      type: KEY_STORE.SET_TEMP_CONSIGNMENT,
+      payload
+    }
+  }
+
   static setSetting (payload) {
     saveDataLocal(KEY_STORE.SET_SETTING, payload)
     return {
       type: KEY_STORE.SET_SETTING,
+      payload
+    }
+  }
+
+  static setAddressInfoArray (payload) {
+    saveDataLocal(KEY_STORE.SET_ADDRESS_INFO_ARRAY, payload)
+    return {
+      type: KEY_STORE.SET_ADDRESS_INFO_ARRAY,
       payload
     }
   }

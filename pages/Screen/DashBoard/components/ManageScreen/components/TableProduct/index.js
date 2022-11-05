@@ -6,7 +6,7 @@ import { Form, Row, Col, Layout, Input, Button, Badge, Spin, Descriptions, Tabs,
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
 import { showNotification, numberWithCommas } from 'common/function'
-import { LeftCircleTwoTone, LoadingOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons'
+import { DeleteFilled, LeftCircleTwoTone, LoadingOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons'
 import { Router } from 'common/routes'
 import { isMobile } from 'react-device-detect'
 import './style.scss'
@@ -115,12 +115,15 @@ class TableProductScreen extends React.PureComponent {
         title: 'Code SP',
         dataIndex: 'code',
         key: 'code',
-        width: 150
+        width: 150,
+        ...this.getColumnSearchKeyProps('code')
       },
       {
         title: 'Tên SP',
         dataIndex: 'name',
-        key: 'name'
+        key: 'name',
+        width: 150,
+        ...this.getColumnSearchKeyProps('name')
       },
       {
         title: 'Giá',
@@ -149,13 +152,15 @@ class TableProductScreen extends React.PureComponent {
         width: 100,
         dataIndex: 'soldNumberProduct',
         key: 'soldNumberProduct'
+        // ...this.getColumnSearchKeyProps('soldNumberProduct')
         // editable: true
       },
       {
         title: 'Còn lại',
         width: 100,
         dataIndex: 'remainNumberProduct',
-        key: 'remainNumberProduct'
+        key: 'remainNumberProduct',
+        ...this.getColumnSearchKeyProps('remainNumberProduct')
       },
       {
         title: 'Tổng tiền sau phí',
@@ -185,6 +190,7 @@ class TableProductScreen extends React.PureComponent {
       total: 0,
       page: 1,
       searchText: '',
+      selectedKeys: {},
       searchedColumn: '',
       tabKey: '1',
       isLoadingTags: false,
@@ -193,7 +199,8 @@ class TableProductScreen extends React.PureComponent {
       currentTag: '',
       mediaImage: [],
       imageUrl: false,
-      isUploading: false
+      isUploading: false,
+      currentPagination: 1
     }
     this.myModal = React.createRef()
   }
@@ -472,6 +479,117 @@ class TableProductScreen extends React.PureComponent {
     return file
   }
 
+  setSelectedKeys = (value, keyColumn) => {
+    console.log(value)
+    console.log(keyColumn)
+    this.setState({
+      selectedKeys: {
+        ...this.state.selectedKeys,
+        [keyColumn]: value
+      } || {}
+    })
+  }
+
+  handleSearch = (confirm) => {
+    const { selectedKeys } = this.state
+    console.log('handleSearch')
+    console.log(selectedKeys)
+    this.fetchTableData(1)
+    confirm()
+  };
+
+  handleReset = (clearFilters, keyColumn) => {
+    const { selectedKeys } = this.state
+    const selectedKeysTemp = { ...selectedKeys }
+    if (selectedKeysTemp && selectedKeysTemp[keyColumn]) {
+      delete selectedKeysTemp[keyColumn]
+      console.log('selectedKeysTemp')
+      console.log(selectedKeysTemp)
+      this.setState({ selectedKeys: selectedKeysTemp }, () => {
+        this.fetchTableData(1)
+        clearFilters()
+      })
+    }
+  };
+
+  getColumnSearchKeyProps = keyColumn => ({
+    filterDropdown: ({ confirm, clearFilters }) => (
+      <div style={{ padding: 10 }}>
+        <Input
+          autoFocus
+          ref={node => {
+            this.searchInput = node
+          }}
+          placeholder={this.convertDataIndexToName}
+          value={this.state.selectedKeys[keyColumn]}
+          onChange={e => this.setSelectedKeys(e.target.value ? e.target.value : [], keyColumn)}
+          onPressEnter={() => this.handleSearch(confirm)}
+          style={{ width: '100%', marginBottom: 8, display: 'block' }}
+        />
+        {/* <Space> */}
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <Button
+            type='primary'
+            onClick={() => this.handleSearch(confirm)}
+            icon={<SearchOutlined />}
+            size='small'
+            style={{ width: '100%', marginBottom: '10px', marginTop: '10px' }}
+          >
+            Tìm kiếm
+          </Button>
+          <Button
+            type='primary'
+            onClick={() => this.handleReset(clearFilters, keyColumn)}
+            icon={<DeleteFilled />}
+            size='small'
+            style={{ width: '100%' }}
+          >
+          Xoá
+          </Button>
+        </div>
+        {/* <Button
+          type='link'
+          size='small'
+          onClick={() => {
+            confirm({ closeDropdown: false })
+            this.setState({
+              searchText: selectedKeys[0],
+              searchedColumn: dataIndex
+            })
+          }}
+        >
+            Filter
+        </Button> */}
+        {/* </Space> */}
+      </div>
+    ),
+    filterIcon: filter => <SearchOutlined
+      style={{ color:
+        (this.state.selectedKeys?.name?.length > 0 && keyColumn === 'name') ||
+        (this.state.selectedKeys?.code?.length > 0 && keyColumn === 'code') ||
+        (this.state.selectedKeys?.soldNumberProduct?.length > 0 && keyColumn === 'soldNumberProduct') ||
+        (this.state.selectedKeys?.remainNumberProduct?.length > 0 && keyColumn === 'remainNumberProduct')
+          ? '#1890ff' : undefined }}
+    />,
+    // onFilter: (value, record) => record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownVisibleChange: visible => {
+      if (visible) {
+        setTimeout(() => this.searchInput.select(), 100)
+      }
+    }
+    // render: text =>
+    //   this.state.searchedColumn === dataIndex ? (
+    //     <Highlighter
+    //       highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+    //       searchWords={[this.state.searchText]}
+    //       autoEscape
+    //       textToHighlight={text ? text.toString() : ''}
+    //     />
+    //   ) : (
+    //     text
+    //   )
+  });
+
   expandedRowRender = (recordData) => {
     const { isUploading } = this.state
     const components = {
@@ -705,16 +823,20 @@ class TableProductScreen extends React.PureComponent {
   }
 
   fetchTableData = async (page = 1, keyword) => {
-    const { searchText, currentTag } = this.state
+    const { searchText, currentTag, selectedKeys } = this.state
     this.setState({
       isLoadingData: true
     }, async () => {
       let res
 
-      if (!searchText) {
-        res = await GapService.getProduct(page, null, null, currentTag)
+      if (selectedKeys && (
+        selectedKeys.name ||
+        selectedKeys.code ||
+        selectedKeys.soldNumberProduct ||
+        selectedKeys.remainNumberProduct)) {
+        res = await GapService.getProduct(page, selectedKeys, null, currentTag)
       } else {
-        res = await GapService.getProduct(page, searchText, null, currentTag)
+        res = await GapService.getProduct(page, null, null, currentTag)
       }
 
       console.log('res')
@@ -741,7 +863,10 @@ class TableProductScreen extends React.PureComponent {
             moneyBackProduct: Math.round(Number(item.soldNumberProduct || 0) * item.priceAfterFee || 0)
           })
         })
+        console.log(consignmentData)
+
         this.setState({
+          currentPagination: page || 1,
           total: res.count,
           productData: productData,
           isLoadingData: false
@@ -780,22 +905,28 @@ class TableProductScreen extends React.PureComponent {
   };
 
   paginationChange = (page) => {
-    console.log(page)
-    this.fetchTableData(page)
+    this.setState({
+      currentPagination: page || 1
+    }, () => {
+      this.fetchTableData(page)
+    })
   }
 
   onChangeTab = (tabKey) => {
+
     const { allInfoTag } = this.state
     this.setState({
+      // selectedKeys: {},
+      currentPagination: 1,
       currentTag: allInfoTag[tabKey].objectId
     }, () => {
-      this.fetchTableData()
+      this.fetchTableData(1)
     })
   }
 
   render () {
     const { userData } = this.props
-    const { isLoadingData, productData, total, isLoadingTags, tags, allInfoTag } = this.state
+    const { isLoadingData, consignmentData, total, isLoadingTags, tags, allInfoTag, currentPagination, productData } = this.state
 
     const components = {
       body: {
@@ -838,11 +969,12 @@ class TableProductScreen extends React.PureComponent {
           bordered
           expandable={{ expandedRowRender: (record) => this.expandedRowRender(record) }}
           pagination={{
+            current: currentPagination,
             total: total,
             pageSize: 100,
             onChange: this.paginationChange
           }}
-          scroll={{ x: 1500, y: '55vh' }}
+          scroll={{ x: 1500, y: '70vh' }}
         />
         <MyModal ref={this.myModal} />
       </div>

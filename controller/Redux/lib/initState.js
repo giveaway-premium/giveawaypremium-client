@@ -1,4 +1,6 @@
 var initState = {
+  string: '',
+  object: {},
   lang: 'en',
   userData: null,
   connectionMethod: null,
@@ -8,6 +10,7 @@ var initState = {
   isloading: true,
   setting: {},
   transferData: {},
+  array: [],
   network: 1,
   tokens: [],
   gasPrice: {},

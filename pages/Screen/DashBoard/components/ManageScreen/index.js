@@ -15,6 +15,7 @@ import TableConsignemntScreen from './components/TableConsignemntScreen'
 import TableCustomer from './components/TableCustomer'
 import TableAppointment from './components/TableAppointment'
 import TableProductScreen from './components/TableProduct'
+import TableOrder from './components/TableOrder'
 const { TabPane } = Tabs
 
 class ManageScreen extends React.PureComponent {
@@ -68,7 +69,9 @@ class ManageScreen extends React.PureComponent {
             <TableProductScreen />
           </TabPane>
           <TabPane tab='Chiến dịch' key='3' />
-          <TabPane tab='Đơn hàng' key='4' />
+          <TabPane tab='Đơn hàng' key='4'>
+            <TableOrder />
+          </TabPane>
 
           <TabPane tab='Khách hàng' key='5'>
             <TableCustomer />

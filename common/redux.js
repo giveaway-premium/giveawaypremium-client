@@ -93,6 +93,18 @@ export default class ReduxServices {
     }
   }
 
+  static getUserData () {
+    const { userData } = storeRedux.getState()
+
+    return userData
+  }
+
+  static getIpHash () {
+    const { IPHASHData } = storeRedux.getState()
+
+    return IPHASHData
+  }
+
   static setUserToken (result) {
     const { userData } = storeRedux.getState()
 
@@ -101,8 +113,47 @@ export default class ReduxServices {
     }
   }
 
+  static setTempConsignment (result) {
+    ReduxServices.callDispatchAction(StorageActions.setTempConsignment(result))
+  }
+
   static deleteUserToken () {
     ReduxServices.callDispatchAction(StorageActions.setUserData({}))
+  }
+
+  static getSettingWithKey (key, defaultValue = '') {
+    const { settingRedux } = storeRedux.getState()
+    console.log('settingRedux')
+    console.log(settingRedux)
+    console.log(settingRedux[key])
+    // console.log(settingRedux[key])
+
+    if (settingRedux && settingRedux[key] && (settingRedux[key] === true || settingRedux[key] === false || settingRedux[key].length > 0)) {
+      if (settingRedux[key] === 'true') {
+        return true
+      } else if (settingRedux[key] === 'false') {
+        return false
+      } else {
+        return settingRedux[key]
+      }
+    } else {
+      return defaultValue
+    }
+  }
+
+  static async getSetting () {
+    const res = await GapService.getSetting()
+
+    console.log('getSetting')
+    console.log(res)
+    // console.log(res.results[0].Setting)
+
+    if (res && res.results && res.results[0] && res.results[0].Setting) {
+      ReduxServices.callDispatchAction(StorageActions.setSetting(res.results[0].Setting))
+      return res.results[0].Setting
+    } else {
+      return {}
+    }
   }
 
   static async getCategory () {
@@ -124,6 +175,54 @@ export default class ReduxServices {
 
     if (res && res.results) {
       ReduxServices.callDispatchAction(StorageActions.setCategory(res.results))
+    }
+  }
+
+  static async getUnitAddress () {
+    const { userData } = storeRedux.getState()
+    console.log('userData', userData)
+    console.log('userData check token', userData && userData.token)
+
+    if (userData && userData.token) {
+      const res = await GapService.getUnitAddress()
+      console.log('resssssss', res.result)
+      if (res && res.result && res.result.length > 0) {
+        ReduxServices.callDispatchAction(StorageActions.setAddressInfoArray(res.result))
+      }
+    }
+  }
+
+  static async checkIpHash () {
+    const { IPHASHData, userData } = storeRedux.getState()
+
+    try {
+      if (IPHASHData && IPHASHData.hash && IPHASHData.objectId) {
+        // do nothing
+        // console.log('res exist')
+        // console.log(IPHASHData)
+        // ReduxServices.callDispatchAction(StorageActions.setIPHASH({}))
+      } else {
+        let hash = 'giveaway'
+        let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+
+        for (let i = 0; i < 50; i++) { hash += possible.charAt(Math.floor(Math.random() * possible.length)) }
+        const formData = {
+          HashIP: hash
+        }
+        if (userData) {
+          formData.userData = userData
+        }
+
+        const res = await GapService.setIPHASH(formData)
+
+        if (res && res.objectId) {
+          ReduxServices.callDispatchAction(StorageActions.setIPHASH({ objectId: res.objectId, hash: hash }))
+        } else {
+          ReduxServices.callDispatchAction(StorageActions.setIPHASH({ objectId: null, hash: hash }))
+        }
+      }
+    } catch (e) {
+      //
     }
   }
 

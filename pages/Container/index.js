@@ -3,8 +3,11 @@ import ReduxServices from 'common/redux'
 import { connect } from 'react-redux'
 import { Detector } from 'common/components/InternetDetect'
 import { Layout, Row, Col } from 'antd'
+import { isMobile } from 'react-device-detect'
 import Header from './Header'
+import innerHeight from 'ios-inner-height'
 import './style.scss'
+import { withRouter } from 'next/router'
 const { Content } = Layout
 
 class BaseContainer extends PureComponent {
@@ -37,23 +40,21 @@ class BaseContainer extends PureComponent {
     }, 1000)
   }
   render () {
-    console.log(this.props)
-
+    const isFullScreen = this.props.router.asPath === '/admin'
     return (
-      <Layout className='main-base-container'>
+      <div className='main-base-container'>
         <div id='parallax' />
         <Header />
-        <Layout className='layout-container'>
-          <Content className='base-content'>
-            <Row type='flex' justify='center'>
+        <div className='contentLayout' style={isFullScreen ? { maxWidth: '100%', minHeight: isMobile && innerHeight } : { minHeight: isMobile && innerHeight }}>
+          {this.props.children}
+        </div>
+        {/* <Row type='flex' justify='center'>
               <Col span={24}>
                 <div className='base-container'>{this.props.children}</div>
               </Col>
-            </Row>
-          </Content>
-        </Layout>
+            </Row> */}
         {/* <Footer /> */}
-      </Layout>
+      </div>
     )
   }
 }
@@ -62,4 +63,4 @@ const mapStateToProps = (state) => ({
   locale: state.locale
 })
 
-export default connect(mapStateToProps)(BaseContainer)
+export default withRouter(connect(mapStateToProps)(BaseContainer))

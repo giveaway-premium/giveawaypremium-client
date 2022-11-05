@@ -29,6 +29,7 @@ import { images } from 'config/images'
 import { Router } from 'common/routes'
 // import NProgress from 'nprogress'
 import homeLoadingJson from 'static/Assets/Image/Lottie/homeLoadingBar.json'
+import GapService from 'controller/Api/Services/Gap'
 
 addLocaleData([...intlEN, ...intlJA, ...intlCN])
 class GiveAway extends App {
@@ -60,9 +61,12 @@ class GiveAway extends App {
         { key: KEY_STORE.SET_LOCALE, action: storageActions.setLocale, init: init.lang },
         { key: KEY_STORE.SET_CONNECTION_METHOD, action: storageActions.setConnectionMethod, init: init.connectionMethod },
         { key: KEY_STORE.SET_USER, action: storageActions.setUserData, init: init.userData },
+        { key: KEY_STORE.SET_IP_HASH, action: storageActions.setIPHASH, init: init.userData },
+        { key: KEY_STORE.SET_CHANNEL_MONITOR, action: storageActions.setChannelMonitor, init: init.object },
         { key: KEY_STORE.SET_TRANSFER_DATA, action: storageActions.setTransferData, init: init.transferData },
         { key: KEY_STORE.SET_SETTING, action: storageActions.setSetting, init: init.setting },
-        { key: KEY_STORE.SET_CATEGORY, action: storageActions.setCategory, init: init.category }
+        { key: KEY_STORE.SET_CATEGORY, action: storageActions.setCategory, init: init.category },
+        { key: KEY_STORE.SET_TEMP_CONSIGNMENT, action: storageActions.setTempConsignment, init: init.object }
       ]
 
       const promiseArr = storageRedux.map((item) => {
@@ -71,8 +75,20 @@ class GiveAway extends App {
       await Promise.all(promiseArr)
 
       const initDataPromiseArr = [
-        ReduxServices.getCategory()
+        ReduxServices.getCategory(),
+        ReduxServices.getSetting(),
+        ReduxServices.checkIpHash(),
+        ReduxServices.getUnitAddress()
       ]
+
+      const IPhash = getDataLocal(KEY_STORE.SET_IP_HASH)
+      const usesr = getDataLocal(KEY_STORE.SET_USER)
+
+      console.log('usesr')
+      console.log(usesr)
+      console.log(IPhash)
+
+      // GapService.deleteSettingWithKey('alo')
 
       if (getDataLocal(KEY_STORE.SET_CATEGORY)) {
         // data is already in local store, don't need to wait for get init data

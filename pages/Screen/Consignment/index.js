@@ -48,6 +48,7 @@ class ConsignmentScreen extends React.PureComponent {
   }
 
   onHandleOpenContent = (formName) => {
+    ReduxServices.getSetting()
     this.setState({
       isShowText1: false,
       isShowText2: false,
@@ -99,6 +100,34 @@ class ConsignmentScreen extends React.PureComponent {
     })
   }
 
+  renderStringCodeBox = () => {
+    const onContinue = () => {
+      window.open('https://zalo.me/1278273211257849348', '_blank')
+    }
+
+    return (
+      <div>
+        <p className='text text-title MB10'>Hướng dẫn ký gửi</p>
+        <p className='text'>Sau khi truy cập Zalo, vui lòng nhấn Quan tâm/Follow để GAP có thể ghi nhận thông tin ký gửi từ anh/chị nhé!</p>
+        <img className='MR10 cursor-pointer MB10 MT10' src={images.kyguiZalo} style={{ objectFit: 'contain', height: '100%', width: '100%' }} />
+
+        <Button className='MT10' onClick={onContinue}>Tiếp tục</Button>
+
+        {/* <p className='text text-title MB10 MT20'>Thông báo tạm ngưng dịch vụ ký gửi online</p>
+        <p className='text'>Xin chào Quý Khách, GAP rất tiếc xin thông báo rằng số lượng đơn ký gửi online đang trong tình trạng quá tải, GAP xin phép tạm ngưng dịch vụ ký gửi online từ ngày 21/10/2022 đến ngày 24/10/2022</p>
+        <p className='text'>Chân thành xin lỗi Quý Khách vì sự bất tiện này.</p> */}
+
+        {/* <img className='MR10 cursor-pointer MB10 MT10' src={images.kyguiZalo} style={{ objectFit: 'contain', height: '100%', width: '100%' }} />
+
+        <Button className='MT10' onClick={onContinue}>Tiếp tục</Button> */}
+      </div>
+    )
+  }
+
+  onIntrucmentConsignZalo = () => {
+    this.myModal.current.openModal(this.renderStringCodeBox(), { closable: true })
+  }
+
   // closeModal = () => {
   //   this.myModal.current.closeModal()
   // }
@@ -109,6 +138,7 @@ class ConsignmentScreen extends React.PureComponent {
       <div className='consignment-home-container'>
         <div className='body-box' style={!isShowText && isShowForm ? { position: 'absolute', width: 0 } : {}}>
           <span onClick={() => this.onHandleOpenContent('consignment')} className={'text consignment-txt' + (isShowText1 ? ' show' : '')} >Đặt Lịch</span>
+          <a onClick={this.onIntrucmentConsignZalo} className={'text info-search-txt' + (isShowText2 ? ' show' : '')}>Ký Gửi Online</a>
           <span onClick={() => this.onHandleOpenContent('search')} className={'text info-search-txt' + (isShowText2 ? ' show' : '')}>Xem Tổng Kết</span>
           <span onClick={() => this.onHandleOpenContent('instrument')} className={'text instrument-txt' + (isShowText3 ? ' show' : '')}>Phương Thức Ký Gửi</span>
         </div>

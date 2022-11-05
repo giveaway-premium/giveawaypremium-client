@@ -4,8 +4,8 @@ import { connect } from 'react-redux'
 import { Form, Row, Col, Input, Button, Descriptions, Divider, DatePicker, Select, Checkbox } from 'antd'
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
-import { numberWithCommas, showNotification, generateIdMix } from 'common/function'
-import { LoadingOutlined, CheckCircleFilled, PlusCircleFilled, PlusOneTwoTone, PlusOutlined, CloseOutlined } from '@ant-design/icons'
+import { numberWithCommas, showNotification, generateIdMix, toLowerCaseNonAccentVietnamese, debounce } from 'common/function'
+import { LoadingOutlined, CheckCircleFilled, PlusCircleFilled, PlusOneTwoTone, PlusOutlined, CloseOutlined, DollarCircleOutlined, ConsoleSqlOutlined } from '@ant-design/icons'
 import { Router } from 'common/routes'
 import { isMobile } from 'react-device-detect'
 import './style.scss'
@@ -14,11 +14,13 @@ import GapService from 'controller/Api/Services/Gap'
 import moment from 'moment'
 import successJson from 'static/Assets/Image/Lottie/success.json'
 import { EMAIL_TITLE, EMAIL_TYPE } from 'common/constants'
+import ReduxServices from 'common/redux'
 
 const { TextArea } = Input
 const { Option } = Select
 
 const dateFormat = 'DD-MM-YYYY'
+var intervalId = null
 class Consignment extends React.PureComponent {
   constructor (props) {
     super(props)
@@ -29,7 +31,7 @@ class Consignment extends React.PureComponent {
         {
           hashCode: generateIdMix(),
           code: '',
-          productId: '',
+          productId: 0,
           price: '',
           count: 1,
           remainNumberProduct: 1,
@@ -37,17 +39,9 @@ class Consignment extends React.PureComponent {
           totalPriceAfterFee: '',
           categoryId: '',
           subCategoryId: '',
-          inventory: {
-            'remain': 1,
-            'shipping': 0,
-            'damaged': 0,
-            'holding': 1,
-            'available': 1,
-            'warranty': 0,
-            'warrantyHolding': 0,
-            'depots': []
-          },
-          note: '---'
+          note: '---',
+          isNew: 'false',
+          rateNew: 100
         }
       ],
       formData: {
@@ -56,12 +50,12 @@ class Consignment extends React.PureComponent {
         phoneNumber: '',
         consignerIdCard: '',
         mail: '',
-        birthday: moment().format('DD-MM-YYYY'),
+        birthday: '',
         bankName: '',
         bankId: '',
         numberOfProducts: 1,
         consignmentId: '',
-        timeGetMoney: moment().format('DD-MM-YYYY'),
+        timeGetMoney: '',
         numberOfConsignmentTime: 0,
         numberOfConsignment: 0
       },
@@ -69,23 +63,26 @@ class Consignment extends React.PureComponent {
       totalMoney: 0,
       isLoadingTags: false,
       objectIdFoundUser: '',
-      birthday: moment().format('DD-MM-YYYY'),
+      birthday: '',
       isConsigning: false,
       isShowConfirmForm: false,
       isFoundUser: false,
       isLoadingUser: false,
       categoryList: [],
       timeGroupId: '',
-      timeGroupCode: ''
+      timeGroupCode: '',
+      onlineCodeStringInput: '',
+      isErrorFormat: false
     }
     this.formRef = React.createRef()
     this.myModal = React.createRef()
   }
 
   componentDidMount () {
-    const { categoryRedux } = this.props
-    console.log('categoryRedux')
-    console.log(categoryRedux)
+    const { categoryRedux, channelMonitorRedux, tempConsignmentRedux } = this.props
+    if (tempConsignmentRedux) {
+      this.setState(tempConsignmentRedux)
+    }
     let categoryList = []
     if (categoryRedux) {
       categoryRedux.map((item, indexItem) => {
@@ -101,13 +98,31 @@ class Consignment extends React.PureComponent {
       categoryList: categoryList
     })
 
-    console.log(categoryList)
-
     this.fetchAllTags()
+
+    if (channelMonitorRedux && channelMonitorRedux.objectId) {
+      intervalId = setInterval(async () => {
+        const body = {
+          data: this.state
+        }
+        const res = await GapService.updateChannel(body, channelMonitorRedux.objectId)
+        console.log('changeData and update channel')
+        console.log(res)
+      }, 2000)
+    }
   }
 
   componentDidUpdate () {
 
+  }
+
+  componentWillUnmount () {
+    clearInterval(intervalId)
+    Router.events.off('routeChangeComplete', this.handleRouteChange)
+  }
+
+  handleRouteChange = () => {
+    clearInterval(intervalId)
   }
 
   //
@@ -131,7 +146,7 @@ class Consignment extends React.PureComponent {
     })
   }
 
-  onConsign = () => {
+  onConsign = async () => {
     const { userData } = this.props
     const {
       isFoundUser, objectIdFoundUser, formData,
@@ -169,14 +184,17 @@ class Consignment extends React.PureComponent {
           isError = true
           showNotification(`Chưa nhập tên sản phẩm số  ${indexItem + 1}`)
         }
-  
+
         if ((Number(item.price) > 0 || item.price.length > 0) && Number(item.count) > 0 && !item.isDeleted) {
           productId += 1
           productCount += Number(item.count)
           productListTemp.push({
             ...item,
+            isNew: item.isNew || 'true',
             code: formData.consignmentId + '-' + timeGroupCode + '-' + productId,
-            key: indexItem
+            key: indexItem,
+            productId: productId,
+            rateNew: item.isNew === 'true' ? 100 : 99
           })
         }
       }
@@ -193,6 +211,19 @@ class Consignment extends React.PureComponent {
     } else if (!timeGroupId || timeGroupId.length === 0) {
       showNotification('Nhập thời gian tổng kết')
       return
+    } else if (formData && (formData.phoneNumber.length === 0 || formData.phoneNumber.length < 10)) {
+      showNotification('Nhập số điện thoại')
+      return
+    } else if (formData && (!formData.consignmentId || formData.consignmentId.length === 0)) {
+      showNotification('Nhập số mã ký gửi')
+      return
+    }
+    const resConsignment = await GapService.getConsignment(1, null, null, this.state.timeGroupId)
+    console.log('resConsignment 1')
+    console.log(resConsignment)
+    let newConsignmentId
+    if (resConsignment && resConsignment.count) {
+      newConsignmentId = `${resConsignment.count + 1}`
     }
 
     console.log(userData)
@@ -201,13 +232,19 @@ class Consignment extends React.PureComponent {
       productList: productListTemp,
       formData: {
         ...formData,
-        numberOfProducts: productCount
+        numberOfProducts: productCount,
+        consignmentId: newConsignmentId || this.state.formData.consignmentId
       }
     }, async () => {
       console.log('onConsign')
       console.log(formData)
       console.log(this.state)
-      if (isFoundUser && objectIdFoundUser) { // for already user
+
+      const resUSer = await GapService.getCustomer(formData.phoneNumber)
+      console.log('fetchUserByPhoneNumber finish')
+      console.log(resUSer)
+      // if (res && res.results && res.results[0]) {
+      if (resUSer && resUSer.results && resUSer.results[0]) { // for already user
         console.log('for already user')
         const result = await GapService.setConsignment(formData, userData.objectId, objectIdFoundUser, timeGroupId, timeGroupCode, productListTemp, moneyBackForFullSold, totalMoney, isTransferMoneyWithBank)
         console.log(result)
@@ -216,13 +253,14 @@ class Consignment extends React.PureComponent {
             isShowConfirmForm: true,
             isConsigning: false
           }, async () => {
+            ReduxServices.setTempConsignment(null)
             const customerFormData = {
               consignerName: formData.consignerName,
               phoneNumber: formData.phoneNumber,
               consignerIdCard: formData.consignerIdCard,
               mail: formData.mail,
               email: formData.mail || 'nothing@giveaway.com',
-              birthday: formData.birthday,
+              birthday: formData.birthday && formData.birthday.length > 0 && formData.birthday !== 'Invalid date' ? formData.birthday : '',
               bankName: formData.bankName,
               bankId: formData.bankId
             }
@@ -230,7 +268,7 @@ class Consignment extends React.PureComponent {
             console.log(customerFormData)
             console.log(objectIdFoundUser)
 
-            formData.mail && formData.mail.length > 0 && GapService.sendMail(customerFormData, formData, EMAIL_TYPE.CONSIGNMENT, EMAIL_TITLE.CONSIGNMENT, timeGroupCode)
+            formData.mail && formData.mail.length > 0 && GapService.sendMail(customerFormData, formData, EMAIL_TYPE.CONSIGNMENT, EMAIL_TITLE.CONSIGNMENT, timeGroupCode, productListTemp)
             GapService.updateCustomer(customerFormData, objectIdFoundUser)
           })
         } else {
@@ -251,7 +289,7 @@ class Consignment extends React.PureComponent {
           // email: formData.mail || 'nothing@giveaway.com',
           username: formData.phoneNumber,
           password: formData.consignerIdCard,
-          birthday: formData.birthday,
+          birthday: formData.birthday && formData.birthday.length > 0 && formData.birthday !== 'Invalid date' ? formData.birthday : '',
           bankName: formData.bankName,
           bankId: formData.bankId
         }
@@ -271,7 +309,8 @@ class Consignment extends React.PureComponent {
               isShowConfirmForm: true,
               isConsigning: false
             })
-            GapService.sendMail(customerFormData, formData, EMAIL_TYPE.CONSIGNMENT, EMAIL_TITLE.CONSIGNMENT, timeGroupCode)
+            ReduxServices.setTempConsignment(null)
+            GapService.sendMail(customerFormData, formData, EMAIL_TYPE.CONSIGNMENT, EMAIL_TITLE.CONSIGNMENT, timeGroupCode, productListTemp)
           } else {
             // this.onRefeshAll()
             this.setState({
@@ -344,13 +383,13 @@ class Consignment extends React.PureComponent {
           phoneNumber: phoneKey.target.value,
           consignerIdCard: '',
           mail: '',
-          birthday: moment().format('DD-MM-YYYY'),
+          birthday: '',
           bankName: '',
           bankId: '',
           consignmentId: ''
         },
         objectIdFoundUser: '',
-        birthday: moment().format('DD-MM-YYYY'),
+        birthday: '',
         isShowConfirmForm: false,
         isFoundUser: false
       })
@@ -363,13 +402,13 @@ class Consignment extends React.PureComponent {
           phoneNumber: phoneKey.target.value,
           consignerIdCard: '',
           mail: '',
-          birthday: moment().format('DD-MM-YYYY'),
+          birthday: '',
           bankName: '',
           bankId: '',
           consignmentId: ''
         },
         objectIdFoundUser: '',
-        birthday: moment().format('DD-MM-YYYY'),
+        birthday: '',
         isShowConfirmForm: false,
         isFoundUser: false
       })
@@ -377,8 +416,30 @@ class Consignment extends React.PureComponent {
     }
   }
 
-  onRefeshAll = () => {
-    const { formData } = this.state
+  onUpdateMobitorData = async () => {
+    const { channelMonitorRedux } = this.props
+    const body = {
+      data: this.state
+    }
+    const res = await GapService.updateChannel(body, channelMonitorRedux.objectId)
+    console.log('changeData and update channel')
+    console.log(res)
+  }
+
+  onRefeshAll = async (isSetTempConsignment = false) => {
+    const { timeGroupId } = this.state
+    console.log('onRefeshAll', isSetTempConsignment)
+    let consignmentId = ''
+    if (isSetTempConsignment) {
+      // if (timeGroupId) {
+      //   const resConsignment = await GapService.getConsignment(1, null, null, timeGroupId)
+
+      //   if (resConsignment && resConsignment.count) {
+      //     consignmentId = `${resConsignment.count}`
+      //   }
+      // }
+      ReduxServices.setTempConsignment(null)
+    }
     this.setState({
       isTransferMoneyWithBank: 'false',
       productList: [
@@ -393,17 +454,9 @@ class Consignment extends React.PureComponent {
           totalPriceAfterFee: '',
           categoryId: '',
           subCategoryId: '',
-          inventory: {
-            'remain': 1,
-            'shipping': 0,
-            'damaged': 0,
-            'holding': 1,
-            'available': 1,
-            'warranty': 0,
-            'warrantyHolding': 0,
-            'depots': []
-          },
-          note: '---'
+          note: '---',
+          isNew: 'false',
+          rateNew: 100
         }
       ],
       formData: {
@@ -412,12 +465,12 @@ class Consignment extends React.PureComponent {
         phoneNumber: '',
         consignerIdCard: '',
         mail: '',
-        birthday: moment(),
+        birthday: '',
         bankName: '',
         bankId: '',
         numberOfProducts: 1,
-        consignmentId: '',
-        timeGetMoney: moment().format('DD-MM-YYYY'),
+        consignmentId: consignmentId,
+        timeGetMoney: '',
         numberOfConsignmentTime: 0,
         numberOfConsignment: 0
       },
@@ -425,19 +478,22 @@ class Consignment extends React.PureComponent {
       totalMoney: 0,
       isLoadingTags: false,
       objectIdFoundUser: '',
-      birthday: moment().format('DD-MM-YYYY'),
+      birthday: '',
       isConsigning: false,
       isShowConfirmForm: false,
       isFoundUser: false,
-      isLoadingUser: false
+      isLoadingUser: false,
+      onlineCodeStringInput: '',
+      isErrorFormat: false,
+      timeGroupId: '',
+      timeGroupCode: ''
     })
   }
 
   onChangeBirthday = (value) => {
     try {
-      const formatTime = moment(value).format('DD-MM-YYYY')
-      console.log(formatTime)
-      console.log(value)
+      // const formatTime = moment(value).format('DD-MM-YYYY')
+      const formatTime = value || ''
 
       this.setState({
         formData: {
@@ -453,7 +509,7 @@ class Consignment extends React.PureComponent {
     }
   }
 
-  changeData = (value) => {
+  changeData = async (value) => {
     console.log(value.target.id)
     const { formData } = this.state
 
@@ -462,25 +518,54 @@ class Consignment extends React.PureComponent {
         ...formData,
         [value.target.id]: value.target.value
       }
-    }, () => console.log(this.state))
+    }, async () => {
+      // const body = {
+      //   data: this.state
+      // }
+      // const res = await GapService.updateChannel(body)
+      // console.log('changeData and update channel')
+      // console.log(res)
+    })
   }
 
-  onChangeTimeGetMoney = (value) => {
+  onChangeTimeGetMoney = async (value) => {
     const { formData, allInfoTag } = this.state
 
-    console.log('onChangeTimeGetMoney')
-    console.log(value)
     const findTag = allInfoTag.filter(tag => tag.code === value)
 
     if (findTag && findTag[0]) {
-      this.setState({
-        formData: {
-          ...formData,
-          timeGetMoney: moment(findTag[0].timeGetMoney).format('DD-MM-YYYY')
-        },
-        timeGroupCode: value,
-        timeGroupId: findTag[0].objectId
-      }, () => {
+      const resConsignment = await GapService.getConsignment(1, null, 1, findTag[0].objectId)
+      console.log('resConsignment')
+      console.log(resConsignment)
+      let newState
+      if (resConsignment && resConsignment.count) {
+        let newConsignmentId = `${resConsignment.count + 1}`
+        console.log('newConsignmentId')
+        console.log(newConsignmentId)
+
+        newState = {
+          formData: {
+            ...formData,
+            timeGetMoney: moment(findTag[0].timeGetMoney).format('DD-MM-YYYY'),
+            consignmentId: newConsignmentId
+          },
+          timeGroupCode: value,
+          timeGroupId: findTag[0].objectId
+        }
+      } else {
+        newState = {
+          formData: {
+            ...formData,
+            timeGetMoney: moment(findTag[0].timeGetMoney).format('DD-MM-YYYY')
+          },
+          timeGroupCode: value,
+          timeGroupId: findTag[0].objectId
+        }
+      }
+      console.log('newState')
+      console.log(newState)
+
+      this.setState(newState, () => {
         console.log(this.state)
       })
     }
@@ -499,8 +584,10 @@ class Consignment extends React.PureComponent {
       let moneyBackForFullSold = 0
       let totalMoney = 0
       productListTemp.map(item => {
-        moneyBackForFullSold += item.count * this.convertPriceAfterFee(Number(item.price)) * 1000
-        totalMoney += item.count * Number(item.price) * 1000
+        if (!item.isDeleted) {
+          moneyBackForFullSold += item.count * this.convertPriceAfterFee(Number(item.price)) * 1000
+          totalMoney += item.count * Number(item.price) * 1000
+        }
       })
 
       this.setState({
@@ -513,24 +600,16 @@ class Consignment extends React.PureComponent {
       productListTemp[indexProduct].remainNumberProduct = Number(value.target.value)
       productListTemp[indexProduct].priceAfterFee = Math.round(Number(this.convertPriceAfterFee(Number(productListTemp[indexProduct].price))))
       productListTemp[indexProduct].totalPriceAfterFee = Math.round(Number(value.target.value * this.convertPriceAfterFee(Number(productListTemp[indexProduct].price))))
-      productListTemp[indexProduct].inventory = {
-        'remain': Number(value.target.value),
-        'shipping': 0,
-        'damaged': 0,
-        'holding': Number(value.target.value),
-        'available': Number(value.target.value),
-        'warranty': 0,
-        'warrantyHolding': 0,
-        'depots': []
-      }
 
       let numberOfProducts = 0
       let moneyBackForFullSold = 0
       let totalMoney = 0
       productListTemp.map(item => {
-        numberOfProducts += Number(item.count)
-        moneyBackForFullSold += item.count * this.convertPriceAfterFee(Number(item.price)) * 1000
-        totalMoney += item.count * Number(item.price) * 1000
+        if (!item.isDeleted) {
+          numberOfProducts += Number(item.count)
+          moneyBackForFullSold += item.count * this.convertPriceAfterFee(Number(item.price)) * 1000
+          totalMoney += item.count * Number(item.price) * 1000
+        }
       })
 
       this.setState({
@@ -566,28 +645,43 @@ class Consignment extends React.PureComponent {
       productList: [
         ...productList,
         {
+          categoryId: '',
+          subCategoryId: '',
           hashCode: generateIdMix(),
           price: '',
           count: 1,
           remainNumberProduct: 1,
           priceAfterFee: '',
-          note: '---'
+          note: '---',
+          productId: productList.length,
+          isNew: 'false',
+          rateNew: 100
         },
         {
+          categoryId: '',
+          subCategoryId: '',
           hashCode: generateIdMix(),
           price: '',
           count: 1,
           remainNumberProduct: 1,
           priceAfterFee: '',
-          note: '---'
+          note: '---',
+          productId: productList.length + 1,
+          isNew: 'false',
+          rateNew: 100
         },
         {
+          categoryId: '',
+          subCategoryId: '',
           hashCode: generateIdMix(),
           price: '',
           count: 1,
           remainNumberProduct: 1,
           priceAfterFee: '',
-          note: '---'
+          note: '---',
+          productId: productList.length + 2,
+          isNew: 'false',
+          rateNew: 100
         }
       ],
       formData: {
@@ -600,26 +694,53 @@ class Consignment extends React.PureComponent {
   onDeleteProductList = async (hashCode) => {
     const { productList, formData, moneyBackForFullSold, totalMoney } = this.state
 
-    let productListTemp = productList.slice()
-    let index
+    let index = null
 
-    await productListTemp.map((item, hashCodeIndex) => {
+    console.log('hashCode')
+    console.log(hashCode)
+
+    productList.map((item, hashCodeIndex) => {
       if (item && item.hashCode === hashCode) {
         index = hashCodeIndex
       }
     })
+    console.log(index)
+    console.log(productList[index])
 
-    console.log('onDeleteProductList')
+    console.log('onDeleteProductList -start')
 
     console.log(index)
-    console.log(productListTemp)
 
+    // if (index >= 0) {
     let moneyBackTemp = moneyBackForFullSold - (this.convertPriceAfterFee(Number(productList[index].price)) * 1000 * Number(productList[index].count))
     let totalMoneyTemp = totalMoney - Number(productList[index].price) * 1000 * Number(productList[index].count)
-    let productNumber = formData.numberOfProducts - productList[index].count
+    let productNumber = Number(formData.numberOfProducts) - Number(productList[index].count)
     // delete productListTemp[index]
-    productListTemp[index].isDeleted = true
+
+    let productListTemp = []
+    let productId = -1
+    productList.map((itemProduct, itemProductIndex) => {
+      if (itemProductIndex !== index) {
+        productId += 1
+        productListTemp.push({
+          ...itemProduct,
+          productId: productId
+        })
+      } else {
+        productListTemp.push({
+          ...itemProduct,
+          productId: 0,
+          isDeleted: true
+        })
+      }
+    })
+
     console.log(productListTemp)
+    console.log(productNumber)
+    console.log(moneyBackTemp)
+    console.log(totalMoneyTemp)
+
+    console.log('onDeleteProductList end')
 
     this.setState({
       moneyBackForFullSold: moneyBackTemp,
@@ -629,7 +750,11 @@ class Consignment extends React.PureComponent {
         ...formData,
         numberOfProducts: productNumber
       }
+    }, () => {
+      console.log('onDeleteProductList end2')
+      console.log(this.state)
     })
+    // }
   }
 
   convertPriceAfterFee = (productPrice = 0) => {
@@ -664,28 +789,66 @@ class Consignment extends React.PureComponent {
     }
   }
 
+  onChangeProductTypeNewOrOld = (value, indexProduct) => {
+    const { productList } = this.state
+
+    let productListTemp = productList.slice()
+    if (value[0] === 'new') {
+      productListTemp[indexProduct].isNew = 'true'
+      productListTemp[indexProduct].rateNew = 100
+    } else {
+      productListTemp[indexProduct].isNew = 'false'
+      productListTemp[indexProduct].rateNew = 99
+    }
+
+    this.setState({
+      productList: productListTemp
+    })
+  }
+
 onChangeCategory = async (valueProp) => {
   const { productList } = this.state
   let productListTemp = productList.slice()
 
-  console.log(valueProp)
+  let filterTxt
 
-  const categorySplitTxt = valueProp.value.split('+')
+  if (valueProp && valueProp.value) {
+    filterTxt = valueProp.value
+  } else if (valueProp && !valueProp.value) {
+    filterTxt = valueProp
+  }
+
+  const categorySplitTxt = filterTxt && filterTxt.split('+')
   let categoryId
   let subCategoryId
   let hashCode
   let indexProduct
+  let defaultCategoryCode
 
   if (categorySplitTxt.length === 3) {
     categoryId = categorySplitTxt[0]
     subCategoryId = categorySplitTxt[1]
     hashCode = categorySplitTxt[2]
+    defaultCategoryCode = {
+      key: categoryId + '+' + subCategoryId + '+' + hashCode,
+      label: valueProp.label,
+      value: categoryId + '+' + subCategoryId + '+' + hashCode
+    }
   } else if (categorySplitTxt.length === 2) {
     // this is also parent category
     categoryId = categorySplitTxt[0]
     hashCode = categorySplitTxt[1]
     subCategoryId = null
+    defaultCategoryCode = {
+      key: categoryId + '+' + hashCode,
+      label: valueProp.label,
+      value: categoryId + '+' + hashCode
+    }
   }
+
+  console.log(categoryId)
+  console.log(hashCode)
+  console.log(subCategoryId)
 
   await productListTemp.map((item, hashCodeIndex) => {
     if (item.hashCode === hashCode) {
@@ -693,8 +856,11 @@ onChangeCategory = async (valueProp) => {
     }
   })
 
+  console.log(indexProduct)
+
   productListTemp[indexProduct].categoryId = categoryId
   productListTemp[indexProduct].subCategoryId = subCategoryId
+  productListTemp[indexProduct].defaultCategoryCode = defaultCategoryCode
 
   console.log('productListTemp')
   console.log(productListTemp)
@@ -702,6 +868,345 @@ onChangeCategory = async (valueProp) => {
   this.setState({
     productList: productListTemp
   })
+}
+
+onOpenInputOnline = () => {
+  this.onRefeshAll()
+  this.myModal.current.openModal(this.renderStringCodeBox(), { closable: true })
+}
+
+onOpenInputOnlineWithError = () => {
+  this.setState({
+    isErrorFormat: true,
+    onlineCodeStringInput: ''
+  }, () => {
+    console.log(this.state)
+    this.myModal.current.openModal(this.renderStringCodeBox(), { closable: true })
+  })
+}
+
+onChangeOnlineInput = (valueTxt) => {
+  console.log('onChangeOnlineInput')
+  console.log(valueTxt.target.value)
+  this.setState({
+    onlineCodeStringInput: valueTxt.target.value
+  })
+}
+
+renderStringCodeBox = () => {
+  const { isErrorFormat } = this.state
+  console.log('isErrorFormat')
+  console.log(isErrorFormat)
+  console.log(this.state)
+
+  return (
+    <div>
+      <p className='text text-title MB10'>Thông tin đơn ký gửi</p>
+      <p className='text'>Tên sản phẩm / giá tiền (k) /tt tình trạng /sl số lượng</p>
+      <p className='text'>Tên sản phẩm / giá tiền (k) /sl số lượng /tt tình trạng</p>
+      <p className='text'>Tên sản phẩm / giá tiền (k) /tt tình trạng</p>
+      <p className='text'>Tên sản phẩm / giá tiền (k) /sl số lượng</p>
+      <p className='text MB10'>Tên sản phẩm / giá tiền (k)</p>
+
+      {isErrorFormat ? <span className='text text-color-6 MB10'>Sai Định dạng</span> : null}
+      <div className='product-item-note MB20'>
+        <TextArea style={{ minHeight: '300px', maxHeight: '50vh' }} onChange={this.onChangeOnlineInput} placeholder='Ghi Chú' id='onlineInput' key='onlineInput' />
+      </div>
+      <Button className='ML10' onClick={this.convertStringToConsignment}>Ok</Button>
+    </div>
+  )
+}
+
+convertStringNameToObjectIdCategory = (stringName = '') => {
+  // const lowerCaseStringCode = toLowerCaseNonAccentVietnamese(stringName)
+  const lowerCaseStringCode = stringName.toLowerCase()
+
+  console.log('lowerCaseStringCode')
+  console.log(lowerCaseStringCode)
+  console.log(lowerCaseStringCode)
+
+  // quần áo
+  if (lowerCaseStringCode.includes('áo') || lowerCaseStringCode.includes('bra')) {
+    return 'ao'
+  } else if (lowerCaseStringCode.includes('đầm')) {
+    return 'dam'
+  } else if (lowerCaseStringCode.includes('quần')) {
+    return 'quan'
+  } else if (lowerCaseStringCode.includes('chân váy') || lowerCaseStringCode.includes('chan váy') || lowerCaseStringCode.includes('cv') || lowerCaseStringCode.includes('cvay') || lowerCaseStringCode.includes('chân vay') || lowerCaseStringCode.includes('váy') || lowerCaseStringCode.includes('vay')) {
+    return 'vay'
+  } else if (lowerCaseStringCode.includes('body') || lowerCaseStringCode.includes('bodysuit') || lowerCaseStringCode.includes('suit') || lowerCaseStringCode.includes('jum') || lowerCaseStringCode.includes('jumsuit')) {
+    return 'set'
+  } else if (lowerCaseStringCode.includes('ao khoác') || lowerCaseStringCode.includes('áo khoác') || lowerCaseStringCode.includes('áo khoac') || lowerCaseStringCode.includes('ao khoac') || lowerCaseStringCode.includes('aokhoac')) {
+    return 'khoac'
+  // eslint-disable-next-line brace-style
+  }
+  // giày dép
+  else if (lowerCaseStringCode.includes('giày') || lowerCaseStringCode.includes('giay') || lowerCaseStringCode.includes('giày thể thao') || lowerCaseStringCode.includes('giay the thao') || lowerCaseStringCode.includes('sneaker') || lowerCaseStringCode.includes('giày the thao') || lowerCaseStringCode.includes('giay thể thao')) {
+    return 'thao'
+  } else if (lowerCaseStringCode.includes('cao gót') || lowerCaseStringCode.includes('cao got') || lowerCaseStringCode.includes('giày cao gót') || lowerCaseStringCode.includes('giay cao gót') || lowerCaseStringCode.includes('giay cao got')) {
+    return 'cao'
+  } else if (lowerCaseStringCode.includes('dép') || lowerCaseStringCode.includes('đôi dép') || lowerCaseStringCode.includes('doi dep ')) {
+    return 'dep'
+  } else if (lowerCaseStringCode.includes('boot')) {
+    return 'boot'
+  } else if (lowerCaseStringCode.includes('sandal')) {
+    return 'sandal'
+    // eslint-disable-next-line brace-style
+  }
+  // Túi Ví
+  else if (lowerCaseStringCode.includes('balo') || lowerCaseStringCode.includes('balô') || lowerCaseStringCode.includes('ba lô')) {
+    return 'balo'
+  } else if (lowerCaseStringCode.includes('túi') || lowerCaseStringCode.includes('chiếc túi')) {
+    return 'tui'
+  } else if (lowerCaseStringCode.includes('clutch')) {
+    return 'clutch'
+  } else if (lowerCaseStringCode.includes('beltbag') || lowerCaseStringCode.includes('belt bag')) {
+    return 'bag'
+  } else if (lowerCaseStringCode.includes('ví')) {
+    return 'vi'
+    // eslint-disable-next-line brace-style
+  }
+  // Phụ kiện
+  else if (lowerCaseStringCode.includes('vòng') || lowerCaseStringCode.includes('vòng tay') || lowerCaseStringCode.includes('vong tay') || lowerCaseStringCode.includes('lắc') || lowerCaseStringCode.includes('cuff')) {
+    return 'vong'
+  } else if (lowerCaseStringCode.includes('hoa tai') || lowerCaseStringCode.includes('bông tai') || lowerCaseStringCode.includes('bong tai')) {
+    return 'tai'
+  } else if (lowerCaseStringCode.includes('nhẫn')) {
+    return 'nhan'
+  } else if (lowerCaseStringCode.includes('dây chuyền') || lowerCaseStringCode.includes('set vòng cổ') || lowerCaseStringCode.includes('day chuyen') || lowerCaseStringCode.includes('vòng cổ')) {
+    return 'chuyen'
+  } else if (lowerCaseStringCode.includes('cài') || lowerCaseStringCode.includes('charm')) {
+    return 'pkhac'
+  } else if (lowerCaseStringCode.includes('đồng hồ') || lowerCaseStringCode.includes('dong ho') || lowerCaseStringCode.includes('đồnghồ') || lowerCaseStringCode.includes('watch') || lowerCaseStringCode.includes('đh') || lowerCaseStringCode.includes('dh')) {
+    return 'ho'
+  } else if (lowerCaseStringCode.includes('mắt kính') || lowerCaseStringCode.includes('kính')) {
+    return 'kinh'
+    // eslint-disable-next-line brace-style
+  }
+  // Mỹ phẩm
+  else if (
+    lowerCaseStringCode.includes('mascara') || lowerCaseStringCode.includes('son') || lowerCaseStringCode.includes('phấn') ||
+    lowerCaseStringCode.includes('phấn má') || lowerCaseStringCode.includes('nền') || lowerCaseStringCode.includes('phấn mắt') ||
+    lowerCaseStringCode.includes('tẩy trang') || lowerCaseStringCode.includes('cọ') || lowerCaseStringCode.includes('set mỹ phẩm') ||
+    lowerCaseStringCode.includes('set mp') || lowerCaseStringCode.includes('mỹ phẩm') || lowerCaseStringCode.includes('mĩ phẩm') ||
+    lowerCaseStringCode.includes('phấn nước') || lowerCaseStringCode.includes('cushion') || lowerCaseStringCode.includes('bút kẻ') ||
+    lowerCaseStringCode.includes('nước cân bằng') || lowerCaseStringCode.includes('tạo khối') || lowerCaseStringCode.includes('phần phủ') ||
+    lowerCaseStringCode.includes('bắt sáng') || lowerCaseStringCode.includes('kem lót') || lowerCaseStringCode.includes('kem nền') ||
+    lowerCaseStringCode.includes('bộ mỹ phẩm') || lowerCaseStringCode.includes('trang điểm') || lowerCaseStringCode.includes('má hồng') ||
+    lowerCaseStringCode.includes('bảng mắt')
+  ) {
+    return 'diem'
+  } else if (
+    lowerCaseStringCode.includes('tonner') || lowerCaseStringCode.includes('toner') || lowerCaseStringCode.includes('kem dưỡng') ||
+    lowerCaseStringCode.includes('dưỡng') || lowerCaseStringCode.includes('dưỡng tóc') || lowerCaseStringCode.includes('sữa rửa mặt') ||
+    lowerCaseStringCode.includes('kem tay') || lowerCaseStringCode.includes('serum') || lowerCaseStringCode.includes('kem chống nắng') ||
+    lowerCaseStringCode.includes('kcn') || lowerCaseStringCode.includes('lotion') || lowerCaseStringCode.includes('mặt nạ') ||
+    lowerCaseStringCode.includes('lăn nách') || lowerCaseStringCode.includes('sữa tắm') || lowerCaseStringCode.includes('gel') ||
+    lowerCaseStringCode.includes('dầu gội') || lowerCaseStringCode.includes('xịt khoáng') || lowerCaseStringCode.includes('dưỡng da') ||
+    lowerCaseStringCode.includes('tinh chất') || lowerCaseStringCode.includes('dầu dưỡng') || lowerCaseStringCode.includes('mask')
+  ) {
+    return 'da'
+    // eslint-disable-next-line brace-style
+  }
+  // Nước hoa
+  else if (lowerCaseStringCode.includes('nước hoa') || lowerCaseStringCode.includes('nuoc hoa') || lowerCaseStringCode.includes('perfume') || lowerCaseStringCode.includes('scent') || lowerCaseStringCode.includes('fragrance')) {
+    return 'YIUniNrIKb'
+    // eslint-disable-next-line brace-style
+  }
+  // Thiết bị làm đẹp
+  else if (lowerCaseStringCode.includes('máy rửa mặt') || lowerCaseStringCode.includes('thiết bị') || lowerCaseStringCode.includes('máy rửa') || lowerCaseStringCode.includes('máy')) {
+    return 'B3OQuAChW1'
+    // eslint-disable-next-line brace-style
+  } else {
+    return 'ao'
+  }
+}
+
+convertStringToConsignment = () => {
+  const { onlineCodeStringInput, categoryList } = this.state
+  console.log('convertStringToConsignment run')
+  let productList = []
+  let isErrorFormat = false
+  let categoryListObjectTemp = {}
+  categoryList.map((itemCate, itemCateIndex) => {
+    switch (itemCate.objectId) {
+    case 'B3OQuAChW1': {
+      categoryListObjectTemp.B3OQuAChW1 = { ...itemCate, keyCode: 'thiet' }
+      break
+    }
+    case 'YIUniNrIKb': {
+      categoryListObjectTemp.YIUniNrIKb = { ...itemCate, keyCode: 'hoa' }
+      break
+    }
+    default: {
+      categoryListObjectTemp[itemCate.keyCode] = { ...itemCate }
+    }
+    }
+  })
+
+  const result = onlineCodeStringInput.trim().split(/\r?\n/)
+
+  console.log(result)
+
+  result.map((item, itemIndex) => {
+    let type
+    let name
+    let amount
+    let price
+    let detail
+    let subCategoryId
+    let categoryId
+    const stringCodeArr = item.trim().split('/')
+
+    // if (isErrorFormat === false && stringCodeArr && (((stringCodeArr.length === 3 || stringCodeArr.length === 4) && Number(stringCodeArr[3].trim()) + 1 > 0) || stringCodeArr.length === 2) && Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', '')) + 1 > 0) {
+    // type = stringCodeArr[0].trim().toLowerCase()
+    // if (isErrorFormat === false && stringCodeArr && (((stringCodeArr.length === 4) && Number(stringCodeArr[3].trim()) + 1 > 0) || stringCodeArr.length === 3) && Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', '')) + 1 > 0) {
+    if (isErrorFormat === false && stringCodeArr && Number(stringCodeArr[1] && stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', '')) + 1 > 0 &&
+    (
+      (
+        stringCodeArr.length === 4 &&
+          (
+            (
+              (stringCodeArr[2] && stringCodeArr[2] && stringCodeArr[2].trim().substr(0, 2) === 'tt') &&
+              (stringCodeArr[3] && stringCodeArr[3] && stringCodeArr[3].trim().substr(0, 2) === 'sl')) ||
+            (
+              (stringCodeArr[2] && stringCodeArr[2] && stringCodeArr[2].trim().substr(0, 2) === 'sl') &&
+              (stringCodeArr[3] && stringCodeArr[3] && stringCodeArr[3].trim().substr(0, 2) === 'tt')
+            )
+          )
+      ) ||
+      (
+        (stringCodeArr.length === 3) &&
+        (stringCodeArr[2] && stringCodeArr[2] && (stringCodeArr[2].trim().substr(0, 2) === 'tt' || stringCodeArr[2].trim().substr(0, 2) === 'sl'))
+      ) || stringCodeArr.length === 2
+    )
+    ) {
+      switch (stringCodeArr.length) {
+      case 4: {
+        name = stringCodeArr[0].trim()
+        price = Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', ''))
+        if (stringCodeArr[2].trim().substr(0, 2) === 'tt') {
+          if (Number(stringCodeArr[3].trim().replace('sl', '').trim()) + 1 > 0) {
+            detail = stringCodeArr[2].trim().replace('tt', '').trim() || '---'
+            amount = Number(stringCodeArr[3].trim().replace('sl', '').trim()) || 1
+          } else {
+            console.log('isErrorFormat')
+            isErrorFormat = true
+          }
+        } else if (stringCodeArr[2].trim().substr(0, 2) === 'sl') {
+          if (Number(stringCodeArr[2].trim().replace('sl', '').trim()) + 1 > 0) {
+            amount = Number(stringCodeArr[2].trim().replace('sl', '').trim()) || 1
+            detail = stringCodeArr[3].trim().replace('tt', '').trim() || '---'
+          } else {
+            console.log('isErrorFormat')
+            isErrorFormat = true
+          }
+        } else {
+          console.log('isErrorFormat')
+          isErrorFormat = true
+        }
+        break
+      }
+      case 3: {
+        name = stringCodeArr[0].trim()
+        price = Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', ''))
+
+        if (stringCodeArr[2].trim().substr(0, 2) === 'tt') {
+          detail = stringCodeArr[2].trim().replace('tt', '').trim() || '---'
+          amount = 1
+        } else if (stringCodeArr[2].trim().substr(0, 2) === 'sl') {
+          if (Number(stringCodeArr[2].trim().replace('sl', '').trim()) + 1 > 0) {
+            amount = Number(stringCodeArr[2].trim().replace('sl', '').trim()) || 1
+            detail = '---'
+          } else {
+            console.log('isErrorFormat')
+            isErrorFormat = true
+          }
+        } else {
+          console.log('isErrorFormat')
+          isErrorFormat = true
+        }
+        break
+      }
+      case 2: {
+        name = stringCodeArr[0].trim()
+        price = Number(stringCodeArr[1].trim().replaceAll('k', '').replaceAll('K', ''))
+        amount = 1
+        detail = '---'
+        break
+      }
+      }
+
+      type = this.convertStringNameToObjectIdCategory(name)
+
+      if (type && categoryListObjectTemp && categoryListObjectTemp[type]) {
+        if (categoryListObjectTemp[type].isParentSelf) {
+          subCategoryId = categoryListObjectTemp[type].objectId
+          categoryId = categoryListObjectTemp[type].objectId
+        } else {
+          subCategoryId = categoryListObjectTemp[type].objectId
+          categoryId = categoryListObjectTemp[type].category.objectId
+        }
+      }
+
+      const hashCode = generateIdMix()
+
+      productList.push({
+        name: name,
+        productId: itemIndex,
+        hashCode: hashCode,
+        price: price,
+        count: amount,
+        remainNumberProduct: amount,
+        totalPriceAfterFee: Math.round(Number(amount * this.convertPriceAfterFee(price))),
+        priceAfterFee: Math.round(Number(this.convertPriceAfterFee(price))),
+        categoryId: categoryId,
+        subCategoryId: subCategoryId,
+        note: detail || '---',
+        defaultCategoryCode: {
+          key: categoryListObjectTemp[type].isParentSelf ? `${categoryId}+${subCategoryId}+${hashCode}` : `${subCategoryId}+${hashCode}`,
+          label: categoryListObjectTemp[type].name,
+          value: categoryListObjectTemp[type].isParentSelf ? `${categoryId}+${subCategoryId}+${hashCode}` : `${subCategoryId}+${hashCode}`
+        },
+        rateNew: detail && detail.includes('new') ? 100 : 99,
+        isNew: detail && detail.includes('new') ? 'true' : 'false'
+      })
+      isErrorFormat = false
+    } else {
+      console.log('isErrorFormat')
+      isErrorFormat = true
+    }
+  })
+
+  if (!isErrorFormat) {
+    let moneyBackForFullSold = 0
+    let totalMoney = 0
+    let numberOfProducts = 0
+    productList.map(item => {
+      numberOfProducts = numberOfProducts + item.count
+      moneyBackForFullSold += item.count * this.convertPriceAfterFee(Number(item.price)) * 1000
+      totalMoney += item.count * Number(item.price) * 1000
+    })
+
+    this.setState({
+      isErrorFormat: false,
+      productList: productList,
+      moneyBackForFullSold: moneyBackForFullSold,
+      totalMoney: totalMoney,
+      formData: {
+        ...this.state.formData,
+        numberOfProducts: numberOfProducts
+      }
+    })
+
+    this.myModal.current.closeModal()
+  } else {
+    this.setState({
+      isErrorFormat: true
+    })
+
+    this.onOpenInputOnlineWithError()
+  }
 }
 
 onBlurCategory = () => {
@@ -717,7 +1222,7 @@ onSearchCategory = (val) => {
 }
 
 render () {
-  const { userData, categoryRedux } = this.props
+  const { userData, categoryRedux, channelMonitorRedux } = this.props
   const {
     formData, isConsigning, isShowConfirmForm, moneyBackForFullSold, totalMoney, timeGroupId, isTransferMoneyWithBank,
     birthday, isLoadingUser, isFoundUser, isLoadingTags, allInfoTag, productList, categoryList, timeGroupCode
@@ -744,6 +1249,15 @@ render () {
     { label: 'Chuyển khoản', value: 'true' },
     { label: 'Trực tiếp', value: 'false' }
   ]
+
+  const optionsTypeProduct = [
+    { label: 'Hàng mới', value: 'new' },
+    { label: 'Hàng đã sử dụng', value: 'old' }
+  ]
+
+  ReduxServices.setTempConsignment(this.state)
+  // console.log('tempConsignmentRedux')
+  // console.log(this.props.tempConsignmentRedux)
 
   return (
     <div className='consignment-container'>
@@ -794,7 +1308,7 @@ render () {
                 })}
               </Col>
             </Row>
-            <Button className='MT20 MB20' onClick={this.onRefeshAll} >Quay lại</Button>
+            <Button className='MT20 MB20' onClick={() => this.onRefeshAll(true)} >Quay lại</Button>
             </>
           : <>
             <Form
@@ -804,8 +1318,23 @@ render () {
               initialValues={formData}
               // onFinish={this.onFinish}
               onFinish={this.onConsign}
-              onValuesChange={(changedValues, allValues) => {
-                console.log(changedValues)
+              onValuesChange={async (changedValues, allValues) => {
+                // console.log('changedValues')
+                // console.log(changedValues)
+                // if (channelMonitorRedux && channelMonitorRedux.objectId) {
+                //   const body = {
+                //     data: {
+                //       ...this.state,
+                //       formData: {
+                //         ...formData,
+                //         ...changedValues
+                //       }
+                //     }
+                //   }
+                //   const res = await GapService.updateChannel(body, channelMonitorRedux.objectId)
+                //   console.log('changeData and update channel')
+                //   console.log(res)
+                // }
                 this.setState({
                   formData: {
                     ...formData,
@@ -815,10 +1344,11 @@ render () {
               }}
             >
               <Row className='flex sell-card-form PT40 PB35' justify='center'>
-                <Form.Item name='phoneNumber' rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]} label='Số điện thoại'>
+                <Button onClick={this.onOpenInputOnline} type='secondary' className='MB30'><DollarCircleOutlined /> Ký gửi online</Button>
+                <Form.Item name='phoneNumber' rules={[{ required: !isFoundUser, message: 'Vui lòng nhập số điện thoại' }]} label='Số điện thoại'>
                   <Col sm={24} md={12}>
                     {/* <Search placeholder="input search loading default" loading /> */}
-                    <Input value={formData.phoneNumber} minLength={10} maxLength={12} allowClear onChange={this.fetchUserByPhoneNumber} style={{ minWidth: 100 }} placeholder='...' suffix={isLoadingUser ? <LoadingOutlined /> : isFoundUser ? <CheckCircleFilled style={{ color: 'green ' }} /> : null} />
+                    <Input value={formData.phoneNumber} minLength={10} maxLength={11} allowClear onChange={this.fetchUserByPhoneNumber} style={{ minWidth: 100 }} placeholder='...' suffix={isLoadingUser ? <LoadingOutlined /> : isFoundUser ? <CheckCircleFilled style={{ color: 'green ' }} /> : null} />
                   </Col>
                 </Form.Item>
                 <Form.Item name='consignerName' rules={[{ required: !isFoundUser, message: 'Vui lòng nhập tên khách hàng' }]} label='Tên Khách Hàng'>
@@ -848,7 +1378,7 @@ render () {
                 </Form.Item>
                 <Form.Item name='birthday' label='Sinh nhật'>
                   <Col sm={24} md={12}>
-                    <DatePicker allowClear={false} disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} id='birthday' key='birthday' defaultValue={moment()} value={moment(formData.birthday, dateFormat)} onChange={this.onChangeBirthday} format={dateFormat} placeholder={dateFormat} style={{ width: '100%' }} />
+                    <Input allowClear={false} disabled={!formData.phoneNumber || formData.phoneNumber.length < 10} id='birthday' key='birthday' value={formData.birthday} onChange={this.onChangeBirthday} placeholder={dateFormat} style={{ width: '100%' }} />
                   </Col>
                 </Form.Item>
 
@@ -861,8 +1391,8 @@ render () {
                         <div key={indexItem} className='product-box MB30'>
                           <div className='close-box MB5'>
                             <span style={{ opacity: 0 }}>{indexItem + 1}</span>
-  
-                            <div disabled={indexItem === 0} onClick={() => this.onDeleteProductList(item.hashCode)} style={{ cursor: 'pointer', opacity: indexItem === 0 ? 0 : 1 }}>
+
+                            <div onClick={() => this.onDeleteProductList(item.hashCode)}>
                               <CloseOutlined />
                             </div>
                           </div>
@@ -871,12 +1401,15 @@ render () {
                             <Select
                               labelInValue
                               showSearch
-                              // value={`${item.categoryId}+${item.subCategoryId}+${item.hashCode}`}
+                              key={indexItem}
                               style={{ width: '50%' }}
                               placeholder='Danh mục'
                               // optionFilterProp='children'
                               onChange={this.onChangeCategory}
                               autoFocus={false}
+                              defaultActiveFirstOption
+                              // {...item.defaultCategoryCode ? { defaultValue: item.defaultCategoryCode } : null}
+                              {...item.defaultCategoryCode ? { value: item.defaultCategoryCode } : null}
                               // onFocus={this.onFocusCategory}
                               // onBlur={this.onBlurCategory}
                               onSearch={this.onSearchCategory}
@@ -892,11 +1425,13 @@ render () {
                                     return (
                                       <>
                                         <Option key={categoryIndex} style={{ width: '100%' }} value={`${categoryItem.category.objectId}+${categoryItem.objectId}+${item.hashCode}`}>{categoryItem.name}</Option>
+                                        {/* <Option key={categoryIndex} style={{ width: '100%' }} value={categoryIndex}>{categoryItem.name}</Option> */}
                                       </>
                                     )
                                   } else {
                                     return (
                                       <>
+                                        {/* <Option key={categoryIndex} style={{ width: '100%' }} value={categoryIndex}>{categoryItem.name}</Option> */}
                                         <Option key={categoryIndex} style={{ width: '100%' }} value={`${categoryItem.objectId}+${item.hashCode}`}>{categoryItem.name}</Option>
                                       </>
                                     )
@@ -909,7 +1444,11 @@ render () {
                             <Input style={{ marginRight: '10px' }} value={item.price} allowClear type={'number'} id='priceProduct' key='priceProduct' onChange={(value) => this.changeDataProduct(value, indexItem)} placeholder='Giá tiền' />
                             <Input value={item.count} prefix={<span>SL</span>} defaultValue={1} type={'number'} id='numberOfProducts' key='numberOfProducts' onChange={(value) => this.changeDataProduct(value, indexItem)} allowClear placeholder='Số lượng' />
                           </div>
-  
+
+                          <div>
+                            <Checkbox.Group options={optionsTypeProduct} value={this.state.productList[indexItem].isNew === 'true' ? 'new' : 'old'} defaultValue={['new']} onChange={(value) => this.onChangeProductTypeNewOrOld(value, indexItem)} />
+                          </div>
+
                           <div className='product-item-note'>
                             <TextArea placeholder='Ghi Chú' value={item.note || '---'} type={'number'} id='note' key='note' onChange={(value) => this.changeDataProduct(value, indexItem)} />
                           </div>
@@ -936,12 +1475,6 @@ render () {
                     <Input suffix='vnđ' id='totalMoney' key='totalMoney' value={numberWithCommas(Math.round(totalMoney))} disabled placeholder={'...000 vnd'} />
                   </Col>
                 </Form.Item>
-
-                <Form.Item name='consignmentId' rules={[{ required: true, message: 'Vui lòng nhập mã ký gửi' }]} label='Mã ký gửi'>
-                  <Col sm={24} md={12}>
-                    <Input allowClear id='consignmentId' key='consignmentId' onChange={this.changeData} placeholder='...' />
-                  </Col>
-                </Form.Item>
                 <Form.Item name='numberOfProducts' label='Số lượng Hàng Hoá'>
                   <Col sm={24} md={12}>
                     <Input disabled defaultValue={1} value={formData.numberOfProducts} type={'number'} id='numberOfProducts' key='numberOfProducts' allowClear placeholder='...' />
@@ -956,7 +1489,7 @@ render () {
 
                 <Form.Item label='Ngày trả tiền'>
                   <Input.Group compact>
-                    <Select onChange={this.onChangeTimeGetMoney} defaultValue={allInfoTag && allInfoTag[0] && allInfoTag[0].code} size='large' loading={isLoadingTags} id='timeGetMoney' key='timeGetMoney' placeholder='...'>
+                    <Select onChange={this.onChangeTimeGetMoney} value={this.state.timeGroupCode} defaultValue={this.state.timeGroupCode} size='large' loading={isLoadingTags} id='timeGetMoney' key='timeGetMoney' placeholder='...'>
                       {
                         isLoadingTags ? null
                           : allInfoTag.map(tag => {
@@ -972,6 +1505,12 @@ render () {
                   </Input.Group>
                 </Form.Item>
 
+                <Form.Item name='consignmentId' rules={[{ message: 'Vui lòng nhập mã ký gửi' }]} label='Mã ký gửi'>
+                  <Col sm={24} md={12}>
+                    <Input allowClear id='consignmentId' key='consignmentId' value={this.state.formData.consignmentId} onChange={this.changeData} placeholder='...' />
+                  </Col>
+                </Form.Item>
+
                 <Form.Item name='consigneeName' label='Tên Nhân Viên'>
                   <Col sm={24} md={12}>
                     <Input defaultValue={userData && userData.name ? userData.name : ''} id='consigneeName' key='consigneeName' value={userData && userData.name ? userData.name : ''} disabled placeholder={userData && userData.name ? userData.name : ''} />
@@ -979,7 +1518,10 @@ render () {
                 </Form.Item>
 
                 <Form.Item className='button-confirm-box MT20 MB40'>
-                  <Button className='MR20' onClick={this.onRefeshAll}>Khôi phục</Button>
+                  {channelMonitorRedux && channelMonitorRedux.objectId && (
+                    <Button className='MR20' onClick={this.onUpdateMobitorData}>Cập nhật monitor</Button>
+                  )}
+                  <Button className='MR20' onClick={() => this.onRefeshAll(true)}>Khôi phục</Button>
                   <Button disabled={isLoadingTags || isLoadingUser || !formData.phoneNumber} loading={isConsigning} type='primary' htmlType='submit'>Xác nhận</Button>
                 </Form.Item>
               </Row>
@@ -993,9 +1535,11 @@ render () {
 }
 
 const mapStateToProps = (state) => ({
+  channelMonitorRedux: state.channelMonitorRedux,
   locale: state.locale,
   categoryRedux: state.categoryRedux,
-  userData: state.userData
+  userData: state.userData,
+  tempConsignmentRedux: state.tempConsignmentRedux
 })
 
 export default withRouter(connect(mapStateToProps, null)(Consignment))

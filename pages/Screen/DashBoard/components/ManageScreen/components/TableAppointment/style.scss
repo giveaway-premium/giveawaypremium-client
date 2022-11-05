@@ -126,3 +126,39 @@
     }
   }
 }
+
+.search-info-user-booking-box {
+  margin-left: 2%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.select-booking-option-box {
+  margin: 50px 0 50px 2%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+
+  .ant-select-selector {
+    min-width: 300px !important;
+  }
+
+  .status-on {
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    background-color: green;
+  }
+  
+  .status-off {
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    background-color: orange;
+  }
+}

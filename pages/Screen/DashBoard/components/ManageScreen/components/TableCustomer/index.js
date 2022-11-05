@@ -150,6 +150,24 @@ class TableConsignemntScreen extends React.PureComponent {
         key: 'bankId',
         width: 10,
         editable: true
+      },
+      {
+        title: 'Tổng tiền đã mua',
+        dataIndex: 'totalMoneyForSale',
+        key: 'totalMoneyForSale',
+        width: 15
+      },
+      {
+        title: 'Tổng sản phẩm đã mua',
+        dataIndex: 'totalProductForSale',
+        key: 'totalProductForSale',
+        width: 10
+      },
+      {
+        title: 'Tổng số lần mua sắm',
+        dataIndex: 'numberOfSale',
+        key: 'numberOfSale',
+        width: 10
       }
       // {
       //   title: 'Nhận tiền',
@@ -248,7 +266,7 @@ class TableConsignemntScreen extends React.PureComponent {
     const index = newData.findIndex((item) => row.objectId === item.objectId)
     const item = newData[index]
     const newItem = { ...item, ...row }
- 
+
     if (!isEqual(newItem, item)) {
       newData.splice(index, 1, newItem)
       console.log('row')
@@ -280,11 +298,10 @@ class TableConsignemntScreen extends React.PureComponent {
         res = await GapService.getCustomerTable(page, searchText)
       }
 
-      console.log('res')
-      console.log(res)
       let customerData = []
       if (res && res.results) {
         res.results.map((item, indexItem) => {
+          console.log(item)
           customerData.push({
             key: indexItem,
             objectId: item.objectId,
@@ -294,7 +311,10 @@ class TableConsignemntScreen extends React.PureComponent {
             bankName: item.banks[0].type,
             bankId: item.banks[0].accNumber,
             email: item.mail,
-            birthday: moment(item.birthday).format('DD-MM-YYYY')
+            birthday: item.birthday,
+            totalMoneyForSale: item.totalMoneyForSale ? `${numberWithCommas(item.totalMoneyForSale)},000vnđ` : 0,
+            totalProductForSale: item.totalProductForSale || '--',
+            numberOfSale: item.numberOfSale || '--'
           })
         })
         this.setState({
@@ -381,7 +401,7 @@ class TableConsignemntScreen extends React.PureComponent {
             pageSize: 100,
             onChange: this.paginationChange
           }}
-          scroll={{ x: 1500, y: '65vh' }}
+          scroll={{ x: 1600, y: '65vh' }}
         />
         <MyModal ref={this.myModal} />
       </div>

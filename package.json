@@ -37,6 +37,7 @@
     "hex2dec": "^1.1.2",
     "history": "4.10.1",
     "howler": "^2.1.2",
+    "ios-inner-height": "^1.1.1",
     "js-base64": "^2.5.1",
     "less": "^2.7.2",
     "lodash": "^4.17.15",
@@ -54,8 +55,9 @@
     "nouislider": "14.5.0",
     "npm": "^6.12.1",
     "nprogress": "^0.2.0",
+    "parse": "^3.4.2",
     "prop-types": "^15.7.2",
-    "qrcode": "^1.4.4",
+    "qrcode": "^1.5.1",
     "query-string": "^6.11.0",
     "rc-tween-one": "^3.0.0-beta.7",
     "react": "^16.11.0",
@@ -85,12 +87,15 @@
     "react-sortable-hoc": "^2.0.0",
     "react-swipeable-views": "0.13.9",
     "react-tagsinput": "3.19.0",
+    "react-to-print": "^2.14.7",
     "react-typing-effect": "^2.0.5",
     "react-typist": "^2.0.5",
     "react-ui-scrollspy": "^2.1.0",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "scroll-snap": "^3.2.4",
+    "socket.io": "^4.5.1",
+    "styled-components": "^5.3.5",
     "svg-sprite-loader": "^4.2.1",
     "use-smooth-scroll": "^1.1.1",
     "validator": "^10.11.0",
@@ -122,5 +127,8 @@
   },
   "eslintConfig": {
     "extends": "react-app"
+  },
+  "browser": {
+    "child_process": false
   }
 }

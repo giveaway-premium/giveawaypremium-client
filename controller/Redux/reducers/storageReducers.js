@@ -46,8 +46,32 @@ export const userData = createReducer(initState.userData, {
   }
 })
 
+export const IPHASHData = createReducer(initState.userData, {
+  [KEY_STORE.SET_IP_HASH] (state, action) {
+    return action.payload
+  }
+})
+
+export const channelMonitorRedux = createReducer(initState.object, {
+  [KEY_STORE.SET_CHANNEL_MONITOR] (state, action) {
+    return action.payload
+  }
+})
+
+export const tempConsignmentRedux = createReducer(initState.object, {
+  [KEY_STORE.SET_TEMP_CONSIGNMENT] (state, action) {
+    return action.payload
+  }
+})
+
 export const settingRedux = createReducer(initState.setting, {
   [KEY_STORE.SET_SETTING] (state, action) {
+    return action.payload
+  }
+})
+
+export const addressInfoArrayRedux = createReducer(initState.array, {
+  [KEY_STORE.SET_ADDRESS_INFO_ARRAY] (state, action) {
     return action.payload
   }
 })

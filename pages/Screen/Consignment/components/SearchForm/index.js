@@ -342,7 +342,7 @@ class SearchForm extends React.PureComponent {
             }}
           >
             <Row className='flex sell-card-form' justify='center'>
-              <h1 className={'text text-searching-title'}>Tìm thông tin ký gửi qua số điện thoại hoặc CMND</h1>
+              <h1 className={'text text-searching-title'}>Tìm thông tin ký gửi qua số điện thoại</h1>
 
               <Form.Item name='phoneNumber' rules={[{ required: formData.consignerIdCard.length === 0, message: 'Vui lòng nhập số điện thoại' }]} label='Số điện thoại'>
                 <Col sm={24} md={22}>
@@ -350,11 +350,11 @@ class SearchForm extends React.PureComponent {
                 </Col>
               </Form.Item>
 
-              <Form.Item name='consignerIdCard' rules={[{ required: formData.phoneNumber.length === 0, message: 'Vui lòng nhập CMND' }]} label='CMND'>
+              {/* <Form.Item name='consignerIdCard' rules={[{ required: formData.phoneNumber.length === 0, message: 'Vui lòng nhập CMND' }]} label='CMND'>
                 <Col sm={24} md={22}>
                   <Input disabled={formData.phoneNumber && formData.phoneNumber.length > 0} value={formData.consignerIdCard} size='small' type={'text'} id='consignerIdCard' key='consignerIdCard' onChange={() => this.changeData} allowClear placeholder='...' />
                 </Col>
-              </Form.Item>
+              </Form.Item> */}
 
               <div className='flex justify-around align-center' style={{ width: '100%' }}>
                 <Button onClick={this.backProp} type='secondary'>Quay lại</Button>
