@@ -608,7 +608,8 @@ class TableProductScreen extends React.PureComponent {
           <img src={images.icClose} alt='remove' />
         </div>
         <img
-          src={item.data.secure_url}
+          defaultValue={images.aLogoBlack}
+          src={item?.data?.secure_url}
           style={{ maxWidth: '70px', height: '70px', objectFit: 'contain' }}
         />
       </div>
@@ -863,7 +864,6 @@ class TableProductScreen extends React.PureComponent {
             moneyBackProduct: Math.round(Number(item.soldNumberProduct || 0) * item.priceAfterFee || 0)
           })
         })
-        console.log(consignmentData)
 
         this.setState({
           currentPagination: page || 1,

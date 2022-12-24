@@ -185,7 +185,7 @@ export default class ReduxServices {
 
     if (userData && userData.token) {
       const res = await GapService.getUnitAddress()
-      console.log('resssssss', res.result)
+      // console.log('resssssss', res.result)
       if (res && res.result && res.result.length > 0) {
         ReduxServices.callDispatchAction(StorageActions.setAddressInfoArray(res.result))
       }

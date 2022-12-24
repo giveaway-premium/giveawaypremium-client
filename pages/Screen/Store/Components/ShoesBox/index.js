@@ -28,7 +28,7 @@ const FashionBox = (props) => {
     setIsLoadingPage(true)
     let isLoadingDone = false
     let isAutoOffLoading = true
-    const productList = await GapService.getProductStore(1, null, 5, OBJECTID_CATEGORY.FASHION)
+    const productList = await GapService.getProductStore(1, null, 5, OBJECTID_CATEGORY.SHOES)
     setTimeout(() => {
       if (isLoadingDone) {
         setIsLoadingPage(false)

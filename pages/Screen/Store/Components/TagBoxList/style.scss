@@ -1,0 +1,13 @@
+.fashionBox-container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: relative;
+
+    .tag-box {
+        min-width: 100px;
+        // background-color: red;
+    }
+}
