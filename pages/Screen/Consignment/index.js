@@ -26,18 +26,30 @@ class ConsignmentScreen extends React.PureComponent {
       isShowBookingForm: false,
       isShowSearchForm: false,
       isShowInstrumentForm: false,
-      isShowForm: false
+      isShowForm: false,
+      isShowBookingOnline: true,
+      bookingOnlineAlert: null
     }
     this.myModal = React.createRef()
   }
 
   componentDidMount () {
+    let isShowBookingOnline = ReduxServices.getSettingWithKey('IS_SHOW_BOOKING_ONLINE_FORM', 'true')
+    let bookingOnlineAlert = ReduxServices.getSettingWithKey('BOOKING_ONLINE_ALERT', '')
+    if (isShowBookingOnline === 'true' || isShowBookingOnline === true) {
+      isShowBookingOnline = true
+    } else {
+      isShowBookingOnline = false
+    }
+
     setTimeout(() => {
       this.setState({
         isShowText: true,
         isShowText1: true,
         isShowText2: true,
-        isShowText3: true
+        isShowText3: true,
+        isShowBookingOnline: isShowBookingOnline,
+        bookingOnlineAlert: bookingOnlineAlert
       })
     }, 200)
   }
@@ -100,9 +112,39 @@ class ConsignmentScreen extends React.PureComponent {
     })
   }
 
+  renderBookingAlert = () => {
+    const { bookingOnlineAlert } = this.state
+    return (
+      <div>
+        <div style={{ display: 'flex', flexDirection: 'column', width: '100%', margin: '30px 0 0 0' }}>
+          {/* <p className='text day-txt'>
+              Hiện tại tính năng đặt lịch ký gửi trên website đang tạm khoá.
+          </p>
+          {bookingOnlineAlert?.length > 0 && (
+            <textarea disabled value={bookingOnlineAlert} className='textarea-container'>{bookingOnlineAlert}</textarea>
+          )}
+          <p className='text day-txt'>
+              Quý khách vui lòng gọi hotline 0703 334 443 để biết thêm thông tin.
+          </p>
+          <p className='text day-txt'>
+              Xin lỗi vì sự bất tiện này.
+          </p> */}
+          {bookingOnlineAlert?.length > 0 && (
+            <textarea contentEditable disabled value={bookingOnlineAlert} className='textarea-container text day-txt'>{bookingOnlineAlert}</textarea>
+          )}
+        </div>
+      </div>
+    )
+  }
+
   renderStringCodeBox = () => {
+    const { isShowBookingOnline } = this.state
     const onContinue = () => {
-      window.open('https://zalo.me/1278273211257849348', '_blank')
+      if (isShowBookingOnline) {
+        window.open('https://zalo.me/1278273211257849348', '_blank')
+      } else {
+        this.myModal.current.openModal(this.renderBookingAlert(), { closable: true })
+      }
     }
 
     return (

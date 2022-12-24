@@ -467,7 +467,7 @@ export default class Gap {
   }
 
   // Consignment
-  static async setConsignment (formData, consigneeData, consignerData, timeGroupId, timeGroupCode, productList, moneyBackForFullSold, totalMoney, isTransferMoneyWithBank = false) {
+  static async setConsignment (formData, consigneeData, consignerData, timeGroupId, timeGroupCode, productList, moneyBackForFullSold, totalMoney, isTransferMoneyWithBank = false, note = '') {
     const body = {
       consignmentId: formData.consignmentId + '-' + timeGroupCode,
       consignerName: formData.consignerName,
@@ -486,6 +486,7 @@ export default class Gap {
         type: formData.bankName,
         accNumber: formData.bankId
       }],
+      note: note,
       isTransferMoneyWithBank: isTransferMoneyWithBank === 'true',
       productList: productList || []
     }
@@ -612,7 +613,8 @@ export default class Gap {
         moneyBackForFullSold: Number(item.moneyBackForFullSold) || 0,
         isGetMoney: item.isGetMoney || false,
         productList: productListTemp,
-        timeConfirmGetMoney: item.timeConfirmGetMoney
+        timeConfirmGetMoney: item.timeConfirmGetMoney,
+        note: item.note || ''
       }
 
       console.log('body update consignment', body)

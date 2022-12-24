@@ -563,7 +563,7 @@ class TableProductScreen extends React.PureComponent {
           <img src={images.icClose} alt='remove' />
         </div>
         <img
-          src={item.data.secure_url}
+          src={item?.data?.secure_url}
           style={{ maxWidth: '70px', height: '70px', objectFit: 'contain' }}
         />
       </div>

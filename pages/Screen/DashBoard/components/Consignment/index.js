@@ -15,6 +15,7 @@ import moment from 'moment'
 import successJson from 'static/Assets/Image/Lottie/success.json'
 import { EMAIL_TITLE, EMAIL_TYPE } from 'common/constants'
 import ReduxServices from 'common/redux'
+import TextInput from 'pages/Components/TextInput'
 
 const { TextArea } = Input
 const { Option } = Select
@@ -72,7 +73,8 @@ class Consignment extends React.PureComponent {
       timeGroupId: '',
       timeGroupCode: '',
       onlineCodeStringInput: '',
-      isErrorFormat: false
+      isErrorFormat: false,
+      note: ''
     }
     this.formRef = React.createRef()
     this.myModal = React.createRef()
@@ -151,7 +153,7 @@ class Consignment extends React.PureComponent {
     const {
       isFoundUser, objectIdFoundUser, formData,
       timeGroupId, productList, moneyBackForFullSold, totalMoney,
-      isTransferMoneyWithBank, timeGroupCode
+      isTransferMoneyWithBank, timeGroupCode, note
     } = this.state
 
     // const productListTemp = productList.filter(item => {
@@ -246,7 +248,7 @@ class Consignment extends React.PureComponent {
       // if (res && res.results && res.results[0]) {
       if (resUSer && resUSer.results && resUSer.results[0]) { // for already user
         console.log('for already user')
-        const result = await GapService.setConsignment(formData, userData.objectId, objectIdFoundUser, timeGroupId, timeGroupCode, productListTemp, moneyBackForFullSold, totalMoney, isTransferMoneyWithBank)
+        const result = await GapService.setConsignment(formData, userData.objectId, objectIdFoundUser, timeGroupId, timeGroupCode, productListTemp, moneyBackForFullSold, totalMoney, isTransferMoneyWithBank, note)
         console.log(result)
         if (result && result.objectId) {
           this.setState({
@@ -301,7 +303,7 @@ class Consignment extends React.PureComponent {
 
         if (resCus && resCus.objectId) {
           showNotification('Thêm khách hàng thành công')
-          const result = await GapService.setConsignment(formData, userData.objectId, resCus.objectId, timeGroupId, timeGroupCode, productListTemp, moneyBackForFullSold, totalMoney, isTransferMoneyWithBank)
+          const result = await GapService.setConsignment(formData, userData.objectId, resCus.objectId, timeGroupId, timeGroupCode, productListTemp, moneyBackForFullSold, totalMoney, isTransferMoneyWithBank, note)
           console.log(result)
 
           if (result && result.objectId) {
@@ -391,7 +393,8 @@ class Consignment extends React.PureComponent {
         objectIdFoundUser: '',
         birthday: '',
         isShowConfirmForm: false,
-        isFoundUser: false
+        isFoundUser: false,
+        note: ''
       })
     } else {
       console.log('fetchUserByPhoneNumber dont run 2')
@@ -410,7 +413,8 @@ class Consignment extends React.PureComponent {
         objectIdFoundUser: '',
         birthday: '',
         isShowConfirmForm: false,
-        isFoundUser: false
+        isFoundUser: false,
+        note: ''
       })
       // this.onRefeshAll()
     }
@@ -486,7 +490,8 @@ class Consignment extends React.PureComponent {
       onlineCodeStringInput: '',
       isErrorFormat: false,
       timeGroupId: '',
-      timeGroupCode: ''
+      timeGroupCode: '',
+      note: ''
     })
   }
 
@@ -510,8 +515,10 @@ class Consignment extends React.PureComponent {
   }
 
   changeData = async (value) => {
-    console.log(value.target.id)
+    // console.log(value)
     const { formData } = this.state
+    console.log(value.target.value)
+    // return
 
     this.setState({
       formData: {
@@ -525,6 +532,16 @@ class Consignment extends React.PureComponent {
       // const res = await GapService.updateChannel(body)
       // console.log('changeData and update channel')
       // console.log(res)
+    })
+  }
+
+  changeDataTextArea = (value, id) => {
+    // console.log(value)
+    console.log('value', { value, id })
+    // return
+
+    this.setState({
+      [id]: value
     })
   }
 
@@ -1286,6 +1303,8 @@ render () {
                   <Descriptions.Item span={24} label='Hình thức nhận tiền'>{isTransferMoneyWithBank === 'true' ? 'Chuyển khoản' : 'Trực tiếp'}</Descriptions.Item>
                   <Descriptions.Item span={24} label='Chứng minh thư'>{formData.consignerIdCard}</Descriptions.Item>
                   <Descriptions.Item span={24} label='Sinh nhật'>{formData.birthday}</Descriptions.Item>
+                  <Descriptions.Item span={24} label='Ghi chú'>{this.state.note || '--'}</Descriptions.Item>
+
                 </Descriptions>
                 {productList.map((item, indexItem) => {
                   return (
@@ -1463,6 +1482,19 @@ render () {
                 </Row>
 
                 <Divider />
+
+                <Form.Item label='Ghi chú đơn ký gửi'>
+                  <Col sm={24} md={12}>
+                    <TextInput
+                      name='note'
+                      handleInput={(value) => this.changeDataTextArea(value, 'note')}
+                      isTextArea
+                      value={this.state.note}
+                      inputStyle='noteBox'
+                    />
+
+                  </Col>
+                </Form.Item>
 
                 <Form.Item label='Tổng tiền sau thu phí'>
                   <Col sm={24} md={12}>

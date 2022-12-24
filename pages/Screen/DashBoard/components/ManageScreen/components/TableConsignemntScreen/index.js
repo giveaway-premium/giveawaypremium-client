@@ -16,6 +16,8 @@ import { filter, isEqual } from 'lodash'
 import Highlighter from 'react-highlight-words'
 import { EMAIL_TITLE, EMAIL_TYPE } from 'common/constants'
 import moment from 'moment'
+import TextInput from 'pages/Components/TextInput'
+import TextArea from 'antd/lib/input/TextArea'
 
 const { TabPane } = Tabs
 
@@ -39,6 +41,8 @@ const EditableCell = ({
   dataIndex,
   record,
   handleSave,
+  isTextArea = false,
+  isRequired = true,
   ...restProps
 }) => {
   const [editing, setEditing] = useState(false)
@@ -70,7 +74,7 @@ const EditableCell = ({
   let childNode = children
 
   if (editable) {
-    childNode = editing ? (
+    childNode = editing && !isTextArea ? (
       <Form.Item
         style={{
           margin: 0
@@ -78,12 +82,27 @@ const EditableCell = ({
         name={dataIndex}
         rules={[
           {
-            required: true,
+            required: isRequired,
             message: `${title} is required.`
           }
         ]}
       >
         <Input ref={inputRef} onPressEnter={save} onBlur={save} />
+      </Form.Item>
+    ) : editing && isTextArea ? (
+      <Form.Item
+        style={{
+          margin: 0
+        }}
+        name={dataIndex}
+        rules={[
+          {
+            required: isRequired,
+            message: `${title} is required.`
+          }
+        ]}
+      >
+        <TextArea ref={inputRef} onPressEnter={save} onBlur={save} />
       </Form.Item>
     ) : (
       <div
@@ -180,15 +199,24 @@ class TableConsignemntScreen extends React.PureComponent {
         key: '10'
       },
       {
+        title: 'Ghi chú',
+        dataIndex: 'note',
+        editable: true,
+        width: 220,
+        isRequired: false,
+        isTextArea: true,
+        key: '11'
+      },
+      {
         title: '',
-        key: '11',
+        key: '12',
         width: 120,
         // fixed: 'right',
         render: (value) => (<Button style={{ width: '100%' }} onClick={() => this.onDeleteButton(value)}>Xoá</Button>)
       },
       {
         title: 'Nhận tiền',
-        key: '12',
+        key: '13',
         width: 90,
         fixed: 'right',
         ...this.getColumnSearchIsGetMoney('isGetMoney'),
@@ -817,7 +845,8 @@ class TableConsignemntScreen extends React.PureComponent {
             email: item.mail,
             birthday: item.birthday,
             productList: item.productList,
-            isGetMoney: item.isGetMoney
+            isGetMoney: item.isGetMoney,
+            note: item.note || ''
           })
         })
         this.setState({
@@ -840,6 +869,10 @@ class TableConsignemntScreen extends React.PureComponent {
     const item = newData[index]
     // const newRemainNumConsignment = `${Number(row.numberOfProducts) - Number(row.numSoldConsignment || 0)}`
     const newItem = { ...item, ...row }
+
+    console.log('newData', newData)
+    console.log('row', row)
+    console.log('newItem', newItem)
 
     if (!isEqual(newItem, item)) {
       newData.splice(index, 1, newItem)
@@ -905,6 +938,8 @@ class TableConsignemntScreen extends React.PureComponent {
           editable: col.editable,
           dataIndex: col.dataIndex,
           title: col.title,
+          isTextArea: col.isTextArea,
+          isRequired: col.isRequired,
           handleSave: this.handleSave
         })
       }
