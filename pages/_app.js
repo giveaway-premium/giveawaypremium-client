@@ -131,7 +131,6 @@ class GiveAway extends App {
           <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no' />
           <meta name='theme-color' content='#000000' />
           <meta name='description' content='GiveAway Premium' />
-          <meta name='google-site-verification' content='D1F12tMnugBHZLza2KcmBK5gWmnC32N6e3U5pKw8DFk' />
           <meta property='og:image' content='https://i.ibb.co/NSz5YLK/Frame-1.png' />
           <meta property='og:image:secure_url' content='https://i.ibb.co/NSz5YLK/Frame-1.png' />
           <meta property='og:image:type' content='image/png' />
@@ -139,6 +138,20 @@ class GiveAway extends App {
           <meta property='og:image:height' content='434' />
           <meta property='og:image:alt' content='GiveAway Premium' />
           {/* <link rel='stylesheet' type='text/css' href='/nprogress.css' /> */}
+          <meta name='google-site-verification' content='CXxXqEKyjokCYlznOl0X_Rmpnc1pg883-XefM9QHJas' />
+          {/* <!-- Google tag (gtag.js) --> */}
+          <script async src='https://www.googletagmanager.com/gtag/js?id=G-ZYZJ59HWQE' />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+              
+                gtag('config', 'G-ZYZJ59HWQE');
+              `
+            }}
+          />
         </Head>
         <NextSeo {...this.state.seoData} />
         {
