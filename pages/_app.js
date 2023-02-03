@@ -138,6 +138,8 @@ class GiveAway extends App {
           <meta property='og:image:height' content='434' />
           <meta property='og:image:alt' content='GiveAway Premium' />
           {/* <link rel='stylesheet' type='text/css' href='/nprogress.css' /> */}
+          <link rel='stylesheet' type='text/css' href='/nprogress.css' />
+
           <meta name='google-site-verification' content='CXxXqEKyjokCYlznOl0X_Rmpnc1pg883-XefM9QHJas' />
           {/* <!-- Google tag (gtag.js) --> */}
           <script async src='https://www.googletagmanager.com/gtag/js?id=G-ZYZJ59HWQE' />
