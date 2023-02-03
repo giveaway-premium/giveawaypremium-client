@@ -115,24 +115,36 @@ class StoreScreen extends React.PureComponent {
         const maxPage = Math.ceil(productList.count / limit)
         console.log(maxPage)
 
-        setTimeout(() => {
-          this.setState({
-            isLoadInit: true,
-            maxPage: maxPage,
-            isLoadingPage: false,
-            currentPage: 1,
-            count: productList.count || 0,
-            productList: [...productList.results]
-          })
-        }, 300)
+        // setTimeout(() => {
+        //   this.setState({
+        //     isLoadInit: true,
+        //     maxPage: maxPage,
+        //     isLoadingPage: false,
+        //     currentPage: 1,
+        //     count: productList.count || 0,
+        //     productList: [...productList.results]
+        //   })
+        // }, 300)
+        this.setState({
+          isLoadInit: true,
+          maxPage: maxPage,
+          isLoadingPage: false,
+          currentPage: 1,
+          count: productList.count || 0,
+          productList: [...productList.results]
+        })
         // setIsLoadingPage(false)
       } else {
-        setTimeout(() => {
-          this.setState({
-            isLoadInit: true,
-            isLoadingPage: false
-          })
-        }, 300)
+        this.setState({
+          isLoadInit: true,
+          isLoadingPage: false
+        })
+        // setTimeout(() => {
+        //   this.setState({
+        //     isLoadInit: true,
+        //     isLoadingPage: false
+        //   })
+        // }, 300)
         // setIsLoadingPage(false)
       }
     })
@@ -211,7 +223,7 @@ class StoreScreen extends React.PureComponent {
             isLoadingPage ? (
               <Skeleton baseColor='#FFFFFF' highlightColor='#F5FFFA' style={{ width: '100vw', height: '100vh' }} enableAnimation />
             ) : (
-              <ProductList productList={productList} />
+              <ProductList productList={productList} currentPage={currentPage} maxPage={maxPage} handleScrollActive={this.handleScrollActive} />
             )
           }
         </div>

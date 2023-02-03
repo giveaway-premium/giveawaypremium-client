@@ -18,7 +18,7 @@ import 'react-loading-skeleton/dist/skeleton.css'
 import { OBJECTID_CATEGORY } from 'common/constants'
 
 const ProductList = (props) => {
-  const { productList, currentPage, maxPage, isLoadingMore } = props
+  const { productList, currentPage, maxPage, isLoadingMore, handleScrollActive } = props
 
   console.log('productList', productList)
 
@@ -39,6 +39,7 @@ const ProductList = (props) => {
                 <div className='detail-box'>
                   {item && item.name && <span className='detail-box-name'>{item.name || '--'}</span>}
                   {item && item.price && <span className='detail-box-price'>{numberWithCommas(item.price * 100)} ₫</span>}
+                  {item && <span className='detail-box-rateNew'>{item.rateNew === 0 ? 'Đã sử dụng' : 'Mới' }</span>}
                 </div>
               </div>
             </div>
@@ -55,7 +56,7 @@ const ProductList = (props) => {
       </div>
       {
         currentPage < maxPage && (
-          <div className='load-more-button' onClick={this.handleScrollActive}>
+          <div className='load-more-button' onClick={handleScrollActive}>
             {
               isLoadingMore ? (
                 <Skeleton baseColor='#F5FFFA' highlightColor='#ffffff ' style={{ width: '100%', height: '100%', padding: '5px' }} enableAnimation />

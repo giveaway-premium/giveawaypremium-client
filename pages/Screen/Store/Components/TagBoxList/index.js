@@ -40,7 +40,7 @@ const TagBoxList = (props) => {
   }
 
   return (
-    <div className='fashionBox-container'>
+    <div style={{ width: '100%' }}>
       <Carousel>
         <TagBox index={0} categoryId='0paqD5jvw3' name='Thời Trang' image={images.chanelBag} />
         <TagBox index={1} categoryId='dNYERCGnBT' name='Túi' image={images.chanelBag} />
