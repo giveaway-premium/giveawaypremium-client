@@ -16,7 +16,8 @@ class HomeCarousel extends React.Component {
       isShowGiveAway: false,
       isShowPremium: false,
       isShowFooter: false,
-      isHideText: false
+      isHideText: false,
+      isShowBanner: false
     }
   }
   // this.Carousel.slidePrev()
@@ -30,6 +31,22 @@ class HomeCarousel extends React.Component {
         isShowFooter: true
       })
     }, 200)
+
+    setTimeout(() => {
+      this.setState({
+        isShowBanner: true
+      })
+    }, 2000)
+  }
+
+  onCloseBanner = () => {
+    this.setState({
+      isShowBanner: false
+    })
+  }
+
+  onHandleClickAds = () => {
+    window.open('http://ddstudio.vn/vi/dich-vu/thiet-ke/', '_blank')
   }
 
   onHanldeRouteAnimation = (pageNameRoute) => {
@@ -266,7 +283,7 @@ class HomeCarousel extends React.Component {
     )
   }
   showDesktopScreen = () => {
-    const { isShowGiveAway, isShowPremium, isShowFooter, activeIndex } = this.state
+    const { isShowGiveAway, isShowPremium, isShowFooter, activeIndex, isShowBanner } = this.state
     const defaultOptionsRightArrow = {
       loop: true,
       autoplay: true,
@@ -275,6 +292,14 @@ class HomeCarousel extends React.Component {
 
     return (
       <div className='banner-flex'>
+        {
+          isShowBanner && (
+            <div className='bottom-banner-box'>
+              <img className='close-icon' src={images.icClose} onClick={this.onCloseBanner} />
+              <img className='banner-img' src={images.bannerHome} onClick={this.onHandleClickAds} />
+            </div>
+          )
+        }
         {/* <div className='arrow-banner-box' onClick={() => this.Carousel.slidePrev()} style={{ justifyContent: 'flex-end' }}> */}
         <div className={'arrow-banner-box left-side' + (isShowGiveAway ? ' show' : '')} >
           GIVEAWAY
@@ -322,7 +347,7 @@ class HomeCarousel extends React.Component {
     )
   }
   showMobileScreen = () => {
-    const { isShowGiveAway, isShowPremium, isShowFooter } = this.state
+    const { isShowGiveAway, isShowPremium, isShowFooter, isShowBanner } = this.state
 
     const defaultOptionsRightArrow = {
       loop: true,
@@ -332,6 +357,14 @@ class HomeCarousel extends React.Component {
 
     return (
       <div className='banner-flex-mobile'>
+        {
+          isShowBanner && (
+            <div className='bottom-banner-box'>
+              <img className='close-icon' src={images.icClose} onClick={this.onCloseBanner} />
+              <img className='banner-img' src={images.bannerHome} onClick={this.onHandleClickAds} />
+            </div>
+          )
+        }
         {/* <div className='arrow-banner-box' onClick={() => this.Carousel.slidePrev()} style={{ justifyContent: 'flex-end' }}> */}
         <div className={'arrow-banner-box left-side' + (isShowGiveAway ? ' show' : '')} >
         GIVEAWAY

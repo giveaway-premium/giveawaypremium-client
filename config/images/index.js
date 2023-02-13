@@ -11,6 +11,8 @@ export const images = {
   markerIcon: '/static/Assets/Image/Icon/marker.png',
   founderAvatar: '/static/Assets/Image/founder-avater.jpg',
   timeLine: '/static/Assets/Image/homeScreen/timeLine.jpg',
+  bannerHome: '/static/Assets/Image/homeScreen/bannerGiveaway.gif',
+
   icClose: '/static/Assets/Image/Icon/close.svg',
 
   favicon: '/static/favicon.png',
