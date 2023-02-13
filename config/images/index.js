@@ -14,6 +14,7 @@ export const images = {
   bannerHome: '/static/Assets/Image/homeScreen/bannerGiveaway.gif',
 
   icClose: '/static/Assets/Image/Icon/close.svg',
+  icCloseGray: '/static/Assets/Image/Icon/closeGray.png',
 
   favicon: '/static/favicon.png',
   kyguiZalo: '/static/Assets/Image/kyguiquantam.jpg',

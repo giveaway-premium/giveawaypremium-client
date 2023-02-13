@@ -36,7 +36,7 @@ class HomeCarousel extends React.Component {
       this.setState({
         isShowBanner: true
       })
-    }, 2000)
+    }, 800)
   }
 
   onCloseBanner = () => {
@@ -292,14 +292,14 @@ class HomeCarousel extends React.Component {
 
     return (
       <div className='banner-flex'>
-        {
+        {/* {
           isShowBanner && (
             <div className='bottom-banner-box'>
               <img className='close-icon' src={images.icClose} onClick={this.onCloseBanner} />
               <img className='banner-img' src={images.bannerHome} onClick={this.onHandleClickAds} />
             </div>
           )
-        }
+        } */}
         {/* <div className='arrow-banner-box' onClick={() => this.Carousel.slidePrev()} style={{ justifyContent: 'flex-end' }}> */}
         <div className={'arrow-banner-box left-side' + (isShowGiveAway ? ' show' : '')} >
           GIVEAWAY
@@ -359,9 +359,11 @@ class HomeCarousel extends React.Component {
       <div className='banner-flex-mobile'>
         {
           isShowBanner && (
-            <div className='bottom-banner-box'>
-              <img className='close-icon' src={images.icClose} onClick={this.onCloseBanner} />
-              <img className='banner-img' src={images.bannerHome} onClick={this.onHandleClickAds} />
+            <div className='bottom-banner-box-out'>
+              <div className='bottom-banner-box'>
+                <img className='close-icon' src={images.icCloseGray} onClick={this.onCloseBanner} />
+                <img className='banner-img' src={images.bannerHome} onClick={this.onHandleClickAds} />
+              </div>
             </div>
           )
         }
