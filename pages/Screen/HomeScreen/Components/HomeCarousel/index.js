@@ -357,7 +357,7 @@ class HomeCarousel extends React.Component {
 
     return (
       <div className='banner-flex-mobile'>
-        {
+        {/* {
           isShowBanner && (
             <div className='bottom-banner-box-out'>
               <div className='bottom-banner-box'>
@@ -366,7 +366,7 @@ class HomeCarousel extends React.Component {
               </div>
             </div>
           )
-        }
+        } */}
         {/* <div className='arrow-banner-box' onClick={() => this.Carousel.slidePrev()} style={{ justifyContent: 'flex-end' }}> */}
         <div className={'arrow-banner-box left-side' + (isShowGiveAway ? ' show' : '')} >
         GIVEAWAY

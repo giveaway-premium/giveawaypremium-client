@@ -38,6 +38,60 @@ html, body {
   }
 }
 
+.bottom-banner-box-out {
+  position: absolute !important;
+  width: 100% !important;
+  max-width: 500px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: flex-end !important;
+  align-self: center !important;
+  bottom: 0 !important;
+  left: 0 !important;
+
+  @media screen and (min-width: 768px) {
+    display: none !important;
+  }
+}
+
+.bottom-banner-box {
+  z-index: 100000 !important;
+  // background-color: rgba($color: #e8e8e8, $alpha: 0.8);
+  position: absolute !important;
+
+  display: flex !important;
+  justify-content: center !important;
+  width: 80% !important;
+
+  .close-icon {
+    z-index: 200000 !important;
+    position: absolute !important;
+    top: -10px !important;
+    left: -10px !important;
+    height: 18px !important;
+    width: 18px !important;
+    object-fit: contain !important;
+
+    &:hover {
+      cursor: pointer !important;
+      height: 26px !important;
+      width: 26px !important;
+    }
+  }
+
+  .banner-img {
+    // position: absolute;
+    cursor: pointer;
+
+    width: 100% !important;
+    object-fit: contain !important;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .-webkit-scrollbar {
   display: none;
