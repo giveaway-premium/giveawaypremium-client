@@ -304,7 +304,8 @@ export default class Gap {
   }
 
   static async getProductWithObjectKey (objectId) {
-    return this.fetchData(`/classes/Product/${objectId}`, REQUEST_TYPE.GET, null)
+    const customQuery = `include=medias&limit=${1}&count=1&where={"objectId":"${objectId}"}`
+    return this.fetchData(`/classes/Product`, REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
 
   static async updateProduct (item) {

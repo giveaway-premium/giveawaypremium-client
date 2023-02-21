@@ -1,19 +1,19 @@
 import React from 'react'
 import Media from 'react-media'
 import './style.scss'
-import 'react-slideshow-image/dist/styles.css'
 import MyModal from 'pages/components/MyModal'
 import { images } from 'config/images'
 import { getCurrentUrl, numberWithCommas } from 'common/function'
 import ReduxServices from 'common/redux'
 import { connect } from 'react-redux'
-import MagicSliderDots from 'react-magic-slider-dots'
 import Slider from 'react-slick'
-import 'react-magic-slider-dots/dist/magic-dots.css'
 import PageReduxAction from 'controller/Redux/actions/pageActions'
 import { isMobile } from 'react-device-detect'
 import Head from 'next/head'
 import { withRouter } from 'next/router'
+import Gap from 'controller/Api/Services/Gap'
+import AliceCarousel from 'react-alice-carousel';
+import 'react-alice-carousel/lib/alice-carousel.css';
 
 class Product extends React.PureComponent {
   static async getInitialProps ({ query, req }) {
@@ -53,13 +53,39 @@ class Product extends React.PureComponent {
     }, async () => {
       // call api to load infomation about this item hereinafter
       const queryId = router.query.id
+      console.log('queryId', queryId)
+      let resData
+      const photoAlbumRes = []
 
       if (router?.query?.id) {
+        resData = await Gap.getProductWithObjectKey(queryId)
+        console.log('resData', resData)
+        if (resData && resData.count > 0 && resData?.results?.length > 0 && resData?.results[0].status === 'ACTIVE') {
+          resData = resData.results[0]
 
+          resData?.medias && resData?.medias.length > 0 && resData?.medias.map((albumItem, albumIndex) => {
+            photoAlbumRes.push(`${albumItem.data.url }`)
+            photoAlbumRes.push(`${albumItem.data.url }`)
+            photoAlbumRes.push(`${albumItem.data.url }`)
+            photoAlbumRes.push(`${albumItem.data.url }`)
+          })
+  
+
+          
+          this.setState({
+            isLoadingDetail: false,
+            detailInfo: resData || null,
+            photoAlbumRes: photoAlbumRes
+          }, () => {
+            //
+            console.log('state', this.state)
+          })
+        } else {
+          // show false
+        }
       } else {
-
+        // show falseee
       }
-      // const resData = await wrapTagService.getDetailNFT(queryId, settingRedux['address_tag_nft'])
     })
   }
 
@@ -101,74 +127,49 @@ class Product extends React.PureComponent {
     })
   }
 
-  renderBannerMain = () => {
+  renderBannerMainMobile = () => {
     const { photoAlbumRes, visiblePreview } = this.state
-
-    const settings = {
-      dots: true,
-      arrows: false,
-      infinite: true,
-      speed: 500,
-      slidesToShow: 1,
-      slidesToScroll: 1,
-      activeDotClassName: 'activeDotClassName',
-      prevNextDotClassName: 'prevNextDotClassName',
-      dotContainerClassName: 'dotContainerClassName',
-      appendDots: dots => {
-        return <MagicSliderDots dots={dots} numDotsToShow={5} dotWidth={30} />
-      }
-    }
 
     return (
       <>
-        <Slider className={`slideContainer`} {...settings}>
-          {photoAlbumRes.map((photoUrl, index) => (
-            <div key={index} className='eachSlide' onClick={this.openPreview}>
-              <img className='slidePhoto' src={photoUrl} />
-            </div>
-          ))}
-        </Slider>
-        <div className='maskPreviewContainer'>
-          {photoAlbumRes.map((photoUrl, index) => (
-            <img style={visiblePreview ? { opacity: 0 } : {}} ref={this.refbanner} key={index} className='slidePhoto' src={photoUrl} />
-          ))}
-        </div>
+        a
       </>
     )
   }
 
+  thumbItems = (items, [setThumbIndex, setThumbAnimation]) => {
+    return items.map((item, i) => (
+        <div className="thumb" onClick={() => (setThumbIndex(i), setThumbAnimation(true))}>
+            {item}
+        </div>
+    ));
+  };
+
   renderBannerMainDesktop = () => {
     const { photoAlbumRes, visiblePreview } = this.state
+    // const responsive = {
+    //   0: { items: 1 },
+    //   568: { items: 2 },
+    //   1024: { items: 3 },
+    // };
 
-    const settings = {
-      dots: true,
-      arrows: true,
-      infinite: true,
-      speed: 500,
-      slidesToShow: 1,
-      slidesToScroll: 1,
-      activeDotClassName: 'activeDotClassName',
-      prevNextDotClassName: 'prevNextDotClassName',
-      dotContainerClassName: 'dotContainerClassName',
-      appendDots: dots => {
-        return <MagicSliderDots dots={dots} numDotsToShow={5} dotWidth={30} />
-      }
-    }
+    let imgArr = []
+
+    photoAlbumRes.map((item, itemKey) => {
+      imgArr.push(
+        <img className='cursor-pointer item-detail-img' key={itemKey} src={item} style={{ objectFit: 'contain', width: 'auto' }} />
+      )
+    })
 
     return (
       <>
-        <Slider className='slideContainer' {...settings}>
-          {photoAlbumRes.map((photoUrl, index) => (
-            <div key={index} className='eachSlide' onClick={this.openPreview}>
-              <img className='slidePhoto' src={photoUrl} />
-            </div>
-          ))}
-        </Slider>
-        <div className='maskPreviewContainer'>
-          {photoAlbumRes.map((photoUrl, index) => (
-            <img style={visiblePreview ? { opacity: 0 } : {}} ref={this.refbanner} key={index} className={styles.slidePhoto} src={photoUrl} />
-          ))}
-        </div>
+        <AliceCarousel
+            mouseTracking
+            // responsive
+            autoWidth
+            items={imgArr}
+            controlsStrategy="alternate"
+        />
       </>
     )
   }
@@ -178,11 +179,9 @@ class Product extends React.PureComponent {
   }
 
   renderDesktop = () => {
-    const {
-      isLoadingDetail, detailInfo, ownerHistory, isTransfering, attributes,
-      video, photoAlbumRes, isPlayingVideo, isDiscarded, isOwner, isReplaced, isTransactionProcessing
-    } = this.state
+    const { isLoadingDetail, detailInfo } = this.state
     const { messages, lang } = this.props.locale
+    console.log('messages', messages)
 
     const DetailInfo = ({ indexKey, info }) => {
       return (
@@ -195,7 +194,7 @@ class Product extends React.PureComponent {
 
     return (
       <div className='bannerContainerDesktopAll'>
-        {
+                {
           isLoadingDetail ? null
             : <>
               <div className='leftBox'>
@@ -203,20 +202,28 @@ class Product extends React.PureComponent {
                   {this.renderBannerMainDesktop()}
                 </div>
 
-                {isTransfering ? <div className='transferBox'>
-                  <span className='transferTxt'>{messages.nftDetail.transfering}...</span>
-                </div> : null}
+                  {/* <div className={'transferBox'}>
+                    <span className={'transferTxt'}>{messages?.nftDetail?.transfering}...</span>
+                  </div>
 
-                {isReplaced ? <div className='transferBox'>
-                  <span className='replaceTxt'>{messages.nftDetail.replaced}</span>
-                </div> : null}
+                  <div className={'transferBox'}>
+                    <span className={'replaceTxt'}>{messages?.nftDetail?.replaced}</span>
+                  </div> */}
               </div>
               <div className='rightBox'>
                 <div className='greyBox'>
-                  {isLoadingDetail
+                  {/* {isLoadingDetail
                     ? <p>{messages.loading}</p>
                     : attributes.map((info, indexInfo) => <DetailInfo key={indexInfo} indexKey={indexInfo} info={info} />)
-                  }
+                  } */}
+                </div>
+
+                <div className='greyBox' style={{ marginTop: '15px' }}>
+                  {/* <span className={'ownerShipTitle'}>{messages?.nftDetail?.ownerHistory}</span> */}
+                  {/* {isLoadingDetail
+                    ? <p>{messages.loading}</p>
+                    : ownerHistory.map((ownerInfo, indexInfo) => <OwnerInfo key={indexInfo} ownerInfo={ownerInfo} />)
+                  } */}
                 </div>
               </div>
 
@@ -229,27 +236,11 @@ class Product extends React.PureComponent {
   }
 
   renderMobile = () => {
-    const {
-      isLoadingDetail, detailInfo, ownerHistory, isTransfering,
-      attributes, video, photoAlbumRes, isPlayingVideo,
-      isDiscarded, isOwner, isReplaced, isTransactionProcessing
-    } = this.state
+    const {} = this.state
     const { messages, lang } = this.props.locale
 
     return (
       <div className='bannerContainerAll'>
-        <div className='bannerWrapperMobile'>
-          {this.renderBannerMain()}
-        </div>
-
-        {isTransfering ? <div className='transferBox'>
-          <span className='transferTxt'>{messages.nftDetail.transfering}...</span>
-        </div> : null}
-
-        {isReplaced ? <div className='transferBox'>
-          <span className='replaceTxt'>{messages.nftDetail.replaced}</span>
-        </div> : null}
-
         <MyModal ref={this.myModal} />
       </div>
 
