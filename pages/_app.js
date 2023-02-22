@@ -43,13 +43,14 @@ class GiveAway extends App {
     this.state = {
       isLoading: true,
       seoData: props.seoData,
-      isShowBanner: true
+      isShowBanner: props.router.asPath === '/'
     }
     this.currentInterval = null
   }
 
   async componentDidMount () {
     try {
+      console.log('props', this.props)
       if (process.env.MAINTENANCE_MODE === 'true') {
         this.setState({
           isLoading: false
