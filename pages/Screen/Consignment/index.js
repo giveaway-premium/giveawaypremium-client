@@ -42,6 +42,17 @@ class ConsignmentScreen extends React.PureComponent {
       isShowBookingOnline = false
     }
 
+    if (this.props?.router?.query?.tab === 'phuongthuc') {
+      this.onHandleOpenContent('instrument')
+      return
+    } else if (this.props?.router?.query?.tab === 'datlich') {
+      this.onHandleOpenContent('consignment')
+      return
+    } else if (this.props?.router?.query?.tab === 'xemtongket') {
+      this.onHandleOpenContent('search')
+      return
+    }
+
     setTimeout(() => {
       this.setState({
         isShowText: true,
@@ -53,7 +64,10 @@ class ConsignmentScreen extends React.PureComponent {
       })
     }, 200)
   }
-  componentDidUpdate () {
+  componentDidUpdate (prevState, preProps) {
+    console.log('prevState', prevState)
+    console.log('preProps', preProps)
+
   }
 
   componentWillUnmount () {

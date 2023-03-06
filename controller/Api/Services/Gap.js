@@ -3,7 +3,7 @@ import { ADDRESS_GET_ORDER_ARRAY, ADDRESS_STREET_GET_ORDER, REQUEST_TYPE } from 
 import ReduxService from 'common/redux'
 import QueryString from 'query-string'
 import moment from 'moment'
-import { numberWithCommas } from 'common/function'
+import { numberWithCommas, showNotification } from 'common/function'
 
 export default class Gap {
   static uploadSingleFileWithFormData = async (file) => {
@@ -108,7 +108,7 @@ export default class Gap {
   }
 
   static async getAppointmentWithSlotId (slotID) {
-    const customQuery = `where={"slot":${slotID}}`
+    const customQuery = `where={"slot":${slotID}, "deletedAt":${null}}`
     return this.fetchData('/classes/AppointmentSchedule', REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
 
@@ -146,6 +146,7 @@ export default class Gap {
       }
       return this.fetchData('/classes/AppointmentSchedule', REQUEST_TYPE.POST, null, body)
     } else {
+      showNotification('Đã có khách đặt slot này trước rồi')
       return false
     }
   }

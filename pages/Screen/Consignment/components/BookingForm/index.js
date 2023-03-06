@@ -28,7 +28,7 @@ class ConsignmentScreen extends React.PureComponent {
       formData: {
         customerName: '',
         phoneNumber: '',
-        numberOfProduct: 1
+        numberOfProduct: 5
       },
       timeBooking: [],
       // timeBooking: [
@@ -66,6 +66,7 @@ class ConsignmentScreen extends React.PureComponent {
       //   }
       // ],
       step: 0,
+      errorSlotInfo: null,
       isHideUserForm: true,
       isHideDayColumn: false,
       choosenDayCode: null,
@@ -81,7 +82,6 @@ class ConsignmentScreen extends React.PureComponent {
 
   async componentDidMount () {
     const newSettingRedux = await ReduxServices.getSetting()
-    const { settingRedux } = this.props
     let dayBookingCount = ['', '', '', '', '', '', '', '', '', '', '', '', '', '']
     let dayBookingTemp = []
     let bookingOptionEachDay = newSettingRedux.BOOKING_OPTION_EACH_DAY || BOOKING_OPTION_EACH_DAY_DATA_DEFAULT
@@ -149,10 +149,6 @@ class ConsignmentScreen extends React.PureComponent {
       })
     }
 
-    console.log('res')
-    console.log(res)
-    console.log(bookingDataCode)
-
     this.setState({
       bookingDataCode: bookingDataCode
     })
@@ -180,7 +176,6 @@ class ConsignmentScreen extends React.PureComponent {
   }
 
   onChooseDay = (choosenDay) => {
-    console.log(choosenDay)
     const { bookingOptionEachDay } = this.state
 
     const { option, timeBooking } = this.checkDayCodeToBookingOption(choosenDay, bookingOptionEachDay)
@@ -196,9 +191,6 @@ class ConsignmentScreen extends React.PureComponent {
   }
 
   onChooseTime = (choosenTime) => {
-    // console.log('choosenTime')
-    // console.log(choosenTime)
-
     this.setState({
       step: 1,
       choosenTimeCode: choosenTime ? choosenTime.timeCode : ''
@@ -226,15 +218,45 @@ class ConsignmentScreen extends React.PureComponent {
       this.setState({
         isConsigning: true
       }, async () => {
-        console.log('onConsign')
         const formatedTime = choosenTimeCode.substring(0, 2) + ':' + choosenTimeCode.substring(2, 4)
         const formatedDay = choosenDayCode.substring(0, 2) + '-' + choosenDayCode.substring(2, 4) + '-' + choosenDayCode.substring(4, 8)
         const slotID = choosenTimeCode + choosenDayCode
         const bookingDataCode = this.state.bookingDataCode + '-' + slotID + '-'
+        const resWithPhone = await GapService.getAppointmentWithPhone(formData.phoneNumber)
+
+        let isExistPhoneNumber = false
+        let errorSlotInfo = null
+        if (resWithPhone && resWithPhone.results && resWithPhone.results.length > 0) {
+          resWithPhone.results.map(item => {
+            if (item.date === formatedDay) {
+              isExistPhoneNumber = true
+              errorSlotInfo = {
+                customerName: item.customerName,
+                date: item.date,
+                dateTime: item.dateTime,
+                phoneNumber: item.phoneNumber
+              }
+            }
+          })
+
+          if (isExistPhoneNumber) {
+            this.setState({
+              isConsigning: false,
+              errorSlotInfo: errorSlotInfo
+            })
+            return
+          } else {
+            this.setState({
+              errorSlotInfo: null
+            })
+          }
+        } else {
+          this.setState({
+            errorSlotInfo: null
+          })
+        }
 
         const res = await GapService.setAppointment(formData, slotID, formatedTime, formatedDay)
-        console.log('res')
-        console.log(res)
         if (res && res.objectId) {
           this.setState({
             bookingDataCode: bookingDataCode,
@@ -290,7 +312,7 @@ class ConsignmentScreen extends React.PureComponent {
       formData: {
         customerName: '',
         phoneNumber: '',
-        numberOfProduct: 1
+        numberOfProduct: 5
       },
       step: 0,
       isHideDayColumn: false,
@@ -299,19 +321,18 @@ class ConsignmentScreen extends React.PureComponent {
     }, () => {
       this.fetchAppointment()
       this.props.backConsignment()
+
+      window.open('https://giveawaypremium.com.vn/kygui?tab=phuongthuc', '_blank')
+
     })
   }
 
   changeData = (e) => {
-    console.log('value')
-    console.log(e.target.value)
-    console.log(e.target.name)
-
-    if (e.target.value > 50 && e.target.name === 'numberOfProduct') {
+    if (e.target.value > 100 && e.target.name === 'numberOfProduct') {
       this.setState({
         isErrorMax: true
       })
-    } else if (e.target.value <= 50 && e.target.name === 'numberOfProduct') {
+    } else if (e.target.value <= 100 && e.target.name === 'numberOfProduct') {
       this.setState({
         isErrorMax: false
       })
@@ -320,12 +341,10 @@ class ConsignmentScreen extends React.PureComponent {
 
   render () {
     const {
-      step, dayBooking, choosenDayCode, timeBooking, bookingDataCode, isErrorMax,
+      step, dayBooking, choosenDayCode, timeBooking, bookingDataCode, isErrorMax, errorSlotInfo,
       choosenTimeCode, formData, isHideUserForm, isConsigning, isHideDayColumn, bookingOptionValue
     } = this.state
     let isShowBookingForm = ReduxServices.getSettingWithKey('IS_SHOW_BOOKING_FORM', 'true')
-    console.log('isShowBookingForm')
-    console.log(isShowBookingForm)
 
     const layout = {
       labelCol: { span: 9 },
@@ -413,10 +432,6 @@ class ConsignmentScreen extends React.PureComponent {
                     {timeBooking.map((itemTime, indexTime) => {
                       const isReady = !bookingDataCode.includes(choosenTimeCode + choosenDayCode) && itemTime.timeCode === choosenTimeCode
                       const isBusy = bookingDataCode.includes(itemTime.timeCode + choosenDayCode)
-                      // console.log(bookingDataCode)
-                      // console.log(itemTime.timeCode + choosenDayCode)
-                      // console.log(isReady)
-                      // console.log(isBusy)
 
                       return (
                         <div style={isBusy ? { pointerEvents: 'none', cursor: 'none' } : {}} onClick={() => isBusy ? {} : this.onChooseTime(itemTime)} key={indexTime} className={'time-box' + (isReady ? ' ready' : isBusy ? ' busy' : '')}>
@@ -482,16 +497,22 @@ class ConsignmentScreen extends React.PureComponent {
                       name='numberOfProduct'
                       rules={[{ required: true, message: 'Vui lòng nhập số lượng hàng' }]}
                       label='Số lượng Hàng Hoá'
-                      {...formData.numberOfProduct < 1 ? { validateStatus: 'error', help: 'Số lượng tối thiểu là 1' } : {}}
-                      {...isErrorMax ? { validateStatus: 'error', help: 'Với số lượng hàng hoá trên 50, Xin vui lòng liên hệ số Zalo 0703334443' } : {}}
+                      {...formData.numberOfProduct < 5 ? { validateStatus: 'error', help: 'Số lượng ký gửi tối thiểu là 5 món. Tuy nhiên, nếu anh/chị ký gửi sản phẩm luxury (giá trị ký gửi trên 5.000.000đ). Vui lòng liên hệ hotline 0703334443 để được hỗ trợ tốt nhất.' } : {}}
+                      {...isErrorMax ? { validateStatus: 'error', help: 'Với số lượng hàng hoá trên 100, Xin vui lòng liên hệ hotline 0703334443 để được hỗ trợ tốt nhất.' } : {}}
                     >
                       <Col sm={24} md={6}>
                         <Input value={formData.numberOfProduct} size='small' defaultValue={1} name='numberOfProduct' type={'number'} id='numberOfProduct' key='numberOfProduct' onChange={this.changeData} placeholder='...' />
                       </Col>
                     </Form.Item>
+
+                    {
+                      errorSlotInfo ? <div className='bookingErrorSlot'>
+                        <span>Khách hàng {errorSlotInfo.customerName} đã đặt lịch cho khung thời gian {errorSlotInfo.dateTime} ngày {errorSlotInfo.date}. Vui lòng đặt lịch lại cho vào ngày khác hoặc liên hệ hotline 0703334443 để được thay đổi lịch hẹn cùng ngày.</span>
+                      </div> : null
+                    }
                     <div className='flex justify-around align-center' style={{ width: '100%' }}>
                       <Button onClick={this.backStepOne} type='secondary'>Quay lại</Button>
-                      <Button disabled={isErrorMax || formData.numberOfProduct < 1 || formData.numberOfProduct > 50} loading={isConsigning} type='secondary' htmlType='submit'>Xác nhận</Button>
+                      <Button disabled={isErrorMax || formData.numberOfProduct < 5 || formData.numberOfProduct > 100} loading={isConsigning} type='secondary' htmlType='submit'>Xác nhận</Button>
                     </div>
                   </Row>
                 </Form>

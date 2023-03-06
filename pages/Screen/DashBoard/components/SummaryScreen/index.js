@@ -146,6 +146,18 @@ class SummaryScreen extends React.PureComponent {
         console.log('state', this.state)
       })
       console.log('orderList', orderList)
+    } else {
+      this.setState({
+        moneyForSale: moneyForSale,
+        moneyAfterFee: moneyAfterFee,
+        moneyFromFee: moneyFromFee,
+        totalProduct: totalProduct,
+        dataOrderList: orderList.results,
+        totalOrder: orderList.count,
+        isLoadingSummary: false
+      }, () => {
+        console.log('state', this.state)
+      })
     }
   }
 

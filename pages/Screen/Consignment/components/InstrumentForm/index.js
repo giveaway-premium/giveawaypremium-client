@@ -107,15 +107,17 @@ class ConsignmentScreen extends React.PureComponent {
                 <p className='MT10'>Số tiền sau khi đã trừ phí là: {moneyBack ? numberWithCommas(moneyBack) : ''}</p>
 
                 <Divider />
-                <h2 className='text text-left text-color-10 txt-small-intro MB15'>{'Thời gian ký gửi từ 50 ngày đến 70 ngày (tuỳ đợt)'}</h2>
+                <h2 className='text text-left text-color-10 txt-small-intro MB15'>{'Thời gian ký gửi: Từ 50-70 ngày và tuỳ đợt ký gửi.'}</h2>
 
-                <h2 className='text text-left text-color-10 txt-small-intro MB15'>{`- Give Away Premium chỉ nhận hàng thương hiệu (local/global)
-                  - Authentic / No Fake
-                  - Độ mới 80% trở lên (riêng Luxury Vintage từ 50% trở lên)
-                  - Mỹ phẩm còn date (Give Away sẽ giúp bạn check date)
+                <h2 className='text text-left text-color-10 txt-small-intro MB15'>{`*Tiêu chí ký gửi:
+                  ⁃ Giá ký gửi là giá thanh lý. Lấy sức hút, tình trạng của sản phẩm tại thời điểm bán để làm tiêu chuẩn định giá thanh lý. Dựa trên 3 yếu tố chính: chất liệu, kiểu dáng, thương hiệu. 
+                  ⁃ GAP chỉ nhận sản phẩm có thương hiệu (global/ local), authentic/ no fake, tình trạng mới từ 80%. 
+                  ⁃ Mỹ phẩm còn date từ 6 tháng (GAP sẽ giúp bạn check date). 
+                  ⁃ Không nhận: quần áo Quảng Châu, hàng không thương hiệu, hàng fake, mỹ phẩm hết date,…
                   `}</h2>
-                <h2 className='text text-left text-color-10 txt-small-intro MB15'>{`Sau khi nhận được double check auth bởi CTV là chuyên viên đang làm việc tại Việt Nam và quốc tế.
-                Nếu phát hiện fake, Give Away sẽ lưu kho và hoàn trả lại khi đến hẹn được ghi trên biên nhận ký gửi.
+                <h2 className='text text-left text-color-10 txt-small-intro MB15'>{`*Lưu ý khác:
+                  ⁃ Sau khi được double check auth bởi CTV là chuyên viên đang làm việc tại Việt Nam và quốc tế, nếu phát hiện fake, GAP sẽ lưu kho và hoàn trả lại khi đến hẹn được ghi trên biên nhận ký gửi.
+                  ⁃ GAP.Q1 có hỗ trợ dịch vụ chuyển khoản tiền tất toán (có phí) và ship hàng tồn tận nhà cho khách (khách thanh toán phí ship).
                 `}</h2>
               </div>
               <div style={{ margin: 'auto' }}>

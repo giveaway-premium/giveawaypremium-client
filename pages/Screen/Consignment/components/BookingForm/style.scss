@@ -211,6 +211,12 @@
           opacity: 1;
           pointer-events: unset;
         }
+
+        .bookingErrorSlot {
+          width: 80%;
+          color: rgb(209, 36, 36);
+          margin: 1em 0;
+        }
       }
 
       .timeBooking-confirm {
