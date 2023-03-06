@@ -272,7 +272,7 @@ export default class Gap {
 
       // const customQuery = `skip=${skip}&limit=${limited}&count=1&where=${whereStr}`
       // const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"deletedAt":${null},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
-      const customQuery = `skip=${skip}&limit=${limited}&count=1&where=${allSearchRegex}`
+      const customQuery = `include=medias&skip=${skip}&limit=${limited}&count=1&where=${allSearchRegex}`
 
       console.log('customQuery')
       console.log(customQuery)
@@ -280,7 +280,7 @@ export default class Gap {
     } else {
       console.log('getConsignment 3')
       // const customQuery = `count=1,where={"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
-      const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"deletedAt":${null},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
+      const customQuery = `include=medias&skip=${skip}&limit=${limited}&count=1&where={"deletedAt":${null},"group":{"__type":"Pointer","className":"ConsignmentGroup","objectId":"${currentTagId}"}}`
       return this.fetchData('/classes/Product', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     }
   }
@@ -304,7 +304,7 @@ export default class Gap {
   }
 
   static async getProductWithObjectKey (objectId) {
-    const customQuery = `include=medias&limit=${1}&count=1&where={"objectId":"${objectId}"}`
+    const customQuery = `include=medias,category,subCategory&limit=${1}&count=1&where={"objectId":"${objectId}"}`
     return this.fetchData(`/classes/Product`, REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
 
@@ -338,6 +338,56 @@ export default class Gap {
       console.log(e)
       return false
     }
+  }
+
+  // //// Order Guest for product
+
+  static async setOrderGuest (productId, count) {
+    const body = {
+      productId: productId,
+      count: count || 1
+    }
+    console.log('body setConsignment')
+    console.log(body)
+    return this.fetchData('/functions/orderGuest', REQUEST_TYPE.POST, null, body)
+  }
+
+  static async updateOrderRequest (item) {
+    try {
+      const body = {
+        isGetMoney: item.isGetMoney || false
+      }
+
+      return this.fetchData(`/classes/OrderRequest/${item.objectId}`, REQUEST_TYPE.PUT, null, body, null, null, null, true)
+    } catch (e) {
+      console.log(e)
+      return false
+    }
+  }
+
+  static async deleteOrderRequest (objectId) {
+    try {
+      const body = {
+        deletedAt: {
+          '__type': 'Date',
+          'iso': moment()
+        }
+      }
+
+      return this.fetchData(`/classes/OrderRequest/${objectId}`, REQUEST_TYPE.PUT, null, body)
+    } catch (e) {
+      console.log(e)
+      return false
+    }
+  }
+
+  static async getOrderRequestWithID (page = 1, productId = null, limit = 20) {
+    let limited = limit || 100
+    let skip = (limited * page) - limited
+    const customQuery = `include=product&skip=${skip}&limit=${limited}&count=1&where={"deletedAt":${null},"product": { "__type": "Pointer", "className": "Product", "objectId": "${productId}" }}`
+    // const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"$or":[{"phoneNumber":"${keyword}"},{"consignerIdCard":"${keyword}"]}`
+
+    return this.fetchData('/classes/OrderRequest', REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
 
   // /////// Order

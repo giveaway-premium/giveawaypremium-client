@@ -27,7 +27,9 @@ class BaseContainer extends PureComponent {
         let _depth3 = `${25 - (_mouseX - _w) * 0.004}% ${70 - (_mouseY - _h) * 0.002}%`
         let x = `${_depth3}, ${_depth2}, ${_depth1}`
         // console.log(x)
-        elem.style.backgroundPosition = x
+        if (elem && elem.style && elem.style.backgroundPosition) {
+          elem.style.backgroundPosition = x
+        }
       }
     })()
 

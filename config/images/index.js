@@ -12,6 +12,8 @@ export const images = {
   founderAvatar: '/static/Assets/Image/founder-avater.jpg',
   timeLine: '/static/Assets/Image/homeScreen/timeLine.jpg',
   icClose: '/static/Assets/Image/Icon/close.svg',
+  chairIcon: '/static/Assets/Image/Icon/chairIcon.png',
+  customerIcon: '/static/Assets/Image/Icon/customerIcon.png',
 
   favicon: '/static/favicon.png',
   kyguiZalo: '/static/Assets/Image/kyguiquantam.jpg',
