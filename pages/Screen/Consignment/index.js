@@ -67,14 +67,12 @@ class ConsignmentScreen extends React.PureComponent {
   componentDidUpdate (prevState, preProps) {
     console.log('prevState', prevState)
     console.log('preProps', preProps)
-
   }
 
   componentWillUnmount () {
   }
 
   onHandleOpenContent = (formName) => {
-    ReduxServices.getSetting()
     this.setState({
       isShowText1: false,
       isShowText2: false,
@@ -83,6 +81,7 @@ class ConsignmentScreen extends React.PureComponent {
     }, () => {
       switch (formName) {
       case 'consignment':
+        ReduxServices.getSetting()
         setTimeout(() => {
           this.setState({
             isShowForm: true,

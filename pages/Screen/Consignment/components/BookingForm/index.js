@@ -138,7 +138,6 @@ class ConsignmentScreen extends React.PureComponent {
       arrayDate.push(`"${itemDate.date}"`)
     })
 
-    ReduxServices.getSetting()
     const res = await GapService.getAppointmentWithDate(arrayDate)
 
     if (res && res.results) {
@@ -322,7 +321,7 @@ class ConsignmentScreen extends React.PureComponent {
       this.fetchAppointment()
       this.props.backConsignment()
 
-      isOpenInstrucmentPage && window.open('https://giveawaypremium.com.vn/kygui?tab=phuongthuc', '_blank')
+      isOpenInstrucmentPage === true && window.open('https://giveawaypremium.com.vn/kygui?tab=phuongthuc', '_blank')
     })
   }
 
@@ -452,7 +451,7 @@ class ConsignmentScreen extends React.PureComponent {
                   </div>
 
                   <div className={'timeBooking-footer' + ((step === 1 || step === 0) && isHideUserForm ? ' show' : '')}>
-                    <span onClick={this.resetAndBackProps} className='text'>{`< Quay lại`}</span>
+                    <span onClick={() => this.resetAndBackProps(false)} className='text'>{`< Quay lại`}</span>
                     {step === 1 && <span onClick={this.onHandleStepTwo} className='text' style={choosenTimeCode ? { color: 'black' } : { opacity: 0.5, pointerEvents: 'none' }}>{`Tiếp tục >`}</span>}
                   </div>
                     </>}
@@ -535,7 +534,7 @@ class ConsignmentScreen extends React.PureComponent {
                       </Descriptions>
                     </Col>
                   </Row>
-                  <Button className='MT20' onClick={() => this.resetAndBackProps(true)} >Quay lại</Button>
+                  <Button className='MT20' onClick={() => this.resetAndBackProps(true)}>Quay lại</Button>
                 </div>
               </div>
             </div>
