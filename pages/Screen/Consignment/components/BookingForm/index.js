@@ -307,7 +307,7 @@ class ConsignmentScreen extends React.PureComponent {
     })
   }
 
-  resetAndBackProps = () => {
+  resetAndBackProps = (isOpenInstrucmentPage = false) => {
     this.setState({
       formData: {
         customerName: '',
@@ -322,8 +322,7 @@ class ConsignmentScreen extends React.PureComponent {
       this.fetchAppointment()
       this.props.backConsignment()
 
-      window.open('https://giveawaypremium.com.vn/kygui?tab=phuongthuc', '_blank')
-
+      isOpenInstrucmentPage && window.open('https://giveawaypremium.com.vn/kygui?tab=phuongthuc', '_blank')
     })
   }
 
@@ -536,7 +535,7 @@ class ConsignmentScreen extends React.PureComponent {
                       </Descriptions>
                     </Col>
                   </Row>
-                  <Button className='MT20' onClick={this.resetAndBackProps} >Quay lại</Button>
+                  <Button className='MT20' onClick={() => this.resetAndBackProps(true)} >Quay lại</Button>
                 </div>
               </div>
             </div>
