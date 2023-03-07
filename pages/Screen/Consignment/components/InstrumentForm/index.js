@@ -109,6 +109,8 @@ class ConsignmentScreen extends React.PureComponent {
                 <Divider />
                 <h2 className='text text-left text-color-10 txt-small-intro MB15'>{'Thời gian ký gửi: Từ 50-70 ngày và tuỳ đợt ký gửi.'}</h2>
 
+                <h2 className='text text-left text-color-10 txt-small-intro MB15'>{'Quy định nhận ký gửi: Số lượng tối thiểu 5 món hoặc tuỳ giá trị đơn hàng (sản phẩm cao cấp).'}</h2>
+
                 <h2 className='text text-left text-color-10 txt-small-intro MB15'>{`*Tiêu chí ký gửi:
                   ⁃ Giá ký gửi là giá thanh lý. Lấy sức hút, tình trạng của sản phẩm tại thời điểm bán để làm tiêu chuẩn định giá thanh lý. Dựa trên 3 yếu tố chính: chất liệu, kiểu dáng, thương hiệu. 
                   ⁃ GAP chỉ nhận sản phẩm có thương hiệu (global/ local), authentic/ no fake, tình trạng mới từ 80%. 
