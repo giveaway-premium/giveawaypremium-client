@@ -208,15 +208,22 @@ class TableConsignemntScreen extends React.PureComponent {
         key: '11'
       },
       {
-        title: '',
+        title: <Button style={{ width: '100%' }} onClick={() => this.onSendEmailToOneGroup()}>Gửi gmail tất cả</Button>,
         key: '12',
+        width: 200,
+        // fixed: 'right',
+        render: (value) => (<Button disabled={value.isGetMoney} style={{ width: '100%' }} onClick={() => this.onSendEmailToOnePerson(value)}>Gửi gmail tổng kết</Button>)
+      },
+      {
+        title: '',
+        key: '13',
         width: 120,
         // fixed: 'right',
         render: (value) => (<Button style={{ width: '100%' }} onClick={() => this.onDeleteButton(value)}>Xoá</Button>)
       },
       {
         title: 'Nhận tiền',
-        key: '13',
+        key: '14',
         width: 90,
         fixed: 'right',
         ...this.getColumnSearchIsGetMoney('isGetMoney'),
@@ -717,6 +724,28 @@ class TableConsignemntScreen extends React.PureComponent {
     }
   }
 
+  onSendEmailToOnePerson = async (row) => {
+    console.log('row', row)
+    const res = await GapService.sendEmailTongketWithObjectId(row.objectId)
+    console.log('res', res)
+    if (res) {
+      showNotification(`Gửi email thành công`)
+    } else {
+      showNotification(`Gửi email chưa được!!!`)
+    }
+  }
+
+  onSendEmailToOneGroup = async () => {
+    const { currentTag } = this.state
+    const res = await GapService.sendEmailTongketALLWithObjectIdConsigment(currentTag)
+    console.log('res', res)
+    if (res) {
+      showNotification(`Gửi email thành công`)
+    } else {
+      showNotification(`Gửi email chưa được!!!`)
+    }
+  }
+
   onChangeRadioIsGetMoney = async (row) => {
     console.log('onChangeRadioIsGetMoney')
     console.log(row)
@@ -967,7 +996,7 @@ class TableConsignemntScreen extends React.PureComponent {
             pageSize: 100,
             onChange: this.paginationChange
           }}
-          scroll={{ x: 1900, y: '65vh' }}
+          scroll={{ x: 2200, y: '65vh' }}
         />
         <MyModal ref={this.myModal} />
       </div>

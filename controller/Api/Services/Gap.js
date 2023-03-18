@@ -628,6 +628,22 @@ export default class Gap {
     }
   }
 
+  static async sendEmailTongketWithObjectId (id) {
+    const body = {
+      objectId: id
+    }
+
+    return this.fetchData('/functions/emailRemiderIndividualConsignment', REQUEST_TYPE.POST, null, body, null, null, null, true)
+  }
+
+  static async sendEmailTongketALLWithObjectIdConsigment (idConsignemnt) {
+    const body = {
+      groupId: idConsignemnt
+    }
+
+    return this.fetchData('/functions/emailReminderConsignmentGroup', REQUEST_TYPE.POST, null, body, null, null, null, true)
+  }
+
   // CHANNEL
   static async updateChannel (dataBody, objectId) {
     const body = {
