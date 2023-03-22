@@ -139,7 +139,7 @@ class TableEmailScreen extends React.PureComponent {
         title: 'RENDER',
         width: 500,
         render: (item) => {
-          if (item.content) {
+          if (item.content && typeof document !== 'undefined') {
             return (
               <ReactQuill
                 readOnly
