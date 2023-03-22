@@ -191,7 +191,7 @@ class ConsignmentScreen extends React.PureComponent {
     const { isShowText1, isShowText2, isShowText3, isShowForm, isShowText, isShowSearchForm, isShowBookingForm, isShowInstrumentForm } = this.state
     return (
       <div className='consignment-home-container'>
-        <div className='body-box' style={!isShowText && isShowForm ? { position: 'absolute', width: 0 } : {}}>
+        <div className='body-box' style={!isShowText && isShowForm ? { position: 'absolute', width: 0, height: 0 } : {}}>
           <span onClick={() => this.onHandleOpenContent('consignment')} className={'text consignment-txt' + (isShowText1 ? ' show' : '')} >Đặt Lịch</span>
           <a onClick={this.onIntrucmentConsignZalo} className={'text info-search-txt' + (isShowText2 ? ' show' : '')}>Ký Gửi Online</a>
           <span onClick={() => this.onHandleOpenContent('search')} className={'text info-search-txt' + (isShowText2 ? ' show' : '')}>Xem Tổng Kết</span>

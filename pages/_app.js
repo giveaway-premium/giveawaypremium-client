@@ -137,6 +137,18 @@ class GiveAway extends App {
           <title>GiveAwayPremium</title>
           <meta charSet='utf-8' />
           <link rel='shortcut icon' href={'https://i.ibb.co/pr24d1c/favicon.png'} />
+          <link rel='stylesheet' href='https://unpkg.com/react-quill@1.3.3/dist/quill.snow.css' />
+          <script
+            src='https://unpkg.com/react@16/umd/react.development.js'
+            crossOrigin
+          />
+          <script
+            src='https://unpkg.com/react-dom@16/umd/react-dom.development.js'
+            crossOrigin
+          />
+          <script src='https://unpkg.com/react-quill@1.3.3/dist/react-quill.js' />
+          <script src='https://unpkg.com/babel-standalone@6/babel.min.js' />
+          <script type='text/babel' src='/my-scripts.js' />
           {/* <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css' /> */}
           <meta httpEquiv='Cache-Control' content='no-cache, no-store, must-revalidate' />
           <meta httpEquiv='Pragma' content='no-cache' />

@@ -16,6 +16,7 @@ import TableCustomer from './components/TableCustomer'
 import TableAppointment from './components/TableAppointment'
 import TableProductScreen from './components/TableProduct'
 import TableOrder from './components/TableOrder'
+import TableEmailScreen from './components/TableEmailScreen'
 const { TabPane } = Tabs
 
 class ManageScreen extends React.PureComponent {
@@ -81,7 +82,10 @@ class ManageScreen extends React.PureComponent {
             <TableAppointment />
             {/* Content of Tab Pane 3 */}
           </TabPane>
-
+          <TabPane tab='Email' key='7'>
+            <TableEmailScreen />
+            {/* Content of Tab Pane 3 */}
+          </TabPane>
         </Tabs>
         {/* {this.detectRenderTabContent()} */}
         <MyModal ref={this.myModal} />

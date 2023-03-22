@@ -812,6 +812,26 @@ export default class Gap {
     return this.fetchData('/classes/Setting/meu8SzyuLd', REQUEST_TYPE.GET, null, null, null, null)
   }
 
+  // EMAIL
+
+  static async getEmailTable (page = 1) {
+    let limited = 100
+    let skip = (limited * page) - limited
+
+    const customQuery = `skip=${skip}&limit=${limited}&count=1`
+    return this.fetchData('/classes/Email', REQUEST_TYPE.GET, null, null, null, null, customQuery)
+  }
+
+  static async updateEmailTable (objectId, content) {
+    const body = {
+      content: content
+    }
+
+    console.log('updateEmailTable')
+    console.log(body)
+
+    return this.fetchData(`/classes/Email/${objectId}`, REQUEST_TYPE.PUT, null, body, null, null, null, true)
+  }
   // SETTING
 
   static async updateSetting (settingObject) {
