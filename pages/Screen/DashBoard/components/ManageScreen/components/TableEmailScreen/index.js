@@ -16,9 +16,12 @@ import { isEqual } from 'lodash'
 import moment from 'moment'
 import Highlighter from 'react-highlight-words'
 import TextArea from 'antd/lib/input/TextArea'
-import ReactQuill from 'react-quill'
+import dynamic from 'next/dynamic'
+
 import 'react-quill/dist/quill.snow.css'
 
+// const ReactQuill = typeof window === 'object' ? require('react-quill') : () => false
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false })
 const EditableRow = ({ index, ...props }) => {
   const [form] = Form.useForm()
   return (
