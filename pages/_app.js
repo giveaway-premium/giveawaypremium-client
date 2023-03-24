@@ -113,15 +113,15 @@ class GiveAway extends App {
     // clearInterval(this.currentInterval)
   }
 
-  onCloseBanner = () => {
-    this.setState({
-      isShowBanner: false
-    })
-  }
+  // onCloseBanner = () => {
+  //   this.setState({
+  //     isShowBanner: false
+  //   })
+  // }
 
-  onHandleClickAds = () => {
-    window.open('http://ddstudio.vn/vi/dich-vu/thiet-ke/', '_blank')
-  }
+  // onHandleClickAds = () => {
+  //   window.open('http://ddstudio.vn/vi/dich-vu/thiet-ke/', '_blank')
+  // }
 
   render () {
     const { Component, pageProps } = this.props
@@ -196,14 +196,14 @@ class GiveAway extends App {
             </div>
           ) : (
             <>
-              {isShowBanner && (
+              {/* {isShowBanner && (
                 <div className='bottom-banner-box-out'>
                   <div className='bottom-banner-box'>
                     <img className='close-icon' src={images.icCloseGray} onClick={this.onCloseBanner} />
                     <img className='banner-img' src={images.bannerHome} onClick={this.onHandleClickAds} />
                   </div>
                 </div>
-              )}
+              )} */}
               <ReduxConnectIntl>
                 <BaseContainer {...pageProps}>
                   <Component {...pageProps} />
