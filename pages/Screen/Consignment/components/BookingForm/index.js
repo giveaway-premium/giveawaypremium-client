@@ -326,11 +326,11 @@ class ConsignmentScreen extends React.PureComponent {
   }
 
   changeData = (e) => {
-    if (e.target.value > 100 && e.target.name === 'numberOfProduct') {
+    if (e.target.value > 50 && e.target.name === 'numberOfProduct') {
       this.setState({
         isErrorMax: true
       })
-    } else if (e.target.value <= 100 && e.target.name === 'numberOfProduct') {
+    } else if (e.target.value <= 50 && e.target.name === 'numberOfProduct') {
       this.setState({
         isErrorMax: false
       })
@@ -496,7 +496,7 @@ class ConsignmentScreen extends React.PureComponent {
                       rules={[{ required: true, message: 'Vui lòng nhập số lượng hàng' }]}
                       label='Số lượng Hàng Hoá'
                       {...formData.numberOfProduct < 5 ? { validateStatus: 'error', help: 'Số lượng ký gửi tối thiểu là 5 món. Tuy nhiên, nếu anh/chị ký gửi sản phẩm luxury (giá trị ký gửi trên 5.000.000đ). Vui lòng liên hệ hotline 0703334443 để được hỗ trợ tốt nhất.' } : {}}
-                      {...isErrorMax ? { validateStatus: 'error', help: 'Với số lượng hàng hoá trên 100, Xin vui lòng liên hệ hotline 0703334443 để được hỗ trợ tốt nhất.' } : {}}
+                      {...isErrorMax ? { validateStatus: 'error', help: 'Với số lượng hàng hoá trên 50, Xin vui lòng liên hệ hotline 0703334443 để được hỗ trợ tốt nhất.' } : {}}
                     >
                       <Col sm={24} md={6}>
                         <Input value={formData.numberOfProduct} size='small' defaultValue={1} name='numberOfProduct' type={'number'} id='numberOfProduct' key='numberOfProduct' onChange={this.changeData} placeholder='...' />
