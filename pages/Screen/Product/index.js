@@ -82,6 +82,10 @@ class Product extends React.PureComponent {
             photoAlbumRes.push(`${albumItem.data.url}`)
           })
 
+          const orderRequest = getDataLocal('orderRequest')
+
+          console.log('orderRequest', orderRequest)
+
           
           this.setState({
             isLoadingDetail: false,
@@ -112,12 +116,12 @@ class Product extends React.PureComponent {
     console.log('detailInfo', detailInfo)
     const resData = await Gap.setOrderGuest(detailInfo.objectId, 1)
 
-    console.log('resData', resData)
-    if (resData && resData.objectId) {
+    console.log('resData1', resData)
+    if (resData && resData?.result?.objectId) {
       const orderRequest = getDataLocal('orderRequest') || []
 
       orderRequest.push({
-        orderRequestId: resData,
+        orderRequestId: resData.result.objectId,
         productId: detailInfo.objectId,
         timeRegister: moment().format('DD-MM-YYYY HH:mm:ss'),
       })

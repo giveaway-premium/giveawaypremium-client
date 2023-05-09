@@ -146,6 +146,10 @@ class SummaryScreen extends React.PureComponent {
         console.log('state', this.state)
       })
       console.log('orderList', orderList)
+    } else {
+      this.setState({
+        isLoadingSummary: false
+      })
     }
   }
 
