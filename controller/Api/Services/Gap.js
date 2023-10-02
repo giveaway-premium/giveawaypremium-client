@@ -209,8 +209,11 @@ export default class Gap {
       }
 
       if (selectedKeys?.code && selectedKeys?.code.length > 0) {
-        whereUpperCase.code = selectedKeys?.code.trim()
-        whereLowerCase.code = selectedKeys?.code.trim().toLowerCase()
+        // whereUpperCase.code = selectedKeys?.code.trim()
+        // whereLowerCase.code = selectedKeys?.code.trim().toLowerCase()
+
+        whereUpperCase.code = { '$regex': selectedKeys?.code.trim() }
+        whereLowerCase.code = { '$regex': selectedKeys?.code.trim().toLowerCase() }
       }
 
       if (selectedKeys?.soldNumberProduct && selectedKeys?.soldNumberProduct.length > 0) {
@@ -496,24 +499,24 @@ export default class Gap {
       console.log('allSearchRegex')
       console.log(allSearchRegex)
 
-      const customQuery = `skip=${skip}&limit=${limited}&count=1&include=product&where={${allSearchRegex}}`
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&include=product,orderData,orderData.transporter&where={${allSearchRegex}}`
       console.log('customQuery')
       console.log(customQuery)
-      const customQueryWithoutCondition = `include=product`
+      const customQueryWithoutCondition = `include=product,orderData,orderData.transporter`
 
       if (selectedKeys.objectId) {
-        return this.fetchData(`/classes/Order/${selectedKeys.objectId.trim()}`, REQUEST_TYPE.GET, null, null, null, null, customQueryWithoutCondition)
+        return this.fetchData(`/classes/OrderRequest/${selectedKeys.objectId.trim()}`, REQUEST_TYPE.GET, null, null, null, null, customQueryWithoutCondition)
       } else {
-        return this.fetchData('/classes/Order', REQUEST_TYPE.GET, null, null, null, null, customQuery)
+        return this.fetchData('/classes/OrderRequest', REQUEST_TYPE.GET, null, null, null, null, customQuery)
       }
     } else {
-      console.log('getConsignment 3')
+      console.log('getConsignment 333')
       const fromDateFormated = moment(fromDateMoment, 'YYYY-MM-DD')
       const toDateFormated = moment(toDateMoment, 'YYYY-MM-DD')
       console.log('fromDateFormated', fromDateFormated)
       console.log('toDateFormated', toDateFormated)
 
-      const customQuery = `skip=${skip}&limit=${limited}&count=1&include=product&where={"deletedAt":${null}, "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"},"$lte": {"__type": "Date","iso": "${toDateFormated}"}}}`
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&include=product,orderData,orderData.transporter&where={"deletedAt":${null}, "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"},"$lte": {"__type": "Date","iso": "${toDateFormated}"}}}`
       return this.fetchData('/classes/OrderRequest', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     }
   }
@@ -999,7 +1002,10 @@ export default class Gap {
     let limited = limit
     let skip = (limited * 1) - limited
 
-    const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"phoneNumber":"${phoneNumber.toString()}"}`
+    // const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"phoneNumber":"${phoneNumber.toString()}"}`
+    // const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"$or":[{"status":"IN_QUEUE"}, {"status":"VALID"}],"deletedAt":${null}, "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"}} ,"product": { "__type": "Pointer", "className": "Product", "objectId": "${productId}" }}`
+
+    const customQuery = `skip=${skip}&limit=${limited}&count=1&where={"$or":[{"phoneNumber":"${phoneNumber.toString()}"},{"username":"${phoneNumber.toString()}"}]}`
 
     return this.fetchData('/classes/_User', REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
@@ -1088,6 +1094,17 @@ export default class Gap {
         },
         transport: 'road',
         value: 0
+      }
+    }
+    return this.fetchData('/functions/transporter', REQUEST_TYPE.POST, null, body)
+  }
+
+  static async deleteTransport (orderId, isXteam = false) {
+    const body = {
+      service: 'giaohangtietkiem',
+      action: 'CANCEL_ORDER',
+      data: {
+        orderId: orderId
       }
     }
     return this.fetchData('/functions/transporter', REQUEST_TYPE.POST, null, body)

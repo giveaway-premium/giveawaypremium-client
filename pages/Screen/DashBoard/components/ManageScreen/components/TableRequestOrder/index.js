@@ -16,6 +16,7 @@ import { filter, isEqual } from 'lodash'
 import Highlighter from 'react-highlight-words'
 import { EMAIL_TITLE, EMAIL_TYPE } from 'common/constants'
 import moment from 'moment'
+import BillOrderGHTK from '../TableOrder/components/BillOrderGHTK'
 const { RangePicker } = DatePicker
 const { TabPane } = Tabs
 
@@ -269,11 +270,12 @@ class TableRequestOrder extends React.PureComponent {
     if (value && !value.transporter) {
       return (
         <Popconfirm title='Xác nhận' onConfirm={() => this.onChangeRadioIsGetMoney(value, true)}>
-          <Radio.Button className={value.isGetMoney ? 'radio-true-isGetMoney' : 'radio-false-isGetMoney'} value={value.isGetMoney}>{value.isGetMoney ? 'Rồi' : 'Tạo đơn GHTK'}</Radio.Button>
+          {/* <Radio.Button className={value.isGetMoney ? 'radio-true-isGetMoney' : 'radio-false-isGetMoney'}>{'Tạo đơn GHTK'}</Radio.Button> */}
+          <Radio.Button className={'radio-false-isGetMoney'}>{'Tạo đơn GHTK'}</Radio.Button>
         </Popconfirm>
         // <Button style={{ width: '100%' }} onClick={() => this.onPushOrderToGHTK(value)}>Tạo đơn GHTK</Button>
       )
-    } else if (value.transporter.success) {
+    } else if (value.transporter) {
       return (
         <>
           <Button style={{ width: '100%', marginBottom: '5px' }} onClick={() => this.onOpenGHTKDetailModal(value)}>Xem đơn GHTK</Button>
@@ -460,15 +462,24 @@ class TableRequestOrder extends React.PureComponent {
     }
   }
 
-  cancelOrder = (value) => {
-    showNotification('Chưa làm')
+  cancelOrder = async (value) => {
+    const deleteTransport = await GapService.deleteTransport(value)
+    console.log('deleteTransport', deleteTransport)
+    if (deleteTransport?.result?.success) {
+      showNotification('Xoá đơn thành công')
+    } else {
+      showNotification('Xoá đơn không thành công')
+    }
   }
 
   printOrder = (orderId) => {
-
+    if (orderId) {
+      this.myModal.current.openModal(<BillOrderGHTK orderId={orderId} />, { closable: true, modalWidth: '50vh' })
+    }
   }
 
   renderDetailGHTKBox = (value) => {
+    console.log('value', value)
     const shipData = value && value?.transporter?.res?.order
     return (
       <div>
@@ -484,8 +495,8 @@ class TableRequestOrder extends React.PureComponent {
         <p>Phí giao hàng: {numberWithCommas(shipData.ship_money)} vnđ</p>
         <p>Địa chỉ giao hàng: {shipData.address}</p>
 
-        <Button className='MT10' onClick={() => this.cancelOrder(value)}>Huỷ Đơn Hàng</Button>
-        <Button className='MT10 ML10' onClick={() => this.printOrder(shipData.partner_id)}>In Đơn Hàng</Button>
+        <Button className='MT10' onClick={() => this.cancelOrder(value.orderId)}>Huỷ Đơn Hàng</Button>
+        <Button className='MT10 ML10' onClick={() => this.printOrder(value.orderId)}>In Đơn Hàng</Button>
       </div>
     )
   }
@@ -1069,7 +1080,7 @@ class TableRequestOrder extends React.PureComponent {
             isOnlineSale: 'Online',
             shippingInfo: item.shippingInfo,
             clientInfo: item.client || item.clientInfo,
-            transporter: item.transporter,
+            transporter: item.orderData.transporter,
             userAdress: item?.userInformation?.userAddress || '---',
             addressShipping: `${item?.userInformation?.orderAdressWard}-${item?.userInformation?.orderAdressDistrict}-${item?.userInformation?.orderAdressProvince}`,
             // numSoldConsignment: `${Number(item.numSoldConsignment || 0)}`,

@@ -412,8 +412,14 @@ class TableOrderScreen extends React.PureComponent {
     }
   }
 
-  cancelOrder = (value) => {
-    showNotification('Chưa làm')
+  cancelOrder = async (value) => {
+    const deleteTransport = await GapService.deleteTransport(value)
+    console.log('deleteTransport', deleteTransport)
+    if (deleteTransport?.result?.success) {
+      showNotification('Xoá đơn thành công')
+    } else {
+      showNotification('Xoá đơn không thành công')
+    }
   }
 
   printOrder = (orderId) => {
@@ -438,7 +444,7 @@ class TableOrderScreen extends React.PureComponent {
         <p>Phí giao hàng: {numberWithCommas(shipData.ship_money)} vnđ</p>
         <p>Địa chỉ giao hàng: {shipData.address}</p>
 
-        <Button className='MT10' onClick={() => this.cancelOrder(value)}>Huỷ Đơn Hàng</Button>
+        <Button className='MT10' onClick={() => this.cancelOrder(value?.transporter?.order?.objectId)}>Huỷ Đơn Hàng</Button>
         <Button className='MT10 ML10' onClick={() => this.printOrder(value?.transporter?.order?.objectId)}>In Đơn Hàng</Button>
       </div>
     )

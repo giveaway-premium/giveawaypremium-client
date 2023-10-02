@@ -153,7 +153,7 @@ class Product extends React.PureComponent {
     return (
       <div>
         <p className='text text-title MB10'>Thông tin mã chờ</p>
-        <p>Mã chờ của bạn là: {waitingCode}</p>
+        <span className='yourOrderIdBox MB5'>Mã chờ của bạn là: {waitingCode}</span>
         <p>Số thứ tự của bạn là: {detailInfo.soldNumberProduct + 1}</p>
         <span className='buyTxt'>Quý khách vui lòng copy mã chờ và nhắn đến trang Facebook GiveawayPremium để chúng tôi tư vấn và đặt hàng.</span>
         <Button style={{ marginTop: '20px' }} onClick={() => this.onRouteFacebook(waitingCode)}>

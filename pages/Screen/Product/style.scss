@@ -345,5 +345,16 @@
       }
     }
   }
-  
+}
+
+.yourOrderIdBox {
+  padding: 5px 10px;
+  align-self: center;
+  margin: 0.5em 0;
+  background-color: black;
+  color: white;
+  margin-bottom: 15px !important;
+  &:hover {
+    cursor: pointer;
+  }
 }
