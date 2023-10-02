@@ -83,6 +83,10 @@ class ManageScreen extends React.PureComponent {
             <TableAppointment />
             {/* Content of Tab Pane 3 */}
           </TabPane>
+          <TabPane tab='Email' key='7'>
+            <TableEmailScreen />
+            {/* Content of Tab Pane 3 */}
+          </TabPane>
 
           <TabPane tab='Hàng Chờ' key='7'>
             <TableRequestOrder />
