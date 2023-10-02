@@ -4,14 +4,15 @@ import GapService from 'controller/Api/Services/Gap'
 import { connect } from 'react-redux'
 import { Router } from 'common/routes'
 import { withRouter } from 'next/router'
-import { Layout, Button, Drawer, Menu, Dropdown } from 'antd'
+import { Layout, Button, Drawer, Menu, Dropdown, Input, Cascader, message } from 'antd'
 import CustomLink from 'pages/Components/CustomLink/index.js'
 import Media from 'react-media'
 import { CloseOutlined, DownOutlined } from '@ant-design/icons'
 import Observer from 'common/observer'
 import { images } from 'config/images'
 import './style.scss'
-import { checkIsSigned } from 'common/function'
+import { checkIsSigned, getDataLocal, saveDataLocal, showNotification } from 'common/function'
+import MyModal from 'pages/Components/MyModal'
 
 class Header extends React.PureComponent {
   constructor (props) {
@@ -23,16 +24,67 @@ class Header extends React.PureComponent {
       isShowConsignment: false,
       isShowStore: false,
       isShowRightSideHeader: false,
-      isShowRightSideHeaderAnimation: false
+      isShowRightSideHeaderAnimation: false,
+      clientInfo: {
+        fullName: '',
+        phoneNumber: '',
+        bankName: '',
+        bankId: '',
+        mail: '',
+        userAddress: ''
+      },
+      optionsAddressArr: [],
+      shippingInfo: {}
     }
+    this.myModal = React.createRef()
   }
 
   componentDidMount () {
+    // this.convertAddressOptionArray()
     setTimeout(() => {
       this.setState({
         isShowRightSideHeader: true
       })
     }, 200)
+
+    // if (getDataLocal('CUSTOMER_DATA')) {
+    //   const userData = getDataLocal('CUSTOMER_DATA')
+    //   this.setState({
+    //     clientInfo: userData.clientInfo,
+    //     shippingInfo: userData.shippingInfo || null
+    //   })
+    // }
+
+    // console.log('CUSTOMER_DATA', getDataLocal('CUSTOMER_DATA'))
+  }
+
+  convertAddressOptionArray = () => {
+    const { addressInfoArrayRedux } = this.props
+    let PROVINCE = []
+    const addressInfoArrayReduxTemp = [...addressInfoArrayRedux]
+    PROVINCE = addressInfoArrayReduxTemp.map((optionAddress, optionAddressIndex) => (
+      {
+        value: optionAddress.name,
+        label: optionAddress.name,
+        children: optionAddress.districts.map((districtItem, districtItemIndex) => (
+          {
+            value: districtItem.name,
+            label: districtItem.name,
+            children: districtItem.wards.map((wardItem, wardItemIndex) => (
+              {
+                value: wardItem.name,
+                label: wardItem.name
+              }
+            ))
+          }
+        ))
+      }
+    ))
+
+    console.log('PROVINCE', PROVINCE)
+    this.setState({
+      optionsAddressArr: PROVINCE
+    })
   }
 
   backHome = () => {
@@ -69,8 +121,176 @@ class Header extends React.PureComponent {
     })
   }
 
+  onChangeDataClient = (event, keyValue) => {
+    const { clientInfo } = this.state
+
+    console.log('onChangeDataClient', event.target.value)
+    if (keyValue === 'bankName') {
+      this.setState({
+        clientInfo: {
+          ...clientInfo,
+          bankName: event.target.value ? event.target.value.trim() : ''
+        }
+      })
+    } else if (keyValue === 'bankId') {
+      this.setState({
+        clientInfo: {
+          ...clientInfo,
+          bankId: event.target.value ? event.target.value.trim() : ''
+        }
+      })
+    } else if (keyValue === 'fullName') {
+      this.setState({
+        clientInfo: {
+          ...clientInfo,
+          fullName: event.target.value ? event.target.value.trim() : ''
+        }
+      })
+    } else if (keyValue === 'userAddress') {
+      this.setState({
+        clientInfo: {
+          ...clientInfo,
+          userAddress: event.target.value ? event.target.value.trim() : ''
+        }
+      })
+    } else if (keyValue === 'mail') {
+      this.setState({
+        clientInfo: {
+          ...clientInfo,
+          mail: event.target.value ? event.target.value.trim() : ''
+        }
+      })
+    } else if (keyValue === 'phoneNumber') {
+      this.setState({
+        clientInfo: {
+          ...clientInfo,
+          phoneNumber: event.target.value ? event.target.value.trim() : ''
+        }
+      })
+    }
+  }
+
   handleVisibleChange = visible => {
     this.setState({ visible })
+  }
+
+  renderUserInfoPopup = () => {
+    const { clientInfo, shippingInfo } = this.state
+    return (
+      <div className='customerInfoBox'>
+        <span className='titleCustomerInfoBox'>Thông tin khách hàng</span>
+        <p className='phoneTxt'>*Chúng tôi sử dụng thông tin này để hỗ trợ công việc vận chuyển đơn hàng và quản lý thông tin đơn hàng.</p>
+
+        <div className='phoneBox'>
+          <span className='phoneTxt'>Số điện thoại: </span>
+          <Input defaultValue={clientInfo?.phoneNumber} minLength={10} maxLength={11} allowClear onChange={(value) => this.onChangeDataClient(value, 'phoneNumber')} placeholder='...' />
+        </div>
+
+        <div className='phoneBox'>
+          <span className='phoneTxt'>Tên khách hàng: </span>
+          <Input defaultValue={clientInfo?.fullName} minLength={10} maxLength={30} allowClear onChange={(value) => this.onChangeDataClient(value, 'fullName')} placeholder='...' />
+        </div>
+
+        <div className='phoneBox'>
+          <span className='phoneTxt'>Email: </span>
+          <Input defaultValue={clientInfo?.mail} minLength={10} maxLength={30} allowClear onChange={(value) => this.onChangeDataClient(value, 'mail')} placeholder='...' />
+        </div>
+
+        <div className='phoneBox'>
+          <span className='phoneTxt'>Tên ngân hàng: </span>
+          <Input defaultValue={clientInfo?.bankName} allowClear onChange={(value) => this.onChangeDataClient(value, 'bankName')} placeholder='...' />
+        </div>
+
+        <div className='phoneBox'>
+          <span className='phoneTxt'>ID ngân hàng: </span>
+          <Input defaultValue={clientInfo?.bankId} allowClear onChange={(value) => this.onChangeDataClient(value, 'bankId')} placeholder='...' />
+        </div>
+
+        <div className='phoneBox'>
+          <span className='phoneTxt'>Địa chỉ: </span>
+          <Input defaultValue={clientInfo?.userAddress} minLength={10} maxLength={11} allowClear onChange={(value) => this.onChangeDataClient(value, 'userAddress')} placeholder='Số nhà & Tên Đường' />
+        </div>
+
+        <div className='phoneBox'>
+          <Cascader
+            allowClear
+            showSearch
+            placeholder={(shippingInfo.orderAdressProvince && shippingInfo.orderAdressDistrict && shippingInfo.orderAdressWard) ? `${shippingInfo.orderAdressProvince}-${shippingInfo.orderAdressDistrict}-${shippingInfo.orderAdressWard}` : 'Thành phố/Tỉnh - Quận/Huyện - Xã/Phường'}
+            options={this.state.optionsAddressArr}
+            defaultValue={[]}
+            displayRender={this.displayRender}
+            style={{ width: '100%' }}
+            onChange={this.onChangeCasacderSeller}
+          />
+        </div>
+
+        <Button className='updateBox' onClick={this.onUpdateUserData}>
+          Cập nhật
+        </Button>
+      </div>
+    )
+  }
+
+  onUpdateUserData = () => {
+    const { clientInfo, shippingInfo } = this.state
+    saveDataLocal('CUSTOMER_DATA', {
+      clientInfo: clientInfo,
+      shippingInfo: shippingInfo
+    })
+
+    message.success('Cập nhật thông tin khách hàng thành công')
+  }
+
+  handleAreaClick = (
+    e,
+    label,
+    option
+  ) => {
+    e.stopPropagation()
+    console.log('clicked', label, option)
+  }
+
+  displayRender = (labels, selectedOptions) =>
+    labels.map((label, i) => {
+      const option = selectedOptions[i]
+      if (i === labels.length - 1) {
+        return (
+          <span key={option.value}>
+            <a onClick={e => this.handleAreaClick(e, label, option)}>{label}</a>
+          </span>
+        )
+      }
+      return <span key={option.value}>{label} / </span>
+    })
+
+    onChangeCasacderSeller = async (value) => {
+      console.log('onChangeOrderAddressStreet', value)
+      const shippingInfo = {
+        orderAdressProvince: value[0],
+        orderAdressDistrict: value[1],
+        orderAdressWard: value[2]
+      }
+      const formDataFee = {
+        orderAdressProvince: value[0],
+        orderAdressDistrict: value[1],
+        orderAdressWard: value[2]
+      }
+      message.loading('Đang lấy thông tin phí shipping...', 2)
+      const resFee = await GapService.getFeeForTransport(formDataFee, false)
+      console.log('getFeeForTransport', resFee)
+
+      if (resFee && resFee.result) {
+        shippingInfo.shippingFee = resFee.result
+        this.setState({
+          shippingInfo
+        })
+      } else {
+        showNotification('Không thể ước tính phí ship')
+      }
+    }
+
+  onOpenUserDetail = () => {
+    this.myModal.current.openModal(this.renderUserInfoPopup(), { closable: true })
   }
 
   renderLeftSide () {
@@ -119,12 +339,15 @@ class Header extends React.PureComponent {
             <span className={'main-nav-item' + (isShowRightSideHeader ? ' show' : '')}>Mua sắm</span>
           </CustomLink>
         </Menu.Item>
+        {/* <Menu.Item key={4} onClick={this.onOpenUserDetail}>
+          <span className={'main-nav-item userInfo' + (isShowRightSideHeader ? ' show' : '')}>Thông tin khách hàng</span>
+        </Menu.Item> */}
       </Menu>
     )
   }
 
   renderFooterNav () {
-    const { messages } = this.props.locale
+    // const { messages } = this.props.locale
     return (
       <Menu
         className='footer-nav'
@@ -136,10 +359,9 @@ class Header extends React.PureComponent {
 
   renderDesktop () {
     const { locale, userData } = this.props
-    const { isShowRightSideHeader } = this.state
-    const { messages } = locale
+    // const { isShowRightSideHeader } = this.state
+    // const { messages } = locale
     const isAdminPage = this.props.router.asPath === '/admin'
-
     const isSigned = checkIsSigned(userData)
 
     setTimeout(() => {
@@ -242,6 +464,9 @@ class Header extends React.PureComponent {
               <h1 className='logo'>
                 <img width={90} src={images.logoHeaderWhite} style={{ objectFit: 'contain', marginBottom: '10px' }} />
               </h1>
+              <Menu.Item key={4} onClick={this.onOpenUserDetail}>
+                <span className={'main-nav-item userInfo'}>Thông tin khách hàng</span>
+              </Menu.Item>
               {this.renderMainNavMobile('vertical')}
 
               {/* {!isSigned && <div className='ctn-btn-signin MT20'>
@@ -283,6 +508,7 @@ class Header extends React.PureComponent {
             query='(max-width: 499px)'
             render={() => this.renderMobile()}
           />
+          <MyModal ref={this.myModal} />
         </div>
       )
     }
@@ -290,6 +516,7 @@ class Header extends React.PureComponent {
 }
 const mapStateToProps = (state) => ({
   locale: state.locale,
-  userData: state.userData
+  userData: state.userData,
+  addressInfoArrayRedux: state.addressInfoArrayRedux
 })
 export default withRouter(connect(mapStateToProps, null)(Header))

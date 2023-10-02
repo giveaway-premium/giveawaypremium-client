@@ -10,6 +10,26 @@ export const saveDataLocal = (key, data) => {
   localStorage.setItem(key, JSON.stringify(data))
 }
 
+export const randomString = () => {
+  const chars = '0123456789'
+  const stringLength = 10
+  let randomstring = ''
+  for (let i = 0; i < stringLength; i++) {
+    const rnum = Math.floor(Math.random() * chars.length)
+    randomstring += chars[rnum]
+  }
+  return randomstring
+}
+
+export const copyToClipboard = (text) => {
+  const tmp = document.createElement('input')
+  tmp.value = text
+  document.body.appendChild(tmp)
+  tmp.select()
+  document.execCommand('copy')
+  tmp.remove()
+}
+
 export const getDataLocal = (key) => {
   // eslint-disable-next-line no-undef
   return JSON.parse(localStorage.getItem(key))
@@ -323,9 +343,9 @@ export const convertAddressArrToString = (arrAddress, numStart = 4, numEnd = 4) 
   }
 }
 
-export const scrollTop = () => {
+export const scrollTop = (topProps = 0) => {
   if (window) {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo({ top: topProps, behavior: 'smooth' })
   }
 }
 

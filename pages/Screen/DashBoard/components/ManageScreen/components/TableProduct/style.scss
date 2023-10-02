@@ -537,4 +537,7 @@
   cursor: row-resize;
 }
 
-
+.CodeBoxPinter {
+  display: flex;
+  flex-direction: column;
+}

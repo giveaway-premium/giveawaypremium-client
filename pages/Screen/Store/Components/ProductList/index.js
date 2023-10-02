@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { Form, Row, Col, Layout, Input, Button, Spin, Descriptions, Tabs, Table } from 'antd'
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
-import { numberWithCommas, showNotification } from 'common/function'
+import { numberWithCommas, scrollTop, showNotification } from 'common/function'
 import { LoadingOutlined } from '@ant-design/icons'
 import { Router } from 'common/routes'
 import { isMobile } from 'react-device-detect'
@@ -18,9 +18,14 @@ import 'react-loading-skeleton/dist/skeleton.css'
 import { OBJECTID_CATEGORY } from 'common/constants'
 
 const ProductList = (props) => {
-  const { productList, currentPage, maxPage, isLoadingMore, handleScrollActive } = props
+  const { productList, currentPage, maxPage, isLoadingMore, handleScrollActive, currentCategoryId } = props
 
   console.log('productList', productList)
+
+  // useEffect(() => {
+  //   scrollTop(80)
+  //   window.scrollTo({ top: 80, behavior: 'smooth' })
+  // }, [currentCategoryId])
 
   const onOpenProductScreen = (item) => {
     Router.pushRoute(`/sanpham/${item.objectId}`, { itemData: item })

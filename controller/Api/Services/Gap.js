@@ -342,21 +342,71 @@ export default class Gap {
 
   // //// Order Guest for product
 
+  static async getOrderGuestWithCode (keyword) {
+    let customQuery
+    if (keyword?.length > 0) {
+      customQuery = `include=medias&limit=${1}&count=1&where={"objectId":"${keyword}"}`
+    } else {
+      customQuery = `include=medias&limit=${1}&count=1`
+    }
+    return this.fetchData('/classes/Product', REQUEST_TYPE.GET, null, null, null, null, customQuery)
+  }
+
   static async setOrderGuest (productId, count) {
     const body = {
       productId: productId,
       count: count || 1
     }
-    console.log('body setConsignment')
-    console.log(body)
     return this.fetchData('/functions/orderGuest', REQUEST_TYPE.POST, null, body)
   }
 
-  static async updateOrderRequest (item) {
+  static async updateClientInfoOrderRequest (objectId, userData, waitingCode) {
     try {
       const body = {
-        isGetMoney: item.isGetMoney || false
+        userInformation: {
+          ...userData.clientInfo,
+          ...userData.shippingInfo
+        }
+        // isGetMoney: item.isGetMoney || false
       }
+
+      if (waitingCode) {
+        body.waitingCode = waitingCode
+      }
+
+      return this.fetchData(`/classes/OrderRequest/${objectId}`, REQUEST_TYPE.PUT, null, body, null, null, null, true)
+    } catch (e) {
+      console.log(e)
+      return false
+    }
+  }
+
+  static async updateOrderRequest (item, isUpdateOrderAndTransportOnly = false) {
+    try {
+      let body = {}
+
+      if (isUpdateOrderAndTransportOnly) {
+        if (item && item.orderId) {
+          body.orderData = { '__type': 'Pointer', 'className': 'Order', 'objectId': item.orderId }
+          // body.order = item.orderId
+        }
+
+        if (item && item.transporterId) {
+          body.transporterDaata = { '__type': 'Pointer', 'className': 'Transporter', 'objectId': item.transporterId }
+          // body.transporter = item.transporterId
+        }
+      } else {
+        body = {
+          isGetMoney: item.isGetMoney || false
+        }
+
+        if (item && item.timeConfirmGetMoney) {
+          body.timeConfirmGetMoney = item.timeConfirmGetMoney
+        }
+      }
+
+      console.log('body update updateOrder', body)
+      console.log('item update updateOrder', item)
 
       return this.fetchData(`/classes/OrderRequest/${item.objectId}`, REQUEST_TYPE.PUT, null, body, null, null, null, true)
     } catch (e) {
@@ -364,6 +414,19 @@ export default class Gap {
       return false
     }
   }
+
+  // static async updateOrderRequest (item) {
+  //   try {
+  //     const body = {
+  //       isGetMoney: item.isGetMoney || false
+  //     }
+
+  //     return this.fetchData(`/classes/OrderRequest/${item.objectId}`, REQUEST_TYPE.PUT, null, body, null, null, null, true)
+  //   } catch (e) {
+  //     console.log(e)
+  //     return false
+  //   }
+  // }
 
   static async deleteOrderRequest (objectId) {
     try {
@@ -381,10 +444,96 @@ export default class Gap {
     }
   }
 
+  static async getOrderRequestWithSearchKey (page = 1, selectedKeys = null, limit = 100, fromDateMoment, toDateMoment) {
+    console.log('getConsignment')
+    console.log(page)
+    console.log(selectedKeys)
+
+    let limited = limit || 100
+    let skip = (limited * page) - limited
+
+    // selectedKeys.phoneNumber ||
+    // selectedKeys.consignerName ||
+    // selectedKeys.objectId ||
+    // selectedKeys.isTransferMoneyWithBank ||
+    // selectedKeys.totalNumberOfProductForSale ||
+    // selectedKeys.isOnlineSale)) {
+
+    if (selectedKeys) {
+      console.log('getConsignment 1')
+      console.log(selectedKeys.phoneNumber)
+      console.log(selectedKeys.remainNumConsignment)
+      const fromDateFormated = moment(fromDateMoment, 'YYYY-MM-DD')
+      const toDateFormated = moment(toDateMoment, 'YYYY-MM-DD')
+      let allSearchRegex = `"deletedAt":${null}, "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"},"$lte": {"__type": "Date","iso": "${toDateFormated}"}}`
+      if (selectedKeys.phoneNumber) {
+        console.log('getConsignment 2')
+
+        allSearchRegex += `,"phoneNumber":{"$regex":"${selectedKeys.phoneNumber.trim()}"}`
+        console.log('allSearchRegex', allSearchRegex)
+      }
+      if (selectedKeys.fullName) {
+        // allSearchRegex += `,"fullName":{"$regex":"${selectedKeys.fullName.trim()}"}`
+
+        allSearchRegex += `,"fullName":{"$text":{"$search":{"$term":"${selectedKeys.fullName}"}}}`
+        console.log('allSearchRegex2', allSearchRegex)
+      }
+
+      if (selectedKeys.isTransferMoneyWithBank) {
+        allSearchRegex += `,"isTransferMoneyWithBank":${selectedKeys.isTransferMoneyWithBank}`
+        console.log('allSearchRegex2', allSearchRegex)
+      }
+
+      if (selectedKeys.totalNumberOfProductForSale) {
+        allSearchRegex += `,"totalNumberOfProductForSale":${selectedKeys.totalNumberOfProductForSale.trim()}`
+        console.log('allSearchRegex2', allSearchRegex)
+      }
+
+      if (selectedKeys.isOnlineSale) {
+        allSearchRegex += `,"isOnlineSale":${selectedKeys.isOnlineSale}`
+        console.log('allSearchRegex2', allSearchRegex)
+      }
+      console.log('allSearchRegex')
+      console.log(allSearchRegex)
+
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&include=product&where={${allSearchRegex}}`
+      console.log('customQuery')
+      console.log(customQuery)
+      const customQueryWithoutCondition = `include=product`
+
+      if (selectedKeys.objectId) {
+        return this.fetchData(`/classes/Order/${selectedKeys.objectId.trim()}`, REQUEST_TYPE.GET, null, null, null, null, customQueryWithoutCondition)
+      } else {
+        return this.fetchData('/classes/Order', REQUEST_TYPE.GET, null, null, null, null, customQuery)
+      }
+    } else {
+      console.log('getConsignment 3')
+      const fromDateFormated = moment(fromDateMoment, 'YYYY-MM-DD')
+      const toDateFormated = moment(toDateMoment, 'YYYY-MM-DD')
+      console.log('fromDateFormated', fromDateFormated)
+      console.log('toDateFormated', toDateFormated)
+
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&include=product&where={"deletedAt":${null}, "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"},"$lte": {"__type": "Date","iso": "${toDateFormated}"}}}`
+      return this.fetchData('/classes/OrderRequest', REQUEST_TYPE.GET, null, null, null, null, customQuery)
+    }
+  }
+
   static async getOrderRequestWithID (page = 1, productId = null, limit = 20) {
     let limited = limit || 100
     let skip = (limited * page) - limited
-    const customQuery = `include=product&skip=${skip}&limit=${limited}&count=1&where={"deletedAt":${null},"product": { "__type": "Pointer", "className": "Product", "objectId": "${productId}" }}`
+    // const fromDateFormated = moment().format('YYYY-MM-DDTHH:MM:SS.MMMZ')
+    // const toDateFormated = moment().format('YYYY-MM-DDTHH:MM:SS.MMMZ')
+
+    let fromDateFormated = moment()
+    fromDateFormated.startOf('day').format('YYYY-MM-DDTHH:MM:SS.MMMZ')
+    let toDateFormated = moment(fromDateFormated)
+    toDateFormated.add(1, 'day').format('YYYY-MM-DDTHH:MM:SS.MMMZ')
+    // fromDateFormated = fromDateFormated.toDate()
+    // toDateFormated = toDateFormated.toDate()
+
+    console.log('fromDateFormated', fromDateFormated)
+    console.log('toDateFormated', toDateFormated)
+    const customQuery = `include=product&skip=${skip}&limit=${limited}&count=1&where={"$or":[{"status":"IN_QUEUE"}, {"status":"VALID"}],"deletedAt":${null}, "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"}} ,"product": { "__type": "Pointer", "className": "Product", "objectId": "${productId}" }}`
     // const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"$or":[{"phoneNumber":"${keyword}"},{"consignerIdCard":"${keyword}"]}`
 
     return this.fetchData('/classes/OrderRequest', REQUEST_TYPE.GET, null, null, null, null, customQuery)
@@ -407,8 +556,14 @@ export default class Gap {
       totalMoneyForSaleAfterFee: `${dataOrder.totalMoneyForSaleAfterFee}`,
       note: dataOrder.note,
       isOnlineSale: dataOrder.isOnlineSale === 'true',
-      shippingInfo: dataOrder.shippingInfo
+      shippingInfo: dataOrder.shippingInfo,
+      isGetMoney: dataOrder.isGetMoney || false
     }
+
+    if (dataOrder && dataOrder.timeConfirmGetMoney) {
+      body.timeConfirmGetMoney = dataOrder.timeConfirmGetMoney
+    }
+
     console.log('body setConsignment')
     console.log(body)
     return this.fetchData('/classes/Order', REQUEST_TYPE.POST, null, body)
@@ -938,7 +1093,7 @@ export default class Gap {
     return this.fetchData('/functions/transporter', REQUEST_TYPE.POST, null, body)
   }
 
-  static async pushOrderToGHTK (formData) {
+  static async pushOrderToGHTK (formData, orderId) {
     const body = {
       service: 'giaohangtietkiem',
       action: 'CREATE_ORDER',
@@ -952,14 +1107,14 @@ export default class Gap {
           phone: '0703334443'
         },
         to: {
-          province: formData.shippingInfo.orderAdressProvince,
-          district: formData.shippingInfo.orderAdressDistrict,
-          address: formData.shippingInfo.orderAdressStreet,
-          ward: formData.shippingInfo.orderAdressWard,
-          name: formData.clientInfo.fullName,
-          phone: formData.clientInfo.phoneNumber
+          province: formData.shippingInfo.orderAdressProvince || formData.shippingInfo.province,
+          district: formData.shippingInfo.orderAdressDistrict || formData.shippingInfo.district,
+          address: formData.shippingInfo.orderAdressStreet || formData.shippingInfo.address,
+          ward: formData.shippingInfo.orderAdressWard || formData.shippingInfo.ward,
+          name: formData.clientInfo.fullName || formData.shippingInfo.name,
+          phone: formData.clientInfo.phoneNumber || formData.shippingInfo.phone
         },
-        orderId: formData.objectId,
+        orderId: orderId || formData.objectId,
         codMoney: 0,
         isFreeShipping: false,
         serviceLevel: 'road',
@@ -988,12 +1143,14 @@ export default class Gap {
     return this.fetchData('/functions/transporter', REQUEST_TYPE.POST, null, body)
   }
 
-  static async getLabelTransform (orderId) {
+  static async getLabelTransform (orderId, orginal = 'landscape', pageSize = 'A6') {
     const body = {
       service: 'giaohangtietkiem',
       action: 'GET_ORDER_LABEL',
       data: {
-        'orderId': orderId
+        'orderId': orderId,
+        'orginal': orginal, // portrait | landscape
+        'pageSize': pageSize // A6 | A5
       }
     }
     return this.fetchData('/functions/transporter', REQUEST_TYPE.POST, null, body)

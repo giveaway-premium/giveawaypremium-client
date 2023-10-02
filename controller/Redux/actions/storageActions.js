@@ -66,6 +66,14 @@ export default class StorageActions {
     }
   }
 
+  static setAddressInfoArrayAfterSort (payload) {
+    saveDataLocal(KEY_STORE.SET_ADDRESS_INFO_ARRAY_AFFTER_SORT, payload)
+    return {
+      type: KEY_STORE.SET_ADDRESS_INFO_ARRAY_AFFTER_SORT,
+      payload
+    }
+  }
+
   static setTransferData (payload) {
     saveDataLocal(KEY_STORE.SET_TRANSFER_DATA, payload)
     return {

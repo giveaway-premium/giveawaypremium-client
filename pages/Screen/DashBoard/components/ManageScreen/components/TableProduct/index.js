@@ -6,7 +6,7 @@ import { Form, Row, Col, Layout, Input, Button, Badge, Spin, Descriptions, Tabs,
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
 import { showNotification, numberWithCommas } from 'common/function'
-import { DeleteFilled, LeftCircleTwoTone, LoadingOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons'
+import { DeleteFilled, LeftCircleTwoTone, LoadingOutlined, PrinterOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons'
 import { Router } from 'common/routes'
 import { isMobile } from 'react-device-detect'
 import './style.scss'
@@ -17,6 +17,14 @@ import Highlighter from 'react-highlight-words'
 import { EMAIL_TITLE, EMAIL_TYPE } from 'common/constants'
 import moment from 'moment'
 import { SortableContainer, SortableElement } from 'react-sortable-hoc'
+import TagOrcode from './components/TagQrcode'
+import ReactToPrint from 'react-to-print'
+import QRCode from 'qrcode'
+import TagPrintBox from './components/TagPrintBox'
+import { PrintOutlined } from '@material-ui/icons'
+import styled from 'styled-components'
+import TagPrintBoxMulti from './components/TagPrintBoxMulti'
+
 // import * as arrayMove from 'array-move'
 const { Dragger } = Upload
 
@@ -112,10 +120,18 @@ class TableProductScreen extends React.PureComponent {
     super(props)
     this.columns = [
       {
-        title: 'Code SP',
-        dataIndex: 'code',
+        title: () => (
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <span>Code SP</span>
+            <div>
+              <PrintOutlined />
+            </div>
+          </div>
+        ),
+        // dataIndex: 'code',
         key: 'code',
-        width: 150,
+        width: 350,
+        render: (value) => <TagPrintBox data={value} />,
         ...this.getColumnSearchKeyProps('code')
       },
       {
@@ -203,6 +219,7 @@ class TableProductScreen extends React.PureComponent {
       currentPagination: 1
     }
     this.myModal = React.createRef()
+    this.componentRef = React.createRef()
   }
 
   componentDidMount () {
@@ -913,7 +930,6 @@ class TableProductScreen extends React.PureComponent {
   }
 
   onChangeTab = (tabKey) => {
-
     const { allInfoTag } = this.state
     this.setState({
       // selectedKeys: {},
@@ -959,6 +975,11 @@ class TableProductScreen extends React.PureComponent {
             : <Tabs defaultActiveKey='0' onChange={this.onChangeTab} >
               {allInfoTag.map((tag, indexTag) => <TabPane tab={tag.code} key={`${indexTag}`} />)}
             </Tabs>
+        }
+        {
+          productData && (
+            <TagPrintBoxMulti productData={productData} />
+          )
         }
         <Table
           components={components}

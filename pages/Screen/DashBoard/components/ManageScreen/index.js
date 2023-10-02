@@ -16,6 +16,7 @@ import TableCustomer from './components/TableCustomer'
 import TableAppointment from './components/TableAppointment'
 import TableProductScreen from './components/TableProduct'
 import TableOrder from './components/TableOrder'
+import TableRequestOrder from './components/TableRequestOrder'
 const { TabPane } = Tabs
 
 class ManageScreen extends React.PureComponent {
@@ -79,6 +80,11 @@ class ManageScreen extends React.PureComponent {
           </TabPane>
           <TabPane tab='Lịch hẹn' key='6'>
             <TableAppointment />
+            {/* Content of Tab Pane 3 */}
+          </TabPane>
+
+          <TabPane tab='Hàng Chờ' key='7'>
+            <TableRequestOrder />
             {/* Content of Tab Pane 3 */}
           </TabPane>
 

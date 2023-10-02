@@ -150,7 +150,7 @@ class StoreScreen extends React.PureComponent {
     })
   }
 
-  onPresstTag = (categoryId) => {
+  onPresstTag = (categoryId, e) => {
     this.setState({
       currentCategoryId: categoryId,
       productList: [],
@@ -159,13 +159,11 @@ class StoreScreen extends React.PureComponent {
       key: null
     })
     this.loadingProduct(categoryId)
-    // e.preventDefault()
-    // const target = window.document.getElementById(
-    //   e.currentTarget.href.split('#')[1]
-    // )
-    // if (target) {
-    //   target.scrollIntoView({ behavior: 'smooth' })
-    // }
+    e.preventDefault()
+    const target = window.document.getElementById('section0')
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' })
+    }
   };
 
   onOpenProductScreen = (item) => {
@@ -204,7 +202,7 @@ class StoreScreen extends React.PureComponent {
     }
 
     return (
-      <div className='store-container' ref={this.container}>
+      <div id={'section0'} className='store-container' ref={this.container}>
         <div className='category-container'>
           {/* <Carousel>
             <TagBox index={0} categoryId='0paqD5jvw3' name='Thời Trang' image={images.chanelBag} />
@@ -223,7 +221,7 @@ class StoreScreen extends React.PureComponent {
             isLoadingPage ? (
               <Skeleton baseColor='#FFFFFF' highlightColor='#F5FFFA' style={{ width: '100vw', height: '100vh' }} enableAnimation />
             ) : (
-              <ProductList productList={productList} currentPage={currentPage} maxPage={maxPage} handleScrollActive={this.handleScrollActive} />
+              <ProductList currentCategoryId={currentCategoryId} productList={productList} currentPage={currentPage} maxPage={maxPage} handleScrollActive={this.handleScrollActive} />
             )
           }
         </div>

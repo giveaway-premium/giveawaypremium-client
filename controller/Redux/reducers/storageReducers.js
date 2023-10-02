@@ -76,6 +76,12 @@ export const addressInfoArrayRedux = createReducer(initState.array, {
   }
 })
 
+export const addressInfoArrayAfterSortRedux = createReducer(initState.array, {
+  [KEY_STORE.SET_ADDRESS_INFO_ARRAY_AFFTER_SORT] (state, action) {
+    return action.payload
+  }
+})
+
 export const transferDataRedux = createReducer(initState.transferData, {
   [KEY_STORE.SET_TRANSFER_DATA] (state, action) {
     return action.payload

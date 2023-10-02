@@ -5,6 +5,7 @@
     flex-direction: column;
     // overflow: scroll;
     // background-color: red;
+    transition: 300ms all;
     position: relative;
     padding-bottom: 0 !important;
     .category-container {
@@ -32,6 +33,10 @@
             overflow-x: scroll;
             justify-content: space-between;
             align-items: center;
+
+            &:hover {
+                background-color: whitesmoke;
+            }
             @media screen and (max-width: 768px) {
                 justify-content: flex-start;
             }

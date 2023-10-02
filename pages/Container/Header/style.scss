@@ -158,6 +158,15 @@
 	  transform: translate(0px) !important;
 	}
 
+	.userInfo {
+		&:hover {
+			transition: 0.15s ease-in;
+			background-color: whitesmoke;
+			padding: 1em;
+			border-radius: 20px;
+		}
+	}
+
 
 	.main-nav-item {
 		// background-color: white;
@@ -271,4 +280,59 @@
 .paper {
 	border: 1px solid map-get($border-colors, "border-2");
 	cursor: pointer;
+}
+
+.customerInfoBox {
+	padding: 0 20px;
+	padding-top: 40px;
+	padding-bottom: 30px;
+	// max-height: 33vh;
+	// overflow-y: scroll;
+	// flex: 1;
+	// max-height: 30vh;
+
+	.titleCustomerInfoBox {
+		width: 100%;
+		font-weight: 500;
+		align-self: center;
+		text-align: center;
+		font-size: 22px;
+		color: black;
+	}
+
+
+	.phoneBox {
+		margin-top: 10px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+
+		.phoneTxt {
+			margin-top: 10px;
+			width: 300px;
+		}
+
+		@media screen and (max-width: 768px) {
+			flex-direction: column;
+		}	
+	}
+
+	.typeTranferBox {
+		margin-top: 10px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+
+		.typeTranferTxt {
+			margin-top: 10px;
+			width: 300px;
+		}
+	}
+}
+
+.updateBox {
+	margin-top: 30px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }

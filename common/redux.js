@@ -180,15 +180,41 @@ export default class ReduxServices {
 
   static async getUnitAddress () {
     const { userData } = storeRedux.getState()
-    console.log('userData', userData)
-    console.log('userData check token', userData && userData.token)
-
     if (userData && userData.token) {
       const res = await GapService.getUnitAddress()
       // console.log('resssssss', res.result)
       if (res && res.result && res.result.length > 0) {
         ReduxServices.callDispatchAction(StorageActions.setAddressInfoArray(res.result))
+        this.convertAddressOptionArray(res.result)
       }
+    }
+  }
+
+  static convertAddressOptionArray = (addressInfoProps) => {
+    const { addressInfoArrayRedux } = storeRedux.getState()
+
+    let PROVINCE = []
+    const addressInfoArrayReduxTemp = [...(addressInfoProps || addressInfoArrayRedux)]
+    PROVINCE = addressInfoArrayReduxTemp.map((optionAddress, optionAddressIndex) => (
+      {
+        value: optionAddress.name,
+        label: optionAddress.name,
+        children: optionAddress.districts.map((districtItem, districtItemIndex) => (
+          {
+            value: districtItem.name,
+            label: districtItem.name,
+            children: districtItem.wards.map((wardItem, wardItemIndex) => (
+              {
+                value: wardItem.name,
+                label: wardItem.name
+              }
+            ))
+          }
+        ))
+      }
+    ))
+    if (PROVINCE) {
+      ReduxServices.callDispatchAction(StorageActions.setAddressInfoArrayAfterSort(PROVINCE))
     }
   }
 
