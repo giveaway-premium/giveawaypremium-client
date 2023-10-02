@@ -1,0 +1,68 @@
+.fashionBox-container {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end !important;
+    position: relative;
+    scroll-snap-align: start;
+
+    .fashionBox-container-inner {
+        height: calc(100vh - 66px);
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-start;
+        position: relative;
+        .top-box {
+            width: 100vw;
+            height: 50%;
+            display: flex;
+            overflow: auto;
+            justify-content: flex-start;
+            align-items: center;
+
+            .top-box-left {
+                height: 100%;
+                // flex: 1;
+                padding: 2px;
+                display: flex;
+                justify-content: flex-end;
+                align-items: flex-end;  
+                text-align: flex-end;
+                flex-direction: column;
+
+                >div {
+                    width: 25vh;
+                    height: 66px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    // background-color: rgba($color: #fff, $alpha: 0.6);
+                    >span {
+                        text-transform: capitalize !important;
+                        display: flex;
+                        color: black;
+                        justify-content: center;
+                        text-align: center;
+                    }
+                }
+            }
+            
+            .top-box-right {
+                height: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;    
+            }
+        }
+
+        .bottom-box {
+            width: 100%;
+            overflow-x: auto;
+            display: flex;
+            height: 50%;
+        }
+    }
+}

@@ -733,7 +733,7 @@ const SaleScreen = (props) => {
     } else if (keyValue === 'bankId') {
       paneTemp[currentPaneIndex].clientInfo = {
         ...paneTemp[currentPaneIndex].clientInfo,
-        bankName: event.target.value ? event.target.value.trim() : ''
+        bankId: event.target.value ? event.target.value.trim() : ''
       }
       setPanes(paneTemp)
     } else if (keyValue === 'fullName') {
@@ -1145,7 +1145,7 @@ const SaleScreen = (props) => {
           <embed id='pdfID' type='text/html' width='1200' height='600' src={`data:application/pdf;base64,${base64}`} />
         </object>
       </div> */}
-      
+
       {/* <div id='qrcode'>
         <style type='text/css' media='print'>
           {'\

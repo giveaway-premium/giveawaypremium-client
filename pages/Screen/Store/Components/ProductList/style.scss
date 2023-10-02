@@ -1,0 +1,137 @@
+.listItem-box {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    padding-bottom: 5vh;
+    margin-top: 2px;
+    justify-content: flex-start;
+
+    @media screen and (max-width: 768px) {
+        padding-bottom: 0vh;
+    }
+
+    .item-container {
+        // min-width: 33vw;
+        width: 24.75%;
+        margin-right: 0.19%;
+        // height: 25vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        box-shadow: none; 
+        // transition: all 1s;
+        z-index: 1;
+
+        @media screen and (max-width: 567px) {
+            width: 48%;
+            margin-right: 2%;
+            // height: 50vw;
+        }
+
+
+        @media screen and (min-width: 2000px) {
+            width: 19.75%;
+            margin-right: 0.2%;
+            // height: 20vw;
+        }
+    
+        .big-avatar-img-box {
+            width: 100%;
+            height: 100%;
+            .big-avatar-img {
+                border-bottom: 1px solid rgb(226, 226, 226);
+                width: 100%;
+                aspect-ratio: 1;
+                // width: 100%;
+                // height: 100%;
+                object-fit: cover;
+                &:hover {
+                    // transition: all 0.4s;
+                    cursor: pointer;
+                    z-index: 1000;
+                    box-shadow: 0 1px 12px rgba(33,33,33,.3); 
+                }
+
+                @media screen and (max-width: 567px) {
+                    width: 49.7vw;
+                    aspect-ratio: 1;
+                }
+
+
+                @media screen and (min-width: 568px) {
+                    width: 100%;
+                    aspect-ratio: 1;
+                }
+            }
+    
+            .detail-box {
+                margin: 10px 0 15px 0;
+                min-width: 12.4vw;
+                padding: 0 0.5em;
+                display: flex;
+                flex-direction: column;
+                justify-items: flex-end;
+                align-items: flex-start;
+                text-align: left !important;
+                text-transform: uppercase;
+                overflow: auto;
+                @media screen and (max-width: 567px) {
+                    padding: 5px 3vw;
+                }
+                @media screen and (min-width: 2000px) {
+                    min-width: 10vw;
+                }
+                .detail-box-name {
+                    // padding: 2px 10px;
+                    // border-radius: 2px;
+                    // line-height: 22px;
+                    // background-color: #2e2e2e;
+                    // color: whitesmoke;
+                    color: #2e2e2e;
+                    // font-family: 'myriadpro' !important;
+                    font-size: 15px !important;
+                    font-weight: 500;
+                    @media screen and (min-width: 2000px) {
+                        font-size: 18px;
+                    }
+                }
+        
+                .detail-box-price {
+                    // font-family: 'myriadpro' !important;
+                    // font-weight: 500 !important;
+                    padding: 2px 10px;
+                    border-radius: 2px;
+                    line-height: 22px;
+                    background-color: #2e2e2e;
+                    color: whitesmoke;
+                    margin: 2px 0;
+
+                    font-size: 15px !important;
+                    @media screen and (min-width: 2000px) {
+                        font-size: 17px;
+                    }
+                }
+
+                .detail-box-rateNew {
+                    font-size: 15px !important;
+                    text-transform: none;
+                }
+            }
+        }
+    
+        .small-avatar-img-box-container {
+            height: 100%;
+    
+            .small-avatar-img-box {
+                width: 100%;
+                height: 25%;
+                .small-avatar-img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+            }
+        }
+    }
+}

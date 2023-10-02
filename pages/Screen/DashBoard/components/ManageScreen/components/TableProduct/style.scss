@@ -1,4 +1,15 @@
 .tableConsignemntScreen-container {
+    .ant-switch-loading-icon, .ant-switch::after {
+      top: 4px !important;
+    }
+    .ant-switch {
+      height: 30px !important;
+      width: 100% !important;
+    }
+
+    .ant-switch-checked {
+      background-color: #b2dd4d;
+    }
     .editable-cell {
         position: relative;
     }
@@ -526,4 +537,7 @@
   cursor: row-resize;
 }
 
-
+.CodeBoxPinter {
+  display: flex;
+  flex-direction: column;
+}

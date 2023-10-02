@@ -10,6 +10,26 @@ export const saveDataLocal = (key, data) => {
   localStorage.setItem(key, JSON.stringify(data))
 }
 
+export const randomString = () => {
+  const chars = '0123456789'
+  const stringLength = 10
+  let randomstring = ''
+  for (let i = 0; i < stringLength; i++) {
+    const rnum = Math.floor(Math.random() * chars.length)
+    randomstring += chars[rnum]
+  }
+  return randomstring
+}
+
+export const copyToClipboard = (text) => {
+  const tmp = document.createElement('input')
+  tmp.value = text
+  document.body.appendChild(tmp)
+  tmp.select()
+  document.execCommand('copy')
+  tmp.remove()
+}
+
 export const getDataLocal = (key) => {
   // eslint-disable-next-line no-undef
   return JSON.parse(localStorage.getItem(key))
@@ -218,6 +238,25 @@ export const isObject = (value) => {
   return value && typeof value === 'object' && value.constructor === Object
 }
 
+export const convertMediaArrayToPointerArray = (medias) => {
+  let pointerArr = []
+  if (medias && medias.length > 0) {
+    medias.map(item => {
+      if (item && item.objectId) {
+        pointerArr.push({
+          '__type': 'Pointer',
+          'className': 'Media',
+          'objectId': item.objectId
+        })
+      }
+    })
+
+    return pointerArr
+  } else {
+    return medias
+  }
+}
+
 export const scientificToDecimal = (num) => {
   const sign = Math.sign(num)
   // if the number is in scientific notation remove it
@@ -256,6 +295,10 @@ export const checkIsSigned = (userData) => {
   }
 
   return false
+}
+
+export const isBottomElement = (el) => {
+  return el && el.getBoundingClientRect().bottom <= window.innerHeight
 }
 
 export const numberWithCommas = (x) => {
@@ -300,9 +343,22 @@ export const convertAddressArrToString = (arrAddress, numStart = 4, numEnd = 4) 
   }
 }
 
-export const scrollTop = () => {
+export const scrollTop = (topProps = 0) => {
   if (window) {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo({ top: topProps, behavior: 'smooth' })
+  }
+}
+
+export const getCurrentUrl = (req, fallback) => {
+  if (req) {
+    // server side request object(req)
+    return req.protocol + '://' + req.get('host') + req.originalUrl
+  } else if (!(typeof window === 'undefined')) {
+    // making sure we are on the client side
+    // return window.location.href
+    return window.location
+  } else {
+    return fallback
   }
 }
 

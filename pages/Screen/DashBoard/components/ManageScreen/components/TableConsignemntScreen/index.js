@@ -674,7 +674,7 @@ class TableConsignemntScreen extends React.PureComponent {
       numberOfProducts: newNumberOfProducts,
       remainNumConsignment: newRemainNumConsignment,
       moneyBack: Math.round(newmoneyBack),
-      numSoldConsignment: newNumSoldConsignment
+      numSoldConsignment: Math.round(newNumSoldConsignment)
     }
 
     console.log('handleSaveNestTable')
@@ -690,8 +690,11 @@ class TableConsignemntScreen extends React.PureComponent {
       console.log(newItem)
       let res
       if (row && row.objectId && row.objectId.length > 0) {
+        console.log('update sanpham')
+
         res = await GapService.updateProduct(newProduct)
       } else {
+        console.log('update consignemnt')
         res = await GapService.updateConsignment(newItem)
       }
 

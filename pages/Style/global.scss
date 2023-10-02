@@ -32,7 +32,6 @@ html, body {
   overflow-y: visible !important;
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
-
   ::-webkit-scrollbar {
     display: none;
   }
@@ -400,6 +399,10 @@ h1, h2, h3, h4 {
 
   @media screen and (min-width: 1424px) {
     max-width: 1424px;
+  }
+
+  @media screen and (min-width: 1424px) {
+    width: 1224px;
   }
 }
 

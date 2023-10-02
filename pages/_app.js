@@ -22,6 +22,8 @@ import { Spin } from 'antd'
 import './Style/override.less'
 import './Style/global.scss'
 import '../static/jank-empty.css'
+import 'animate.css'
+
 import Lottie from 'react-lottie'
 import { images } from 'config/images'
 import { Router } from 'common/routes'
@@ -43,7 +45,8 @@ class GiveAway extends App {
     this.state = {
       isLoading: true,
       seoData: props.seoData,
-      isShowBanner: props.router.asPath === '/'
+      isShowBanner: props.router.asPath === '/',
+      seoData: props.seoData
     }
     this.currentInterval = null
   }
@@ -66,7 +69,9 @@ class GiveAway extends App {
         { key: KEY_STORE.SET_TRANSFER_DATA, action: storageActions.setTransferData, init: init.transferData },
         { key: KEY_STORE.SET_SETTING, action: storageActions.setSetting, init: init.setting },
         { key: KEY_STORE.SET_CATEGORY, action: storageActions.setCategory, init: init.category },
-        { key: KEY_STORE.SET_TEMP_CONSIGNMENT, action: storageActions.setTempConsignment, init: init.object }
+        { key: KEY_STORE.SET_TEMP_CONSIGNMENT, action: storageActions.setTempConsignment, init: init.object },
+        { key: KEY_STORE.SET_ADDRESS_INFO_ARRAY_AFFTER_SORT, action: storageActions.setAddressInfoArrayAfterSort, init: init.array },
+        { key: KEY_STORE.SET_ADDRESS_INFO_ARRAY, action: storageActions.setAddressInfoArray, init: init.array }
       ]
 
       const promiseArr = storageRedux.map((item) => {
@@ -156,6 +161,7 @@ class GiveAway extends App {
           <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no' />
           <meta name='theme-color' content='#000000' />
           <meta name='description' content='GiveAway Premium' />
+          {/* <meta name='google-site-verification' content='D1F12tMnugBHZLza2KcmBK5gWmnC32N6e3U5pKw8DFk' /> */}
           <meta property='og:image' content='https://i.ibb.co/NSz5YLK/Frame-1.png' />
           <meta property='og:image:secure_url' content='https://i.ibb.co/NSz5YLK/Frame-1.png' />
           <meta property='og:image:type' content='image/png' />

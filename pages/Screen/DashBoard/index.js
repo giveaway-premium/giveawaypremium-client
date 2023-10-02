@@ -56,7 +56,7 @@ class DashBoard extends React.PureComponent {
     this.myModal = React.createRef()
   }
 
-  async componentDidMount () {
+  componentDidMount () {
     this.checkIsSigned()
 
     // Parse.initialize('myAppId', 'myJavascriptKey')npx9ZOI6fokHfvaJQjDjidPnogS8PCH0
@@ -93,12 +93,18 @@ class DashBoard extends React.PureComponent {
     this.checkIsSigned()
   }
 
-  checkIsSigned = () => {
+  checkIsSigned = async (isShowPopup = true) => {
     const { userData } = this.props
+    const { isLogin } = this.state
+    // console.log('userData', userData)
     const isSigned = checkIsSigned(userData)
-    if (!isSigned) {
+    if (!isSigned && isShowPopup && !isLogin) {
       this.myModal.current.openModal(this.renderLoginPopup(), { closable: false })
-    } else {
+    } else if (isLogin || isSigned) {
+      this.setState({
+        isLogin: true,
+        isLoadingLogin: false
+      })
       console.log('isSigned = true')
     }
   }

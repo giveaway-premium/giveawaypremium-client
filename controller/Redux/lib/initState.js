@@ -3,6 +3,7 @@ var initState = {
   object: {},
   lang: 'en',
   userData: null,
+  connectionMethod: null,
   walletConnect: [],
   category: [],
   internet: true,

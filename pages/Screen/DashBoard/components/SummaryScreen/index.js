@@ -155,8 +155,6 @@ class SummaryScreen extends React.PureComponent {
         dataOrderList: orderList.results,
         totalOrder: orderList.count,
         isLoadingSummary: false
-      }, () => {
-        console.log('state', this.state)
       })
     }
   }

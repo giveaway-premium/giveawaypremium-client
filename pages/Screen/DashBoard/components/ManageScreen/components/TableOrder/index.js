@@ -226,6 +226,10 @@ class TableOrderScreen extends React.PureComponent {
 
   }
 
+  onRefeshPage = () => {
+    this.fetchAllTags()
+  }
+
   translateStatusName = (value) => {
     switch (value.transporter.status) {
     case 'WAITING_PICK_UP':
@@ -248,7 +252,7 @@ class TableOrderScreen extends React.PureComponent {
   ghtkActionView = (value) => {
     if (!value) {
       return null
-    }    
+    }
     if (value && !value.transporter) {
       return (
         <Button style={{ width: '100%' }} onClick={() => this.onPushOrderToGHTK(value)}>Tạo đơn GHTK</Button>
@@ -408,8 +412,14 @@ class TableOrderScreen extends React.PureComponent {
     }
   }
 
-  cancelOrder = (value) => {
-    showNotification('Chưa làm')
+  cancelOrder = async (value) => {
+    const deleteTransport = await GapService.deleteTransport(value)
+    console.log('deleteTransport', deleteTransport)
+    if (deleteTransport?.result?.success) {
+      showNotification('Xoá đơn thành công')
+    } else {
+      showNotification('Xoá đơn không thành công')
+    }
   }
 
   printOrder = (orderId) => {
@@ -434,8 +444,8 @@ class TableOrderScreen extends React.PureComponent {
         <p>Phí giao hàng: {numberWithCommas(shipData.ship_money)} vnđ</p>
         <p>Địa chỉ giao hàng: {shipData.address}</p>
 
-        <Button className='MT10' onClick={() => this.cancelOrder(value)}>Huỷ Đơn Hàng</Button>
-        <Button className='MT10 ML10' onClick={() => this.printOrder(shipData.partner_id)}>In Đơn Hàng</Button>
+        <Button className='MT10' onClick={() => this.cancelOrder(value?.transporter?.order?.objectId)}>Huỷ Đơn Hàng</Button>
+        <Button className='MT10 ML10' onClick={() => this.printOrder(value?.transporter?.order?.objectId)}>In Đơn Hàng</Button>
       </div>
     )
   }
@@ -453,6 +463,7 @@ class TableOrderScreen extends React.PureComponent {
         showNotification(res.error || 'Cập nhật GHTK chưa được')
         return
       }
+      this.onRefeshPage()
     } else {
       showNotification(`Cập nhật GHTK chưa được`)
     }
@@ -1010,6 +1021,7 @@ class TableOrderScreen extends React.PureComponent {
             </Tabs>
         } */}
         <RangePicker value={[fromDateMoment, toDateMoment]} onChange={this.onHandleDatePicker} />
+        <Button style={{ marginLeft: 10 }} onClick={this.onRefeshPage}>Cập nhật</Button>
         {/* <RangePicker value={[moment(), moment().add(1, 'month')]} defaultPickerValue={[moment(), moment().add(1, 'month')]} picker='month' onChange={this.onHandleDatePicker} /> */}
         <Table
           components={components}

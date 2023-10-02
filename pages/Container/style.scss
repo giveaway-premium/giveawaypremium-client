@@ -39,6 +39,8 @@
     //     }
     // }
 
+
+
     .contentLayout {
         width: 100%;
         // background-color: yellow;
@@ -51,6 +53,7 @@
         align-self: center;  
         // mobile
         @media screen and (max-width: 768px) {
+          margin-top: 10px;
             // position: fixed;
           // 64px is header height
           min-height: calc(100vh - 80px - 20px);
@@ -66,4 +69,82 @@
           // => 25px is padding top from header
         }
       }
+
+
+      .UserInfoBox {
+        z-index: 10000;
+        position: fixed;
+        bottom: 1rem;
+        right: 1rem;
+
+        display: flex;
+        align-items: center;      
+        background: whitesmoke;
+        transition: 300ms all !important;
+        padding: 10px 20px;
+        border-radius: 100px;
+        border: 1px solid #d6d6d6;
+
+        &:hover {
+          cursor: pointer;
+          transition: 0.15s ease-in;
+          background-color: whitesmoke;
+          padding: 1.1em 1.5em;
+          border-radius: 20px;
+        }
+      }
+}
+
+.customerInfoBoxContainer {
+  padding: 0 5px;
+  padding-top: 20px;
+  padding-bottom: 30px;
+  // max-height: 33vh;
+  // overflow-y: scroll;
+  // flex: 1;
+  // max-height: 30vh;
+
+  @media screen and (max-width: 768px) {
+    padding: 0 !important;
+    padding-top: 40px;
+    padding-bottom: 50px;
+  }	
+
+  .titleCustomerInfoBox {
+    width: 100%;
+    font-weight: 500;
+    align-self: center;
+    text-align: center;
+    font-size: 26px;
+    color: black;
+  }
+
+
+  .phoneBox {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .phoneTxt {
+      margin-top: 10px;
+      width: 300px;
+    }
+
+    @media screen and (max-width: 768px) {
+      flex-direction: column;
+    }	
+  }
+
+  .typeTranferBox {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .typeTranferTxt {
+      margin-top: 10px;
+      width: 300px;
+    }
+  }
 }
