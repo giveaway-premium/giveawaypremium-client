@@ -1044,6 +1044,8 @@ class TableRequestOrder extends React.PureComponent {
     }, () => this.fetchTableData())
   }
 
+  //
+
   convertPriceAfterFee = (productPrice = 0) => {
     let moneyBackForFullSold = productPrice
 
