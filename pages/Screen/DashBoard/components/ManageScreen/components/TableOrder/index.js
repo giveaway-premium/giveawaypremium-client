@@ -17,6 +17,9 @@ import Highlighter from 'react-highlight-words'
 import { EMAIL_TITLE, EMAIL_TYPE } from 'common/constants'
 import moment from 'moment'
 import BillOrderGHTK from './components/BillOrderGHTK'
+import ReactToPrint from 'react-to-print'
+import ReceiptOffline from './components/ReceiptOffline'
+import TagPrintBox from './components/TagPrintBox'
 const { RangePicker } = DatePicker
 const { TabPane } = Tabs
 
@@ -186,8 +189,15 @@ class TableOrderScreen extends React.PureComponent {
         render: (value) => value.isOnlineSale === 'Online' ? this.ghtkActionView(value) : null
       },
       {
-        title: 'Nhận tiền',
+        title: 'Bill',
         key: '11',
+        width: 170,
+        // fixed: 'right',
+        render: (value) => this.billPrintView(value)
+      },
+      {
+        title: 'Nhận tiền',
+        key: '12',
         width: 90,
         fixed: 'right',
         // ...this.getColumnSearchIsGetMoney('isGetMoney'),
@@ -213,7 +223,8 @@ class TableOrderScreen extends React.PureComponent {
       currentTag: '',
       currentPagination: 1,
       fromDateMoment: null,
-      toDateMoment: null
+      toDateMoment: null,
+      chosenBillOrder: null
     }
     this.myModal = React.createRef()
   }
@@ -265,6 +276,38 @@ class TableOrderScreen extends React.PureComponent {
         </>
       )
     }
+  }
+
+  reactToPrintTrigger = (value) => {
+    // NOTE: could just as easily return <SomeComponent />. Do NOT pass an `onClick` prop
+    // to the root node of the returned component as it will be overwritten.
+
+    // Bad: the `onClick` here will be overwritten by `react-to-print`
+    // return <button onClick={() => alert('This will not work')}>Print this out!</button>;
+
+    // Good
+    // return <button>Print using a Class Component</button>;
+    return <Button style={{ width: '100%' }} onClick={() => this.printBillOrder(value)}>In Bill</Button>
+  }
+
+  setComponentRef = (ref) => {
+    this.componentRef = ref
+  }
+
+  reactToPrintContent = () => {
+    return this.componentRef
+  }
+
+  billPrintView = (value) => {
+    if (!value) {
+      return null
+    }
+
+    return (
+      <>
+        <TagPrintBox data={value} />
+      </>
+    )
   }
 
   expandedRowRender = (recordData) => {
@@ -426,6 +469,10 @@ class TableOrderScreen extends React.PureComponent {
     if (orderId) {
       this.myModal.current.openModal(<BillOrderGHTK orderId={orderId} />, { closable: true, modalWidth: '50vh' })
     }
+  }
+
+  printBillOrder = () => {
+
   }
 
   renderDetailGHTKBox = (value) => {
@@ -1039,6 +1086,7 @@ class TableOrderScreen extends React.PureComponent {
           }}
           scroll={{ x: 1700, y: '70vh' }}
         />
+
         <MyModal ref={this.myModal} />
       </div>
     )

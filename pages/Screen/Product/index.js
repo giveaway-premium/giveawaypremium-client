@@ -196,7 +196,8 @@ class Product extends React.PureComponent {
       const waitingCode = randomString()
       console.log('waitingCode', waitingCode)
       const updateClientRes = await Gap.updateClientInfoOrderRequest(resData?.result?.objectId, userData, waitingCode)
-      
+      // const updateClientRes = await Gap.updateProductCodeOrderRequest(resData?.result?.objectId, resData.result.product, waitingCode)
+
       const orderRequest = getDataLocal('orderRequest') || []
 
       orderRequest.push({

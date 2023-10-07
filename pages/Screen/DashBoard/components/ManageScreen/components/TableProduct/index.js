@@ -122,9 +122,9 @@ class TableProductScreen extends React.PureComponent {
       {
         title: () => (
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <span>Code SP</span>
+            <span className='MR10'>Code SP</span>
             <div>
-              <PrintOutlined />
+              <Button onClick={() => this.onShowPrintAll()}>{!this.state.isShowMultiPrintView ? `In Tất Cả` : 'Đóng In Tất Cả'}</Button>
             </div>
           </div>
         ),
@@ -133,6 +133,13 @@ class TableProductScreen extends React.PureComponent {
         width: 350,
         render: (value) => <TagPrintBox data={value} />,
         ...this.getColumnSearchKeyProps('code')
+      },
+      {
+        title: 'SL TAG IN',
+        dataIndex: 'numberTagCount',
+        key: 'numberTagCount',
+        width: 120,
+        editable: true
       },
       {
         title: 'Tên SP',
@@ -174,7 +181,7 @@ class TableProductScreen extends React.PureComponent {
       {
         title: 'Còn lại',
         width: 100,
-        dataIndex: 'remainNumberProduct',
+        dataIndex: 'w',
         key: 'remainNumberProduct',
         ...this.getColumnSearchKeyProps('remainNumberProduct')
       },
@@ -216,7 +223,8 @@ class TableProductScreen extends React.PureComponent {
       mediaImage: [],
       imageUrl: false,
       isUploading: false,
-      currentPagination: 1
+      currentPagination: 1,
+      isShowMultiPrintView: false
     }
     this.myModal = React.createRef()
     this.componentRef = React.createRef()
@@ -228,6 +236,13 @@ class TableProductScreen extends React.PureComponent {
 
   componentDidUpdate () {
 
+  }
+
+  onShowPrintAll = () => {
+    console.log('onPrintAll')
+    this.setState({
+      isShowMultiPrintView: !this.state.isShowMultiPrintView
+    })
   }
 
   convertStatusNumberToText = (statusNumber) => {
@@ -356,9 +371,6 @@ class TableProductScreen extends React.PureComponent {
 
   removePhoto = async (item, recordData, indexPhoto) => {
     const { productData } = this.state
-
-    console.log('removePhoto run')
-    console.log(recordData)
     this.setState({
       isUploading: true
     }, async () => {
@@ -422,24 +434,12 @@ class TableProductScreen extends React.PureComponent {
       this.setState({
         isUploading: true
       }, async () => {
-        console.log('handleUpload run')
-
-        console.log(info)
-        console.log(recordData)
-        console.log('handleUpload run 1111 ----')
-
         const newData = [...productData]
         const index = newData.findIndex((item) => recordData.key === item.key)
         let newItem = newData[index]
         let newItemForUploading
 
-        console.log(newData)
-        console.log(newItem)
-        console.log('handleUpload run 2222 ----')
-
         const res = await GapService.uploadSingleFileWithFormData(info.file.originFileObj)
-        console.log('handleUpload 3333 res')
-        console.log(res)
         const newImage = { '__type': 'Pointer', 'className': 'Media', 'objectId': res.objectId }
 
         if (newItem.medias && newItem.medias.length > 0) {
@@ -878,6 +878,7 @@ class TableProductScreen extends React.PureComponent {
             priceAfterFee: Number(item.priceAfterFee) || 0,
             soldNumberProduct: Number(item.soldNumberProduct) || 0,
             remainNumberProduct: Number(item.count) - Number(item.soldNumberProduct || 0),
+            numberTagCount: Number(item.count) - Number(item.soldNumberProduct || 0),
             moneyBackProduct: Math.round(Number(item.soldNumberProduct || 0) * item.priceAfterFee || 0)
           })
         })
@@ -902,14 +903,15 @@ class TableProductScreen extends React.PureComponent {
     const item = newData[index]
     // const newRemainNumConsignment = `${Number(row.numberOfProducts) - Number(row.numSoldConsignment || 0)}`
     const newItem = { ...item, ...row }
+    console.log('row', row)
 
     if (!isEqual(newItem, item)) {
       newData.splice(index, 1, newItem)
-      console.log('row')
       this.setState({
         productData: newData
       }, async () => {
         console.log(newItem)
+        // if ()
         const res = await GapService.updateConsignment(newItem)
         console.log(res)
         if (res) {
@@ -942,7 +944,7 @@ class TableProductScreen extends React.PureComponent {
 
   render () {
     const { userData } = this.props
-    const { isLoadingData, consignmentData, total, isLoadingTags, tags, allInfoTag, currentPagination, productData } = this.state
+    const { isLoadingData, consignmentData, total, isLoadingTags, tags, allInfoTag, currentPagination, productData, isShowMultiPrintView } = this.state
 
     const components = {
       body: {
@@ -977,8 +979,11 @@ class TableProductScreen extends React.PureComponent {
             </Tabs>
         }
         {
-          productData && (
-            <TagPrintBoxMulti productData={productData} />
+          productData && isShowMultiPrintView && (
+            <>
+              <Button className='MT15 MB15' onClick={() => this.onShowPrintAll()}>{!this.state.isShowMultiPrintView ? `In Tất Cả` : 'Đóng In Tất Cả'}</Button>
+              <TagPrintBoxMulti productData={productData} />
+            </>
           )
         }
         <Table

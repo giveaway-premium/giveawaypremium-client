@@ -75,14 +75,26 @@ class ConsignmentScreen extends React.PureComponent {
       isErrorMax: false,
       isShowEightSlot: true,
       bookingOptionValue: 8,
-      bookingOptionEachDay: {}
+      bookingOptionEachDay: {},
+      workingDayCount: 14
     }
     this.myModal = React.createRef()
   }
 
   async componentDidMount () {
     const newSettingRedux = await ReduxServices.getSetting()
-    let dayBookingCount = ['', '', '', '', '', '', '', '', '', '', '', '', '', '']
+    let workingDayCountTemp = 14
+
+    if (newSettingRedux.WORKING_DAY_COUNT) {
+      workingDayCountTemp = newSettingRedux.WORKING_DAY_COUNT
+    }
+
+    let dayBookingCount = []
+
+    for (let i = 0; i < workingDayCountTemp; i++) {
+      dayBookingCount.push('')
+    }
+
     let dayBookingTemp = []
     let bookingOptionEachDay = newSettingRedux.BOOKING_OPTION_EACH_DAY || BOOKING_OPTION_EACH_DAY_DATA_DEFAULT
 
@@ -101,7 +113,8 @@ class ConsignmentScreen extends React.PureComponent {
       bookingOptionValue: option,
       timeBooking: timeBooking,
       bookingOptionEachDay: bookingOptionEachDay,
-      dayBooking: dayBookingTemp
+      dayBooking: dayBookingTemp,
+      workingDayCount: workingDayCountTemp
     }, async () => {
       await this.fetchAppointment()
     })

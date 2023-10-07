@@ -466,6 +466,7 @@ export default class Gap {
     if (selectedKeys) {
       console.log('getConsignment 1')
       console.log(selectedKeys.phoneNumber)
+      console.log(selectedKeys)
       console.log(selectedKeys.remainNumConsignment)
       const fromDateFormated = moment(fromDateMoment, 'YYYY-MM-DD')
       const toDateFormated = moment(toDateMoment, 'YYYY-MM-DD')
@@ -493,6 +494,13 @@ export default class Gap {
         console.log('allSearchRegex2', allSearchRegex)
       }
 
+      // if (selectedKeys.productCode) {
+      //   allSearchRegex += `,"product":${selectedKeys.productCode.trim()}`
+      //   // allSearchRegex += `,"product":{"$inQuery":{"where":{"code":${selectedKeys.productId.trim()},"className":"product"}}}`
+
+      //   console.log('allSearchRegex2', allSearchRegex)
+      // }
+
       if (selectedKeys.isOnlineSale) {
         allSearchRegex += `,"isOnlineSale":${selectedKeys.isOnlineSale}`
         console.log('allSearchRegex2', allSearchRegex)
@@ -500,10 +508,18 @@ export default class Gap {
       console.log('allSearchRegex')
       console.log(allSearchRegex)
 
-      const customQuery = `skip=${skip}&limit=${limited}&count=1&include=product,orderData,orderData.transporter&where={${allSearchRegex}}`
+      let customQuery = `skip=${skip}&limit=${limited}&count=1&include=product,orderData,orderData.transporter&where={${allSearchRegex}}`
       console.log('customQuery')
       console.log(customQuery)
       const customQueryWithoutCondition = `include=product,orderData,orderData.transporter`
+
+      if (selectedKeys.productId) {
+        allSearchRegex += `,"product":{"__type":"Pointer","className":"Product","objectId":"${selectedKeys.productId.trim()}"}`
+
+        // allSearchRegex += `,"product":{"$inQuery":{"where":{"objectId":${selectedKeys.productId.trim()},"className":"Product"}}}`
+        customQuery = `skip=${skip}&limit=${limited}&count=1&include=product,orderData,orderData.transporter&where={${allSearchRegex}}`
+        console.log('allSearchRegex2', allSearchRegex)
+      }
 
       if (selectedKeys.objectId) {
         return this.fetchData(`/classes/OrderRequest/${selectedKeys.objectId.trim()}`, REQUEST_TYPE.GET, null, null, null, null, customQueryWithoutCondition)

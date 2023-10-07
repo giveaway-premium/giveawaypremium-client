@@ -318,19 +318,24 @@ class TableRequestOrder extends React.PureComponent {
 
     const columns = [
       {
-        title: 'ID',
+        title: () => (
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div className='MR10'>ID</div>
+            <Button onClick={() => this.onSearchProductOnRequestOrder(recordData)}>{`Tìm kiếm Tất cả`}</Button>
+          </div>
+        ),
         dataIndex: 'objectId',
         key: 'objectId',
-        render: (value) => <Button onClick={() => this.onRouteDetailProductScreenWithId(value)}>{value}</Button>
+        render: (value) => <Button onClick={() => this.onRouteDetailProductScreenWithId(value)}>{value}</Button>,
         // editable: true,
-        // width: 180
+        width: 220
       },
       {
         title: 'Mã SP',
         dataIndex: 'code',
-        key: 'code'
+        key: 'code',
         // editable: true,
-        // width: 180
+        width: 200
       },
       {
         title: 'Tên SP',
@@ -411,6 +416,29 @@ class TableRequestOrder extends React.PureComponent {
       pagination={false}
     />
   };
+
+  onSearchProductOnRequestOrder = (recordData) => {
+    console.log('recordData', recordData)
+    const { selectedKeys } = this.state
+    const selectedKeysTemp = { ...selectedKeys, productId: recordData.productList[0].objectId, productCode: recordData.productList[0].code }
+
+    console.log('selectedKeysTemp')
+    console.log(selectedKeysTemp)
+    this.setState({ selectedKeys: selectedKeysTemp }, () => {
+      this.fetchTableData(1)
+    })
+  }
+
+  onDeleteFilterProductId = () => {
+    const { selectedKeys } = this.state
+    const selectedKeysTemp = { ...selectedKeys }
+    delete selectedKeysTemp.productId
+    delete selectedKeysTemp.productCode
+
+    this.setState({ selectedKeys: selectedKeysTemp }, () => {
+      this.fetchTableData(1)
+    })
+  }
 
   convertDataIndexToName = (dataIndex) => {
     console.log('dataIndex')
@@ -1050,7 +1078,9 @@ class TableRequestOrder extends React.PureComponent {
         selectedKeys.fullName ||
         selectedKeys.isTransferMoneyWithBank ||
         selectedKeys.totalNumberOfProductForSale ||
-        selectedKeys.isOnlineSale)) {
+        selectedKeys.isOnlineSale ||
+        selectedKeys.productCode ||
+        selectedKeys.productId)) {
         res = await GapService.getOrderRequestWithSearchKey(page, selectedKeys, null, fromDateMoment, toDateMoment)
       } else {
         res = await GapService.getOrderRequestWithSearchKey(page, null, null, fromDateMoment, toDateMoment)
@@ -1065,7 +1095,7 @@ class TableRequestOrder extends React.PureComponent {
           console.log('item', item)
           orderData.push({
             key: indexItem,
-            objectId: item.objectId,
+            objectId: item.waitingCode,
             fullName: item?.userInformation?.fullName,
             consignmentId: item.consignmentId,
             consignerIdCard: item.consignerIdCard,
@@ -1080,7 +1110,7 @@ class TableRequestOrder extends React.PureComponent {
             isOnlineSale: 'Online',
             shippingInfo: item.shippingInfo,
             clientInfo: item.client || item.clientInfo,
-            transporter: item.orderData.transporter,
+            transporter: item?.orderData?.transporter || null,
             userAdress: item?.userInformation?.userAddress || '---',
             addressShipping: `${item?.userInformation?.orderAdressWard}-${item?.userInformation?.orderAdressDistrict}-${item?.userInformation?.orderAdressProvince}`,
             // numSoldConsignment: `${Number(item.numSoldConsignment || 0)}`,
@@ -1094,6 +1124,8 @@ class TableRequestOrder extends React.PureComponent {
             // birthday: item.birthday,
             orderId: item?.orderData?.objectId,
             productList: [item.product],
+            productId: item.product.objectId,
+            productCode: item.product.code,
             isGetMoney: (item.isGetMoney || false)
           })
         })
@@ -1178,7 +1210,7 @@ class TableRequestOrder extends React.PureComponent {
 
   render () {
     const { userData } = this.props
-    const { isLoadingData, orderData, total, isLoadingTags, currentPagination, fromDateMoment, toDateMoment } = this.state
+    const { isLoadingData, orderData, total, isLoadingTags, currentPagination, fromDateMoment, toDateMoment, selectedKeys } = this.state
 
     const components = {
       body: {
@@ -1215,6 +1247,9 @@ class TableRequestOrder extends React.PureComponent {
         <RangePicker value={[fromDateMoment, toDateMoment]} onChange={this.onHandleDatePicker} />
 
         <Button style={{ marginLeft: 10 }} onClick={this.onRefeshPage}>Cập nhật</Button>
+
+        {selectedKeys.productId && <Button style={{ marginLeft: 10 }} onClick={this.onDeleteFilterProductId}>Xoá Tìm kiếm {`${selectedKeys.productId}`}</Button>}
+
         {/* <RangePicker value={[moment(), moment().add(1, 'month')]} defaultPickerValue={[moment(), moment().add(1, 'month')]} picker='month' onChange={this.onHandleDatePicker} /> */}
         <Table
           components={components}

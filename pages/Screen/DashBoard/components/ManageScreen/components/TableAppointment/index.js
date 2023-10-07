@@ -15,7 +15,7 @@ import rightArrowJson from 'static/Assets/Image/Lottie/rightArrow.json'
 import Lottie from 'react-lottie'
 import { bindActionCreators } from 'redux'
 import StorageActions from 'controller/Redux/actions/storageActions'
-import { BOOKING_OPTION_EACH_DAY, BOOKING_OPTION_EACH_DAY_DATA_DEFAULT, TIME_BOOKING } from 'common/constants'
+import { BOOKING_OPTION_EACH_DAY, BOOKING_OPTION_EACH_DAY_DATA_DEFAULT, TIME_BOOKING, WORKING_DAY_COUNT } from 'common/constants'
 const { Option } = Select
 class TableAppointment extends React.Component {
   static async getInitialProps ({ query }) {
@@ -76,7 +76,8 @@ class TableAppointment extends React.Component {
       searchInfo: '',
       isLast7Day: false,
       bookingOptionValue: 8,
-      bookingOptionEachDay: {}
+      bookingOptionEachDay: {},
+      workingDayCount: 14
     }
     this.myModal = React.createRef()
   }
@@ -110,12 +111,19 @@ class TableAppointment extends React.Component {
     // let res = await GapService.updateSettingWithKeyAndValue(BOOKING_OPTION_EACH_DAY, bookingOptionList)
     // console.log(res)
 
+    let workingDayCountTemp = 14
+
+    if (settingRedux.WORKING_DAY_COUNT) {
+      workingDayCountTemp = settingRedux.WORKING_DAY_COUNT
+    }
+
     this.setState({
       bookingOptionValue: option,
       timeBooking: timeBooking,
       bookingOptionEachDay: bookingOptionEachDay,
       choosenDayCode: choosenDayCode,
-      dayBooking: dayBookingTemp
+      dayBooking: dayBookingTemp,
+      workingDayCount: workingDayCountTemp
     }, async () => {
       await this.fetchAppointment()
     })
@@ -230,6 +238,39 @@ class TableAppointment extends React.Component {
     }, () => {
       this.myModal.current.openModal(this.renderInfoAppointment(), { closable: true })
     })
+  }
+
+  onChangeWorkingDayOption = async (value = 1) => {
+    const { settingRedux, setSetting } = this.props
+    const { dayBooking, bookingOptionEachDay } = this.state
+
+    this.setState({
+      isLoadingBooking: true
+    })
+
+    let res = await GapService.updateSettingWithKeyAndValue(WORKING_DAY_COUNT, value)
+
+    if (res.code === 101 || res.error) {
+      showNotification('Thay đổi không thành công')
+      this.setState({
+        isLoadingBooking: false
+      })
+    } else {
+      this.setState({
+        bookingOptionValue: null,
+        timeBooking: null,
+        workingDayCount: value,
+        isLoadingBooking: false,
+        choosenDayCode: null,
+        isLast7Day: null,
+        choosenTimeCode: null
+      })
+      const settingReduxTemp = { ...settingRedux }
+      settingReduxTemp.WORKING_DAY_COUNT = value
+      console.log(settingReduxTemp)
+      setSetting(settingReduxTemp)
+      showNotification('Thay đổi thành công')
+    }
   }
 
   onChangeBookingOption = async (value = 1) => {
@@ -361,6 +402,22 @@ class TableAppointment extends React.Component {
     }
   }
 
+  renderOptionewWorkingDay = () => {
+    return (
+      <>
+        <Option value={14}>{`Mặc định 14 ngày`}</Option>
+        <Option value={1}>{'1 ngày'}</Option>
+        <Option value={2}>{'2 ngày'}</Option>
+        <Option value={3}>{'3 ngày'}</Option>
+        <Option value={4}>{'4 ngày'}</Option>
+
+        <Option value={5}>{'5 ngày'}</Option>
+        <Option value={6}>{'6 ngày'}</Option>
+        <Option value={7}>{'7 ngày'}</Option>
+      </>
+    )
+  }
+
   renderOptionBooking = () => {
     const { isLast7Day, choosenDayCode, bookingOptionEachDay } = this.state
 
@@ -487,7 +544,7 @@ class TableAppointment extends React.Component {
             <div style={{ overflowX: 'hidden', overflowY: 'scroll', position: 'relative' }} className={'dayBooking-box show'}>
 
               {dayBooking.map((dayItem, dayIndex) => {
-                const isLast7Day = dayIndex >= 14
+                const isLast7Day = dayIndex >= this.state.workingDayCount
                 return (
                   <div
                     key={dayIndex}
@@ -534,7 +591,7 @@ class TableAppointment extends React.Component {
               Xin lỗi vì sự bất tiện này.
                         </p>
                       </div>
-                    </div> : timeBooking.map((itemTime, indexTime) => {
+                    </div> : timeBooking ? timeBooking.map((itemTime, indexTime) => {
                       const isReady = !bookingDataCode.includes(choosenTimeCode + choosenDayCode) && itemTime.timeCode === choosenTimeCode
                       const isBusy = bookingDataCode.includes(itemTime.timeCode + choosenDayCode)
                       // console.log(bookingDataCode)
@@ -547,7 +604,7 @@ class TableAppointment extends React.Component {
                           <span className='text'>{itemTime.timeName}</span>
                         </div>
                       )
-                    })}
+                    }) : null}
               </div>
             </div>
           </div>
@@ -570,6 +627,18 @@ class TableAppointment extends React.Component {
           <Select onChange={this.onChangeBookingOption} value={bookingOptionValue} defaultValue={bookingOptionValue} size='large' id='bookingOption' key='bookingOption' placeholder='...'>
             {
               this.renderOptionBooking()
+            }
+          </Select>
+        </div>
+
+        <div className='select-booking-option-box'>
+          <div className='flex align-center'>
+            <div className={`status-on MR3 MB4`} />
+            <span className='MB3'>{`Số ngày làm việc`}</span>
+          </div>
+          <Select onChange={this.onChangeWorkingDayOption} value={this.state.workingDayCount} defaultValue={14} size='large' id='workingOption' key='workingOption' placeholder='...'>
+            {
+              this.renderOptionewWorkingDay()
             }
           </Select>
         </div>

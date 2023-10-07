@@ -88,7 +88,7 @@ class ManageScreen extends React.PureComponent {
             {/* Content of Tab Pane 3 */}
           </TabPane>
 
-          <TabPane tab='Hàng Chờ' key='7'>
+          <TabPane tab='Hàng Chờ' key='8'>
             <TableRequestOrder />
             {/* Content of Tab Pane 3 */}
           </TabPane>

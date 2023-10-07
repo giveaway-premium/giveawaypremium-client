@@ -21,7 +21,7 @@ const TagPrintBoxMulti = (props) => {
     // return <button onClick={() => alert('This will not work')}>Print this out!</button>;
 
     // Good
-    return <span className='createNewButton'><PrintOutlined /></span>
+    return <span className='createNewButton' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid black', padding: 8, borderRadius: 50 }}><PrintOutlined className='MR10' style={{ fontSize: 25 }} /> In Ngay</span>
   }, [])
 
   const PageBreakWrapper = styled.div`
@@ -31,8 +31,6 @@ const TagPrintBoxMulti = (props) => {
 `
 
   const PrintTemplate = ({ index, detail }) => {
-    console.log('PrintTemplate', detail)
-    console.log('index', index)
     return (
       <div style={{ display: 'inline-block', width: '34mm !important', margin: 0, marginLeft: 2.5 }}>
         <TagOrcode data={detail} />
@@ -42,21 +40,36 @@ const TagPrintBoxMulti = (props) => {
     )
   }
 
-  let printingPages = []
-  let index = 0
+  let productDataTemp = [...productData]
+  // let printingPages = []
+  let indexItemStart = 0
+  let indexLoop = 0
+
   for (const detail of productData) {
-    console.log(detail)
-    const tempTemplate = <PrintTemplate index={index} detail={detail} />
-    index += 1
-    printingPages.push(tempTemplate)
+    // console.log('detail', detail)
+    // console.log(detail)
+    // const tempTemplate = <PrintTemplate index={index} detail={detail} />
+
+    for (let i = 0; i < detail.numberTagCount - 1; i++) {
+      // indexLoop += 1
+      indexItemStart += 1
+      productDataTemp.splice(indexItemStart, 0, detail)
+      // printingPages.push(tempTemplate)
+    }
+    // indexLoop = 0
   }
 
   return (
     <div className='CodeBoxPinterMulti'>
       {/* <div className='boxTwoTag' ref={componentRef}>{printingPages}</div> */}
-      <div className='boxTwoTag' ref={componentRef}>{productData && productData.map((item, indexItem) => {
+      <ReactToPrint
+        trigger={reactToPrintTrigger}
+        removeAfterPrint
+        content={reactToPrintContent}
+      />
+      <div className='boxTwoTag' ref={componentRef}>{productData && productDataTemp && productDataTemp.map((item, indexItem) => {
         return (
-          <PrintTemplate key={indexItem} index={index} detail={item} />
+          <PrintTemplate key={indexItem} index={indexItem} detail={item} />
         )
       })}</div>
 
