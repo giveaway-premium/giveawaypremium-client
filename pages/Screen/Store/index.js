@@ -38,13 +38,15 @@ class StoreScreen extends React.PureComponent {
       key: null,
       limit: 100,
       productList: [],
-      currentCategoryId: OBJECTID_CATEGORY.FASHION
+      currentCategoryId: OBJECTID_CATEGORY.FASHION,
+      isShowComingSoon: props.router.asPath !== '/store-test'
     }
     this.myModal = React.createRef()
     this.container = React.createRef()
   }
 
   componentDidMount () {
+    console.log('this.props', this.props)
     window.addEventListener('scroll', this.handleScroll)
     this.loadingProduct(OBJECTID_CATEGORY.FASHION)
   }
@@ -171,12 +173,12 @@ class StoreScreen extends React.PureComponent {
   }
 
   render () {
-    const { productList, count, isLoadingPage, currentPage, maxPage, currentCategoryId, isLoadInit, isLoadingMore } = this.state
-    // const defaultOptions = {
-    //   loop: false,
-    //   autoplay: false,
-    //   animationData: comingSoonJson
-    // }
+    const { productList, count, isLoadingPage, currentPage, maxPage, currentCategoryId, isLoadInit, isLoadingMore, isShowComingSoon } = this.state
+    const defaultOptions = {
+      loop: false,
+      autoplay: false,
+      animationData: comingSoonJson
+    }
 
     console.log('currentPage')
     console.log(currentPage)
@@ -203,28 +205,38 @@ class StoreScreen extends React.PureComponent {
 
     return (
       <div id={'section0'} className='store-container' ref={this.container}>
-        <div className='category-container'>
-          {/* <Carousel>
-            <TagBox index={0} categoryId='0paqD5jvw3' name='Thời Trang' image={images.chanelBag} />
-            <TagBox index={1} categoryId='dNYERCGnBT' name='Túi' image={images.chanelBag} />
-            <TagBox index={2} categoryId='YIUniNrIKb' name='Nước Hoa' image={images.chanelBag} />
-            <TagBox index={3} categoryId='PtUHtoonRc' name='Giày Dép' image={images.chanelBag} />
-            <TagBox index={4} categoryId='OwyMj5kQ2N' name='Mỹ Phẩm' image={images.chanelBag} />
-            <TagBox index={5} categoryId='eMxuZ7VdUy' name='Phụ Kiện Trang Điểm' image={images.chanelBag} />
-            <TagBox index={6} categoryId='B3OQuAChW1' name='Thiết Bị Làm Đẹp' image={images.chanelBag} />
-          </Carousel> */}
-          <TagBoxList currentCategoryId={currentCategoryId} isLoadInit={isLoadInit} onPresstTag={this.onPresstTag} />
-        </div>
+        {
+          isShowComingSoon ? (
+            <Row style={{ height: '70vh' }} type='flex' justify='center'>
+              <Col span={20} align='center'>
+                <Lottie
+                  options={defaultOptions}
+                  height='100%'
+                  width='50%'
+                  speed={0.5}
+                  isStopped={false}
+                  isPaused={false}
+                />
+              </Col>
+            </Row>
+          ) : (
+            <>
+              <div className='category-container'>
+                <TagBoxList currentCategoryId={currentCategoryId} isLoadInit={isLoadInit} onPresstTag={this.onPresstTag} />
+              </div>
 
-        <div className='body-box' id='ctn-list-card'>
-          {
-            isLoadingPage ? (
-              <Skeleton baseColor='#FFFFFF' highlightColor='#F5FFFA' style={{ width: '100vw', height: '100vh' }} enableAnimation />
-            ) : (
-              <ProductList currentCategoryId={currentCategoryId} productList={productList} currentPage={currentPage} maxPage={maxPage} handleScrollActive={this.handleScrollActive} />
-            )
-          }
-        </div>
+              <div className='body-box' id='ctn-list-card'>
+                {
+                  isLoadingPage ? (
+                    <Skeleton baseColor='#FFFFFF' highlightColor='#F5FFFA' style={{ width: '100vw', height: '100vh' }} enableAnimation />
+                  ) : (
+                    <ProductList currentCategoryId={currentCategoryId} productList={productList} currentPage={currentPage} maxPage={maxPage} handleScrollActive={this.handleScrollActive} />
+                  )
+                }
+              </div>
+            </>
+          )
+        }
 
         {/* <div className='test-component-0' /> */}
         {/* <div id='0paqD5jvw3' className='test-component-1'>

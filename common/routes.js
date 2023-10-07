@@ -8,6 +8,7 @@ module.exports = routes()
   .add('/kygui', 'Screen/Consignment')
   .add('/gioithieu', 'Screen/AboutUs')
   .add('/muasam', 'Screen/Store')
+  .add('/store-test', 'Screen/Store')
   .add('/sanpham', 'Screen/Product')
   .add('/sanpham/:id', 'Screen/Product')
   // main routes

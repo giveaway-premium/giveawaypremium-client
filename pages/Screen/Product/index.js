@@ -544,7 +544,7 @@ class Product extends React.PureComponent {
                   </Button>
 
                   <div className='typeBox'>
-                    <span className='typeTxt'>{`${detailInfo?.category?.name} ___ ${detailInfo?.subCategory?.name}`}</span>
+                    <span className='typeTxt'>{`${detailInfo?.category?.name} ${(detailInfo?.subCategory?.name && detailInfo?.subCategory?.name !== 'undefined') ? `___ ${detailInfo?.subCategory?.name}` : null}`}</span>
                   </div>
 
                   <span className='nameProduct'>{detailInfo.name}</span>
@@ -563,10 +563,10 @@ class Product extends React.PureComponent {
                   <span className='valueTxt'>{detailInfo.remainNumberProduct}</span>
                   </div>
 
-                  <div className='detailBox'>
-                  <span className='titleTxt'>{`Size:`}</span>
-                  <span className='valueTxt'>{detailInfo.sizeInfo || '---'}</span>
-                  </div>
+                  {detailInfo?.sizeInfo && <div className='detailBox'>
+                    <span className='titleTxt'>{`Size:`}</span>
+                    <span className='valueTxt'>{detailInfo.sizeInfo || '---'}</span>
+                  </div>}
 
 
                   <div className='detailBox'>

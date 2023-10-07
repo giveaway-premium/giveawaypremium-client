@@ -294,10 +294,10 @@ export default class Gap {
     let skip = (limited * page) - limited
 
     if (keyword) {
-      const customQuery = `include=medias,category,subCategory&skip=${skip}&limit=${limited}&count=1&where={"name":{"$regex":"${keyword}"},"status":"ACTIVE","categoryId.objectId":"${categoryId}"}`
+      const customQuery = `include=medias,category,subCategory&skip=${skip}&limit=${limited}&count=1&where={"remainNumberProduct":{"$gte":0}, "name":{"$regex":"${keyword}"},"status":"ACTIVE","categoryId.objectId":"${categoryId}"}`
       return this.fetchData('/classes/Product', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     } else {
-      const customQuery = `include=medias,category,subCategory&skip=${skip}&limit=${limited}&count=1&where={"status":"ACTIVE","category":{"__type":"Pointer","className":"Category","objectId":"${categoryId}"}}`
+      const customQuery = `include=medias,category,subCategory&skip=${skip}&limit=${limited}&count=1&where={"remainNumberProduct":{"$gte":0}, "status":"ACTIVE","category":{"__type":"Pointer","className":"Category","objectId":"${categoryId}"}}`
       return this.fetchData('/classes/Product', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     }
   }
@@ -741,7 +741,18 @@ export default class Gap {
   static async getConsignmentWithPhone (page = 1, keyword = null, limit = 20) {
     let limited = limit || 100
     let skip = (limited * page) - limited
-    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"deletedAt":${null},"phoneNumber":"${keyword}"}`
+
+    const thisDay = moment().get('date')
+    const thisMonth = moment().get('month') + 1
+    const thisYear = moment().get('year')
+
+    const fromDateMomentTemp = moment(`$${thisYear}-${thisMonth}-${thisDay}`).subtract(1, 'year')
+    const toDateMomentTemp = moment(`$${thisYear}-${thisMonth}-${thisDay}`)
+
+    const fromDateFormated = moment(fromDateMomentTemp, 'YYYY-MM-DD')
+    const toDateFormated = moment(toDateMomentTemp, 'YYYY-MM-DD')
+
+    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"deletedAt":${null},"phoneNumber":"${keyword}", "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"},"$lte": {"__type": "Date","iso": "${toDateFormated}"}}}`
     // const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"$or":[{"phoneNumber":"${keyword}"},{"consignerIdCard":"${keyword}"]}`
 
     return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
