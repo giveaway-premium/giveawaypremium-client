@@ -305,7 +305,7 @@ class TableRequestOrder extends React.PureComponent {
   }
 
   onRouteDetailProductScreenWithId = (codeId) => {
-    window.open(`https://giveawaypremium.com/sanpham/${codeId}`, '_blank')
+    window.open(`https://giveawaypremium.com.vn/sanpham/${codeId}`, '_blank')
   }
 
   expandedRowRender = (recordData) => {
