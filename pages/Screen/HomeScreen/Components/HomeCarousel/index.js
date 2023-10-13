@@ -330,7 +330,9 @@ class HomeCarousel extends React.Component {
         </div>
 
         <div className={'bottom-homescreen' + (isShowFooter ? ' show' : '')}>
-          <div className='left-bottom-box' />
+          <div className='left-bottom-box'>
+            <a href='https://www.chendinh.com/work/giveaway-premium' rel='noopener noreferrer' target='_blank' className='text-bold chendinh-text'>*ChenDinh Solutions</a>
+          </div>
           <div className='line-bottom' />
           <div className='right-bottom-box'>
             <span className='text MR10'>Follow us</span>
@@ -407,8 +409,10 @@ class HomeCarousel extends React.Component {
               <img className='cursor-pointer' src={images.facebookIcon} style={{ objectFit: 'contain', height: '100%', width: 'auto' }} />
             </a>
           </div>
+          <div className='left-bottom-box'>
+            <a href='https://www.chendinh.com/work/giveaway-premium' rel='noopener noreferrer' target='_blank' className='text-bold chendinh-text'>*ChenDinh Solutions</a>
+          </div>
         </div>
-
       </div>
     )
   }
