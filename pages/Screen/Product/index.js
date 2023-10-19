@@ -402,8 +402,18 @@ class Product extends React.PureComponent {
                   </Button>
 
                   <div className='typeBox'>
-                    <span className='typeTxt'>{`${detailInfo?.category?.name} ___ ${detailInfo?.subCategory?.name}`}</span>
+                    <div className='categoryNameBox'>{detailInfo?.category?.name}</div>
+                    {
+                      (detailInfo?.subCategory?.name && detailInfo?.subCategory?.name !== 'undefined') && (
+                        <div className='subCategoryNameBox'>{detailInfo?.subCategory?.name}</div>
+                      )
+                    }
+                    {/* <span className='typeTxt'>{`${detailInfo?.category?.name} ${(detailInfo?.subCategory?.name && detailInfo?.subCategory?.name !== 'undefined') ? `___ ${detailInfo?.subCategory?.name}` : null}`}</span> */}
                   </div>
+
+                  {/* <div className='typeBox'>
+                    <span className='typeTxt'>{`${detailInfo?.category?.name} ___ ${detailInfo?.subCategory?.name}`}</span>
+                  </div> */}
 
                   <span className='nameProduct'>{detailInfo.name}</span>
 
@@ -544,7 +554,13 @@ class Product extends React.PureComponent {
                   </Button>
 
                   <div className='typeBox'>
-                    <span className='typeTxt'>{`${detailInfo?.category?.name} ${(detailInfo?.subCategory?.name && detailInfo?.subCategory?.name !== 'undefined') ? `___ ${detailInfo?.subCategory?.name}` : null}`}</span>
+                    <div className='categoryNameBox'>{detailInfo?.category?.name}</div>
+                    {
+                      (detailInfo?.subCategory?.name && detailInfo?.subCategory?.name !== 'undefined') && (
+                        <div className='subCategoryNameBox'>{detailInfo?.subCategory?.name}</div>
+                      )
+                    }
+                    {/* <span className='typeTxt'>{`${detailInfo?.category?.name} ${(detailInfo?.subCategory?.name && detailInfo?.subCategory?.name !== 'undefined') ? `___ ${detailInfo?.subCategory?.name}` : null}`}</span> */}
                   </div>
 
                   <span className='nameProduct'>{detailInfo.name}</span>

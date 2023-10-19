@@ -746,14 +746,18 @@ export default class Gap {
     const thisMonth = moment().get('month') + 1
     const thisYear = moment().get('year')
 
-    const fromDateMomentTemp = moment(`$${thisYear}-${thisMonth}-${thisDay}`).subtract(1, 'year')
+    const fromDateMomentTemp = moment(`$${thisYear}-${thisMonth}-${1}`).subtract(1, 'year')
     const toDateMomentTemp = moment(`$${thisYear}-${thisMonth}-${thisDay}`)
 
     const fromDateFormated = moment(fromDateMomentTemp, 'YYYY-MM-DD')
     const toDateFormated = moment(toDateMomentTemp, 'YYYY-MM-DD')
 
-    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"deletedAt":${null},"phoneNumber":"${keyword}", "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"},"$lte": {"__type": "Date","iso": "${toDateFormated}"}}}`
-    // const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"$or":[{"phoneNumber":"${keyword}"},{"consignerIdCard":"${keyword}"]}`
+    // console.log('fromDateFormated', fromDateFormated)
+    // console.log('toDateFormated', toDateFormated)
+    const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"deletedAt":${null},"phoneNumber":"${keyword}", "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"}}}`
+
+    // const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"deletedAt":${null},"phoneNumber":"${keyword}", "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"},"$lte": {"__type": "Date","iso": "${toDateFormated}"}}}`
+    // const customQuery = `order=-createdAt&include=group&skip=${skip}&limit=${limited}&count=1&where={"$or":[{"phoneNumber":"${keyword}"},{"consignerIdCard":"${keyword}"]}}`
 
     return this.fetchData('/classes/Consignment', REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }

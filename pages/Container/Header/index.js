@@ -454,7 +454,7 @@ class Header extends React.PureComponent {
           onClose={this.closeDrawer}
           // closeicon={<CloseOutlined />}
           maskClosable
-          closable={false}
+          closable
           visible={this.state.isOpen}
           // drawerStyle={{ background: '#000' }}
         >
@@ -464,9 +464,9 @@ class Header extends React.PureComponent {
               <h1 className='logo'>
                 <img width={90} src={images.logoHeaderWhite} style={{ objectFit: 'contain', marginBottom: '10px' }} />
               </h1>
-              <Menu.Item key={4} onClick={this.onOpenUserDetail}>
+              {/* <Menu.Item key={4} onClick={this.onOpenUserDetail}>
                 <span className={'main-nav-item userInfo'}>Thông tin khách hàng</span>
-              </Menu.Item>
+              </Menu.Item> */}
               {this.renderMainNavMobile('vertical')}
 
               {/* {!isSigned && <div className='ctn-btn-signin MT20'>
