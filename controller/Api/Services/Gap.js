@@ -23,7 +23,8 @@ export default class Gap {
           body: data,
           method: 'POST',
           headers: {
-            // "Content-Type": "multipart/form-data",
+            // 'Content-Type': 'multipart/form-data',
+            // 'Content-Type': 'multipart/form-data',
             'x-parse-application-id': process.env.APP_ID,
             'x-parse-rest-api-key': process.env.REST_API_KEY,
             'x-parse-revocable-session': '1',
@@ -312,22 +313,29 @@ export default class Gap {
     return this.fetchData(`/classes/Product`, REQUEST_TYPE.GET, null, null, null, null, customQuery)
   }
 
-  static async updateProduct (item) {
+  static async updateProduct (item, isUploadImg = false) {
     console.log('updateProduct', item)
     try {
-      const body = {
-        medias: convertMediaArrayToPointerArray(item.medias),
-        rateNew: Number(item.rateNew) || 0,
-        note: item.note || '---',
-        sizeInfo: item.sizeInfo || '---',
-        detailInfo: item.detailInfo || '---',
-        code: item.code,
-        name: item.name,
-        price: item.price,
-        priceAfterFee: item.priceAfterFee,
-        count: item.count,
-        soldNumberProduct: item.soldNumberProduct,
-        remainNumberProduct: item.remainNumberProduct
+      let body
+      if (isUploadImg && item.medias) {
+        body = {
+          medias: convertMediaArrayToPointerArray(item.medias)
+        }
+      } else {
+        body = {
+          medias: convertMediaArrayToPointerArray(item.medias),
+          rateNew: Number(item.rateNew) || 0,
+          note: item.note || '---',
+          sizeInfo: item.sizeInfo || '---',
+          detailInfo: item.detailInfo || '---',
+          code: item.code,
+          name: item.name,
+          price: item.price,
+          priceAfterFee: item.priceAfterFee,
+          count: item.count,
+          soldNumberProduct: item.soldNumberProduct,
+          remainNumberProduct: item.remainNumberProduct
+        }
       }
 
       if (item && item.status) {

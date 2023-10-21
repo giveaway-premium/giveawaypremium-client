@@ -1,3 +1,13 @@
+@font-face {
+  font-family: myriadpro-boldcond;
+  src: url("/static/Assets/Fonts/myriadpro-boldcond.otf");
+  }
+
+  @font-face {
+    font-family: myriadpro-cond;
+    src: url("/static/Assets/Fonts/myriadpro-cond.otf");
+    }
+
 .containerProduct {
   // margin: 1em;
   // filter: grayscale(5%);
@@ -93,7 +103,8 @@
     padding-bottom: 7em;
     overflow-y: auto;
     min-height: calc(100vh - 130px);
-  
+    font-family: inherit !important;
+
     // background-color: yellow;
     width: 50%;
     height: 100%;
@@ -211,7 +222,7 @@
       background-color: rgb(57, 53, 51);
       border: 1px solid black;
       color: white;
-      margin-right: 5px;
+      margin-right: 10px;
       font-weight: bold;
     }
 

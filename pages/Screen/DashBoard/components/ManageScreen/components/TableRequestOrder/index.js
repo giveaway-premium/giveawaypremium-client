@@ -108,11 +108,11 @@ class TableRequestOrder extends React.PureComponent {
     this.columns = [
       {
         title: 'Mã Chờ',
-        dataIndex: 'objectId',
+        dataIndex: 'waitingCode',
         key: '0',
         width: 140,
         // editable: true,
-        ...this.getColumnSearchKeyProps('objectId')
+        ...this.getColumnSearchKeyProps('waitingCode')
       },
       {
         title: 'Tên khách hàng',
@@ -441,8 +441,6 @@ class TableRequestOrder extends React.PureComponent {
   }
 
   convertDataIndexToName = (dataIndex) => {
-    console.log('dataIndex')
-    console.log(dataIndex)
     switch (dataIndex) {
     case 'consignerName':
       return 'Tìm tên khách hàng'
@@ -452,8 +450,8 @@ class TableRequestOrder extends React.PureComponent {
   }
 
   setSelectedKeys = (value, keyColumn) => {
-    console.log(value)
-    console.log(keyColumn)
+    // console.log(value)
+    // console.log(keyColumn)
     this.setState({
       selectedKeys: {
         ...this.state.selectedKeys,
@@ -908,7 +906,7 @@ class TableRequestOrder extends React.PureComponent {
       style={{ color:
         (this.state.selectedKeys?.phoneNumber?.length > 0 && keyColumn === 'phoneNumber') ||
         (this.state.selectedKeys?.fullName?.length > 0 && keyColumn === 'fullName') ||
-        (this.state.selectedKeys?.objectId?.length > 0 && keyColumn === 'objectId') ||
+        (this.state.selectedKeys?.waitingCode?.length > 0 && keyColumn === 'waitingCode') ||
         (this.state.selectedKeys?.totalNumberOfProductForSale?.length > 0 && keyColumn === 'totalNumberOfProductForSale')
           ? '#1890ff' : undefined }}
     />,
@@ -1071,7 +1069,7 @@ class TableRequestOrder extends React.PureComponent {
     }, async () => {
       let res
 
-      if (selectedKeys && selectedKeys.objectId) {
+      if (selectedKeys && selectedKeys.waitingCode) {
         res = await GapService.getOrderRequestWithSearchKey(page, selectedKeys, null, fromDateMoment, toDateMoment)
         console.log('getOrder', res)
         res.results = [res]
@@ -1097,7 +1095,8 @@ class TableRequestOrder extends React.PureComponent {
           console.log('item', item)
           orderData.push({
             key: indexItem,
-            objectId: item.waitingCode,
+            waitingCode: item.waitingCode,
+            objectId: item.objectId,
             fullName: item?.userInformation?.fullName,
             consignmentId: item.consignmentId,
             consignerIdCard: item.consignerIdCard,

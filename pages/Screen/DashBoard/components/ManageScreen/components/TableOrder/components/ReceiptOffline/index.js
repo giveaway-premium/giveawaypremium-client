@@ -29,9 +29,9 @@ export default class ReceiptOffline extends React.PureComponent {
   render () {
     const { data = {} } = this.props
     const { productList = [] } = data
-    console.log('data', data)
+    // console.log('data', data)
 
-    console.log('productList', productList)
+    // console.log('productList', productList)
 
     return (
       <div className={'BoxContainer'}>

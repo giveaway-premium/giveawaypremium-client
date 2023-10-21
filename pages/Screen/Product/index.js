@@ -485,11 +485,11 @@ class Product extends React.PureComponent {
                         {/* <span className='buyTxt'>Quý khách vui lòng copy mã chờ và nhắn đến Facebook GiveawayPremium để chúng tôi tư vấn và đặt hàng.</span> */}
                         {/* <p style={{ color: 'blue', marginTop: '1em' }} onClick={() => this.onRouteFacebook(theLastValidBooking.orderRequestId)}>Nhấn vào đây để chuyển đến phòng chat và gửi thông tin mã chờ trên: https://www.facebook.com/messages/t/104637727623228</p> */}
                       </div>
-                    ) : (
+                    ) : detailInfo.remainNumberProduct !== 0 ? (
                       <div className='buyButton' onClick={this.onRegisterOrderRequest}>
                         <span className='buyTxt'>MUA NGAY</span>
                       </div>
-                    )
+                    ) : null
                   }
               </div>
             </>

@@ -440,6 +440,7 @@ class TableProductScreen extends React.PureComponent {
         let newItemForUploading
 
         const res = await GapService.uploadSingleFileWithFormData(info.file.originFileObj)
+        console.log('res', res)
         const newImage = { '__type': 'Pointer', 'className': 'Media', 'objectId': res.objectId }
 
         if (newItem.medias && newItem.medias.length > 0) {
@@ -466,7 +467,7 @@ class TableProductScreen extends React.PureComponent {
           ]
         }
 
-        const resPro = await GapService.updateProduct(newItemForUploading)
+        const resPro = await GapService.updateProduct(newItemForUploading, true)
         if (resPro) {
           newData[index] = newItem
           this.setState({

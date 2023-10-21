@@ -58,7 +58,7 @@ export default class TagOrcode extends React.PureComponent {
   render () {
     const { data = {} } = this.props
     const { svg } = this.state
-    console.log('data', data)
+    // console.log('data', data)
 
     const customNameProduct = (`${data.name} 123213 123213`).length > 55 ? `${`${data.name} 123213 123213`.slice(0, 55)}...` : data?.name ? data.name : '---'
 
