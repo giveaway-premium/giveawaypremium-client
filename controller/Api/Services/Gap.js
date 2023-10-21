@@ -12,9 +12,8 @@ export default class Gap {
     const key = await ReduxService.getAuthKeyBearer()
 
     return new Promise(resolve => {
-      const isOnline = () => resolve(true)
-      const isOffline = () => resolve(false)
-
+      // const isOnline = () => resolve(true)
+      // const isOffline = () => resolve(false)
       var data = new FormData()
       data.append('media', file)
 
@@ -23,7 +22,10 @@ export default class Gap {
           body: data,
           method: 'POST',
           headers: {
-            // 'Content-Type': 'multipart/form-data',
+            // 'Content-Type': 'text/html',
+            // 'X-Powered-By': 'Next.js',
+            // 'Vary': 'Accept-Encoding',
+            // 'Transfer-Encoding': 'chunked',
             // 'Content-Type': 'multipart/form-data',
             'x-parse-application-id': process.env.APP_ID,
             'x-parse-rest-api-key': process.env.REST_API_KEY,
@@ -382,6 +384,10 @@ export default class Gap {
         // isGetMoney: item.isGetMoney || false
       }
 
+      if (body?.userInformation?.phoneNumber) {
+        body.phoneNumber = body.userInformation.phoneNumber
+      }
+
       if (waitingCode) {
         body.waitingCode = waitingCode
       }
@@ -481,8 +487,9 @@ export default class Gap {
       let allSearchRegex = `"deletedAt":${null}, "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"},"$lte": {"__type": "Date","iso": "${toDateFormated}"}}`
       if (selectedKeys.phoneNumber) {
         console.log('getConsignment 2')
-
         allSearchRegex += `,"phoneNumber":{"$regex":"${selectedKeys.phoneNumber.trim()}"}`
+
+        // allSearchRegex += `,"phoneNumber":{"$text":{"$search":{"$term":"${selectedKeys.phoneNumber.trim()}"}}}`
         console.log('allSearchRegex', allSearchRegex)
       }
       if (selectedKeys.fullName) {
@@ -499,6 +506,11 @@ export default class Gap {
 
       if (selectedKeys.totalNumberOfProductForSale) {
         allSearchRegex += `,"totalNumberOfProductForSale":${selectedKeys.totalNumberOfProductForSale.trim()}`
+        console.log('allSearchRegex2', allSearchRegex)
+      }
+
+      if (selectedKeys.waitingCode) {
+        allSearchRegex += `,"waitingCode":{"$text":{"$search":{"$term":"${selectedKeys.waitingCode.trim()}"}}}`
         console.log('allSearchRegex2', allSearchRegex)
       }
 

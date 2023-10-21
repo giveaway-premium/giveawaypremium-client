@@ -450,8 +450,8 @@ class TableRequestOrder extends React.PureComponent {
   }
 
   setSelectedKeys = (value, keyColumn) => {
-    // console.log(value)
-    // console.log(keyColumn)
+    console.log('value', value)
+    console.log(keyColumn)
     this.setState({
       selectedKeys: {
         ...this.state.selectedKeys,
@@ -1069,7 +1069,9 @@ class TableRequestOrder extends React.PureComponent {
     }, async () => {
       let res
 
-      if (selectedKeys && selectedKeys.waitingCode) {
+      console.log('selectedKeys', selectedKeys)
+
+      if (selectedKeys && selectedKeys.objectId) {
         res = await GapService.getOrderRequestWithSearchKey(page, selectedKeys, null, fromDateMoment, toDateMoment)
         console.log('getOrder', res)
         res.results = [res]
@@ -1080,6 +1082,7 @@ class TableRequestOrder extends React.PureComponent {
         selectedKeys.totalNumberOfProductForSale ||
         selectedKeys.isOnlineSale ||
         selectedKeys.productCode ||
+        selectedKeys.waitingCode ||
         selectedKeys.productId)) {
         res = await GapService.getOrderRequestWithSearchKey(page, selectedKeys, null, fromDateMoment, toDateMoment)
       } else {
@@ -1096,7 +1099,7 @@ class TableRequestOrder extends React.PureComponent {
           orderData.push({
             key: indexItem,
             waitingCode: item.waitingCode,
-            objectId: item.objectId,
+            objectId: item?.objectId,
             fullName: item?.userInformation?.fullName,
             consignmentId: item.consignmentId,
             consignerIdCard: item.consignerIdCard,
@@ -1125,8 +1128,8 @@ class TableRequestOrder extends React.PureComponent {
             // birthday: item.birthday,
             orderId: item?.orderData?.objectId,
             productList: [item.product],
-            productId: item.product.objectId,
-            productCode: item.product.code,
+            productId: item?.product?.objectId,
+            productCode: item?.product?.code,
             isGetMoney: (item.isGetMoney || false)
           })
         })
