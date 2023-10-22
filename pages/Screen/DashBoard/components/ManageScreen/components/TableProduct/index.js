@@ -233,14 +233,35 @@ class TableProductScreen extends React.PureComponent {
       imageUrl: false,
       isUploading: false,
       currentPagination: 1,
-      isShowMultiPrintView: false
+      isShowMultiPrintView: false,
+      loadedWitget: false
     }
     this.myModal = React.createRef()
     this.componentRef = React.createRef()
+    this.loaded = false
   }
 
   componentDidMount () {
     this.fetchAllTags()
+    if (!this.state.loadedWitget) {
+      const uwScript = document.getElementById('uw')
+      if (!uwScript) {
+        // If not loaded, create and load the script
+        const script = document.createElement('script')
+        script.setAttribute('async', '')
+        script.setAttribute('id', 'uw')
+        script.src = 'https://upload-widget.cloudinary.com/global/all.js'
+        script.addEventListener('load', () => this.setState({
+          loadedWitget: true
+        }))
+        document.body.appendChild(script)
+      } else {
+        // If already loaded, update the state
+        this.setState({
+          loadedWitget: true
+        })
+      }
+    }
   }
 
   componentDidUpdate () {
@@ -783,14 +804,20 @@ class TableProductScreen extends React.PureComponent {
                     //       </div>
                     //   }
                     // </Dragger>
-                      <CloudinaryUploadWidget
-                        isUploading={isUploading}
-                        uwConfig={{
-                          cloudName: 'hzxyensd5',
-                          uploadPreset: 'aoh4fpwm'
-                        }}
-                        setPublicInfo={(info) => this.handleUploadv2(info, recordData)}
-                      />
+                      this.state.loadedWitget && (
+                        <CloudinaryUploadWidget
+                          uwConfig={{
+                            cloudName: 'hzxyensd5',
+                            uploadPreset: 'aoh4fpwm',
+                            multiple: false,
+                            maxImageFileSize: 2000000,
+                            maxImageWidth: 600,
+                            cropping: true,
+                            isShowing: true
+                          }}
+                          setPublicInfo={(info) => this.handleUploadv2(info, recordData)}
+                        />
+                      )
                     )
 
                 }
