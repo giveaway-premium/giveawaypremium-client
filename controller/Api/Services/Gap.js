@@ -91,6 +91,22 @@ export default class Gap {
     }
   }
 
+  // Media
+
+  static async setMedia (infoMedia) {
+    if (infoMedia?.asset_id) {
+      const body = {
+        data: infoMedia,
+        cloud: 'Cloudinary',
+        type: infoMedia.asset_id
+      }
+      return this.fetchData('/classes/Media', REQUEST_TYPE.POST, null, body)
+    } else {
+      showNotification('Chưa Lưu thông tin ảnh được')
+      return false
+    }
+  }
+
   // Appointment
 
   static async getAppointmentWithPhone (phoneNumber, limit = 1, page = 1) {

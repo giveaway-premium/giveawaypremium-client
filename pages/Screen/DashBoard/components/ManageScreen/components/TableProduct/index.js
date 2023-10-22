@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { Form, Row, Col, Layout, Input, Button, Badge, Spin, Descriptions, Tabs, Table, Radio, Popconfirm, Upload, Switch } from 'antd'
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
-import { showNotification, numberWithCommas } from 'common/function'
+import { showNotification, numberWithCommas, randomString } from 'common/function'
 import { DeleteFilled, LeftCircleTwoTone, LoadingOutlined, PrinterOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons'
 import { Router } from 'common/routes'
 import { isMobile } from 'react-device-detect'
@@ -24,6 +24,15 @@ import TagPrintBox from './components/TagPrintBox'
 import { PrintOutlined } from '@material-ui/icons'
 import styled from 'styled-components'
 import TagPrintBoxMulti from './components/TagPrintBoxMulti'
+import CloudinaryUploadWidget from './CloudinaryUploadWidget'
+import { Cloudinary } from '@cloudinary/url-gen'
+import { AdvancedImage, responsive, placeholder } from '@cloudinary/react'
+
+const cld = new Cloudinary({
+  cloud: {
+    cloudName: 'hzxyensd5'
+  }
+})
 
 // import * as arrayMove from 'array-move'
 const { Dragger } = Upload
@@ -422,6 +431,10 @@ class TableProductScreen extends React.PureComponent {
     })
   }
 
+  action = (a) => {
+    console.log('action log', a)
+  }
+
   handleUpload = async (info, recordData) => {
     const { productData, isUploading } = this.state
     const status = info.file.status
@@ -439,7 +452,9 @@ class TableProductScreen extends React.PureComponent {
         let newItem = newData[index]
         let newItemForUploading
 
-        const res = await GapService.uploadSingleFileWithFormData(info.file.originFileObj)
+        console.log('info', info)
+
+        const res = await GapService.uploadSingleFileWithFormData(info.file)
         console.log('res', res)
         const newImage = { '__type': 'Pointer', 'className': 'Media', 'objectId': res.objectId }
 
@@ -487,6 +502,74 @@ class TableProductScreen extends React.PureComponent {
         isUploading: false
       })
       showNotification(`Cập nhật chưa thành công`)
+    }
+  }
+
+  handleUploadv2 = async (info, recordData) => {
+    const { productData, isUploading } = this.state
+
+    try {
+      this.setState({
+        isUploading: true
+      }, async () => {
+        const newData = [...productData]
+        const index = newData.findIndex((item) => recordData.key === item.key)
+        let newItem = newData[index]
+        let newItemForUploading
+
+        console.log('info', info)
+
+        const res = await GapService.setMedia(info)
+        console.log('res', res)
+        const newImage = { '__type': 'Pointer', 'className': 'Media', 'objectId': res.objectId }
+
+        if (newItem.medias && newItem.medias.length > 0) {
+          newItemForUploading = {
+            ...newItem,
+            medias: [
+              ...newItem.medias,
+              newImage
+            ]
+          }
+          newItem.medias = [
+            ...newItem.medias,
+            { ...newImage, data: info }
+          ]
+        } else {
+          newItemForUploading = {
+            ...newItem,
+            medias: [
+              newImage
+            ]
+          }
+          newItem.medias = [
+            { ...newImage, data: info }
+          ]
+        }
+
+        const resPro = await GapService.updateProduct(newItemForUploading, true)
+        if (resPro) {
+          newData[index] = newItem
+          this.setState({
+            productData: newData,
+            isUploading: false
+          })
+          showNotification(`Cập nhật thành công ${newItem.objectId}`)
+        } else {
+          this.setState({
+            isUploading: false
+          })
+          showNotification(`Cập nhật chưa thành công ${newItem.objectId}`)
+        }
+      })
+    } catch (e) {
+      this.setState({
+        isUploading: false
+      })
+    } finally {
+      this.setState({
+        isUploading: false
+      })
     }
   }
 
@@ -668,34 +751,50 @@ class TableProductScreen extends React.PureComponent {
 
                 {
                   value && value.length >= 5 ? null
-                    : <Dragger
-                      name='uploadFile'
-                      listType='picture-card'
-                      showUploadList={false}
-                      onChange={(info) => this.handleUpload(info, recordData)}
-                      multiple
-                      maxCount={5}
-                      maxLength={5}
-                      accept='.png,.jpg,.jpeg,.gif'
-                      className='upload-Dragger'
-                      style={value && value.length === 0 && { border: 'none', background: 'transparent' }}
-                    >
-                      {
-                        value && value.length === 0
-                          ? <Button>
-                            <UploadOutlined /> Thêm ảnh
-                          </Button> : <div>
-                            <p className='ant-upload-text'>
-                              {isUploading ? (
-                                <LoadingOutlined />
-                              ) : (
-                                <img src={images.increase} />
-                              )}
-                            </p>
-                          </div>
-                      }
-                    </Dragger>
+                    : (
+                    // <Dragger
+                    //   beforeUpload={this.action}
+                    //   withCredentials
+                    //   name='uploadFile'
+                    //   listType='picture-card'
+                    //   action={this.action}
+                    //   showUploadList={false}
+                    //   onChange={(info) => this.handleUpload(info, recordData)}
+                    //   multiple
+                    //   maxCount={5}
+                    //   maxLength={5}
+                    //   accept='.png,.jpg,.jpeg,.gif'
+                    //   className='upload-Dragger'
+                    //   style={value && value.length === 0 && { border: 'none', background: 'transparent' }}
+                    // >
+                    //   <input type='file' id='myFile' name='filename' />
+                    //   {
+                    //     value && value.length === 0
+                    //       ? <Button>
+                    //         <UploadOutlined /> Thêm ảnh
+                    //       </Button> : <div>
+                    //         <p className='ant-upload-text'>
+                    //           {isUploading ? (
+                    //             <LoadingOutlined />
+                    //           ) : (
+                    //             <img src={images.increase} />
+                    //           )}
+                    //         </p>
+                    //       </div>
+                    //   }
+                    // </Dragger>
+                      <CloudinaryUploadWidget
+                        isUploading={isUploading}
+                        uwConfig={{
+                          cloudName: 'hzxyensd5',
+                          uploadPreset: 'aoh4fpwm'
+                        }}
+                        setPublicInfo={(info) => this.handleUploadv2(info, recordData)}
+                      />
+                    )
+
                 }
+
               </div>
               <div className='nft-message-length'>
                 {value ? value.length : 0}/5
