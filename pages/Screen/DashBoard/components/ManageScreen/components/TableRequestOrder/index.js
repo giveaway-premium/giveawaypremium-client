@@ -504,6 +504,10 @@ class TableRequestOrder extends React.PureComponent {
     }
   }
 
+  trackingOrder = (labelId) => {
+    window.open(`https://i.ghtk.vn/${labelId}`, '_blank')
+  }
+
   renderDetailGHTKBox = (value) => {
     console.log('value', value)
     const shipData = value && value?.transporter?.res?.order
@@ -523,6 +527,7 @@ class TableRequestOrder extends React.PureComponent {
 
         <Button className='MT10' onClick={() => this.cancelOrder(value.orderId)}>Huỷ Đơn Hàng</Button>
         <Button className='MT10 ML10' onClick={() => this.printOrder(value.orderId)}>In Đơn Hàng</Button>
+        <Button className='MT10 ML10' onClick={() => this.trackingOrder(shipData.label_id)}>Tra cứu GHTK</Button>
       </div>
     )
   }
@@ -589,7 +594,7 @@ class TableRequestOrder extends React.PureComponent {
         const addressShippingArr = newItem.addressShipping.split('-')
         const dataOrder = {
           isGetMoney: true,
-          timeConfirmGetMoney: moment(item.createdAt).format('DD-MM-YYYY hh:mm'),
+          timeConfirmGetMoney: moment().format('DD-MM-YYYY hh:mm'),
           isOnlineSale: 'true',
           clientInfo: {
             objectId: '',
@@ -599,9 +604,10 @@ class TableRequestOrder extends React.PureComponent {
             bankName: newItem.bankName,
             bankId: newItem.bankId,
             consignerIdCard: '',
-            mail: newItem.email
+            mail: newItem.mail || newItem.email
           },
           shippingInfo: {
+            mail: newItem.mail || newItem.email,
             phone: newItem.phoneNumber,
             optionTransfer: 'tk',
             address: newItem.userAdress,

@@ -43,7 +43,7 @@ const ProductList = (props) => {
                 <img src={item && item.medias && item.medias[0] && item.medias[0].data && item.medias[0].data.url ? item.medias[0].data.url : images.aLogoBlack} className='big-avatar-img' />
                 <div className='detail-box'>
                   {item && item.name && <span className='detail-box-name'>{item.name || '--'}</span>}
-                  {item && item.price && <span className='detail-box-price'>{numberWithCommas(item.price * 100)} ₫</span>}
+                  {item && item.price && <span className='detail-box-price'>{numberWithCommas(item.price * 1000)} ₫</span>}
                   {item && <span className='detail-box-rateNew'>{item.rateNew === 0 ? 'Đã sử dụng' : 'Mới' }</span>}
                 </div>
               </div>

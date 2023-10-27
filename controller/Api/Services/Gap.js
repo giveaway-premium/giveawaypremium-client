@@ -38,6 +38,34 @@ export default class Gap {
     })
   }
 
+  static uploadSingleFileWithTinify = async (file) => {
+    // eslint-disable-next-line no-undef
+    console.log('file uploading ======', file)
+    const key = await ReduxService.getAuthKeyBearer()
+
+    return new Promise(resolve => {
+      // const isOnline = () => resolve(true)
+      // const isOffline = () => resolve(false)
+      var data = new FormData()
+      data.append('media', file)
+
+      fetch('https://api.tinify.com/shrink',
+        {
+          body: data,
+          method: 'POST',
+          headers: {
+            // 'Content-Type': 'text/html',
+            // 'X-Powered-By': 'Next.js',
+            // 'Vary': 'Accept-Encoding',
+            // 'Transfer-Encoding': 'chunked',
+            // 'Content-Type': 'multipart/form-data',
+            'Authorization': 'Basic Y4NWVvHdCfTbMYXwzvR8fNnr95vRrnx1'
+          }
+        }
+      ).then(result => resolve(result.json()))
+    })
+  }
+
   static logInAdmin (username, password) {
     const queryBody = {
       username: username,
@@ -1217,6 +1245,21 @@ export default class Gap {
   }
 
   static async pushOrderToGHTK (formData, orderId) {
+    console.log('formDataformData', formData)
+    const formDataFee = {
+      orderAdressProvince: formData.shippingInfo.orderAdressProvince || formData.shippingInfo.province,
+      orderAdressDistrict: formData.shippingInfo.orderAdressDistrict || formData.shippingInfo.district,
+      orderAdressWard: formData.shippingInfo.orderAdressWard || formData.shippingInfo.ward
+    }
+    const resFee = await this.getFeeForTransport(formDataFee)
+
+    let shippingFee
+    if (resFee && resFee.result) {
+      shippingFee = resFee.result
+    } else {
+      showNotification('Không thể ước tính phí ship')
+      return false
+    }
     const body = {
       service: 'giaohangtietkiem',
       action: 'CREATE_ORDER',
@@ -1230,6 +1273,7 @@ export default class Gap {
           phone: '0703334443'
         },
         to: {
+          email: formData.clientInfo.mail || formData.shippingInfo.mail,
           province: formData.shippingInfo.orderAdressProvince || formData.shippingInfo.province,
           district: formData.shippingInfo.orderAdressDistrict || formData.shippingInfo.district,
           address: formData.shippingInfo.orderAdressStreet || formData.shippingInfo.address,
@@ -1239,10 +1283,15 @@ export default class Gap {
         },
         orderId: orderId || formData.objectId,
         codMoney: 0,
-        isFreeShipping: false,
+        pick_option: 'cod',
         serviceLevel: 'road',
-        value: Number(formData.totalMoneyForSale) * 1000 >= 20000 ? 20000 : Number(formData.totalMoneyForSale) * 1000,
-        items: []
+        value: Number(formData.totalMoneyForSale) * 1000 >= 2000000 ? 2000000 : Number(formData.totalMoneyForSale) * 1000,
+        items: [],
+        orderRequest: {
+          email: formData.clientInfo.mail || formData.shippingInfo.mail,
+          pick_money: Number(shippingFee),
+          is_freeship: 1
+        }
       }
     }
 

@@ -475,6 +475,10 @@ class TableOrderScreen extends React.PureComponent {
 
   }
 
+  trackingOrder = (labelId) => {
+    window.open(`https://i.ghtk.vn/${labelId}`, '_blank')
+  }
+
   renderDetailGHTKBox = (value) => {
     const shipData = value && value?.transporter?.res?.order
     return (
@@ -493,6 +497,7 @@ class TableOrderScreen extends React.PureComponent {
 
         <Button className='MT10' onClick={() => this.cancelOrder(value?.transporter?.order?.objectId)}>Huỷ Đơn Hàng</Button>
         <Button className='MT10 ML10' onClick={() => this.printOrder(value?.transporter?.order?.objectId)}>In Đơn Hàng</Button>
+        <Button className='MT10 ML10' onClick={() => this.trackingOrder(shipData.label_id)}>Tra cứu GHTK</Button>
       </div>
     )
   }
@@ -936,7 +941,7 @@ class TableOrderScreen extends React.PureComponent {
             note: item.note || '---',
             isOnlineSale: item.isOnlineSale ? 'Online' : 'Offline',
             shippingInfo: item.shippingInfo,
-            clientInfo: item.client || item.clientInfo,
+            clientInfo: item.clientInfo || item.client,
             transporter: item.transporter,
 
             // numSoldConsignment: `${Number(item.numSoldConsignment || 0)}`,
@@ -945,7 +950,7 @@ class TableOrderScreen extends React.PureComponent {
             // bankId: item.banks && item.banks[0] ? item.banks[0].accNumber : '',
             moneyBackForFullSold: item.moneyBackForFullSold ? `${item.moneyBackForFullSold}` : 0,
             // totalMoney: item.totalMoney ? `${item.totalMoney}` : 0,
-            timeConfirmGetMoney: item.timeConfirmGetMoney || moment(item.createdAt).format('DD-MM-YYYY hh:mm'),
+            timeConfirmGetMoney: item.timeConfirmGetMoney || moment(item.timeConfirmGetMoney).format('DD-MM-YYYY hh:mm'),
             // email: item.mail,
             // birthday: item.birthday,
             productList: item.productList,

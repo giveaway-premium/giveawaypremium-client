@@ -52,6 +52,7 @@
   }
   
   .leftBox {
+    padding-bottom: 0 !important;
     // border-bottom: 1px solid #ffd700;
     // border-left: 2px solid #ffd700;
     // border-left: 15px solid #e0e0e0;
@@ -59,7 +60,7 @@
     // border-top-left-radius: 60px;
   
     overflow-y: auto;
-    background-color: rgb(57, 53, 51);
+    // background-color: rgb(57, 53, 51);
     width: 50%;
     height: 100%;
     margin: 0 auto;
@@ -140,6 +141,8 @@
   
   
   .item-detail-img {
+    // filter: sepia(0.04) contrast(0.92) grayscale(0.02) saturate(2);
+    filter: sepia(0.03) contrast(0.98) grayscale(0.1) saturate(1.4);
     background-color: whitesmoke;
     z-index: 100;
     width: 100% !important;
