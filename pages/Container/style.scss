@@ -95,6 +95,15 @@
       }
 }
 
+.ant-cascader-menu-item-active:not(.ant-cascader-menu-item-disabled) {
+  background-color: #b0a6a3 !important;
+}
+
+.ant-cascader-menu-item-active {
+  background-color: #b0a6a3 !important;
+
+}
+
 .customerInfoBoxContainer {
   padding: 0 5px;
   padding-top: 20px;

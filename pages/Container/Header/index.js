@@ -182,12 +182,12 @@ class Header extends React.PureComponent {
         <p className='phoneTxt'>*Chúng tôi sử dụng thông tin này để hỗ trợ công việc vận chuyển đơn hàng và quản lý thông tin đơn hàng.</p>
 
         <div className='phoneBox'>
-          <span className='phoneTxt'>Số điện thoại: </span>
+          <span className='phoneTxt'>*Số điện thoại: </span>
           <Input defaultValue={clientInfo?.phoneNumber} minLength={10} maxLength={11} allowClear onChange={(value) => this.onChangeDataClient(value, 'phoneNumber')} placeholder='...' />
         </div>
 
         <div className='phoneBox'>
-          <span className='phoneTxt'>Tên khách hàng: </span>
+          <span className='phoneTxt'>*Tên khách hàng: </span>
           <Input defaultValue={clientInfo?.fullName} minLength={10} maxLength={30} allowClear onChange={(value) => this.onChangeDataClient(value, 'fullName')} placeholder='...' />
         </div>
 
@@ -196,7 +196,7 @@ class Header extends React.PureComponent {
           <Input defaultValue={clientInfo?.mail} minLength={10} maxLength={30} allowClear onChange={(value) => this.onChangeDataClient(value, 'mail')} placeholder='...' />
         </div>
 
-        <div className='phoneBox'>
+        {/* <div className='phoneBox'>
           <span className='phoneTxt'>Tên ngân hàng: </span>
           <Input defaultValue={clientInfo?.bankName} allowClear onChange={(value) => this.onChangeDataClient(value, 'bankName')} placeholder='...' />
         </div>
@@ -204,10 +204,10 @@ class Header extends React.PureComponent {
         <div className='phoneBox'>
           <span className='phoneTxt'>ID ngân hàng: </span>
           <Input defaultValue={clientInfo?.bankId} allowClear onChange={(value) => this.onChangeDataClient(value, 'bankId')} placeholder='...' />
-        </div>
+        </div> */}
 
         <div className='phoneBox'>
-          <span className='phoneTxt'>Địa chỉ: </span>
+          <span className='phoneTxt'>*Địa chỉ: </span>
           <Input defaultValue={clientInfo?.userAddress} minLength={10} maxLength={11} allowClear onChange={(value) => this.onChangeDataClient(value, 'userAddress')} placeholder='Số nhà & Tên Đường' />
         </div>
 

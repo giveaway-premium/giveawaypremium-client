@@ -40,7 +40,7 @@ const TagPrintBoxMulti = (props) => {
     )
   }
 
-  let productDataTemp = [...productData]
+  let productDataTemp = []
   // let printingPages = []
   let indexItemStart = 0
   let indexLoop = 0
@@ -49,14 +49,12 @@ const TagPrintBoxMulti = (props) => {
     // console.log('detail', detail)
     // console.log(detail)
     // const tempTemplate = <PrintTemplate index={index} detail={detail} />
-
-    for (let i = 0; i < detail.numberTagCount - 1; i++) {
-      // indexLoop += 1
-      indexItemStart += 1
-      productDataTemp.splice(indexItemStart, 0, detail)
+    for (let i = 0; i < detail.numberTagCount; i++) {
+      // indexItemStart += 1
+      productDataTemp.push(detail)
       // printingPages.push(tempTemplate)
     }
-    // indexLoop = 0
+    indexLoop += 1
   }
 
   return (

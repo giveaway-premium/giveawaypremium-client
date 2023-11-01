@@ -226,8 +226,21 @@ class TableRequestOrder extends React.PureComponent {
         // ...this.getColumnSearchIsGetMoney('isGetMoney'),
         render: (value) =>
           this.state.orderData.length >= 1 ? (
-            <Popconfirm title='Xác nhận' onConfirm={() => this.onChangeRadioIsGetMoney(value)}>
+            <Popconfirm disabled={value.isGetMoney} title='Xác nhận' onConfirm={() => this.onChangeRadioIsGetMoney(value)}>
               <Radio.Button className={value.isGetMoney ? 'radio-true-isGetMoney' : 'radio-false-isGetMoney'} value={value.isGetMoney}>{value.isGetMoney ? 'Rồi' : 'Chưa'}</Radio.Button>
+            </Popconfirm>
+          ) : null
+      },
+      {
+        title: 'Tư vấn',
+        key: '11',
+        width: 90,
+        fixed: 'right',
+        // ...this.getColumnSearchIsGetMoney('isGetMoney'),
+        render: (value) =>
+          this.state.orderData.length >= 1 ? (
+            <Popconfirm title='Xác nhận' onConfirm={() => this.onChangeRadioIsContact(value)}>
+              <Radio.Button className={value.isContact ? 'radio-true-isGetMoney' : 'radio-false-isGetMoney'} value={value.isContact}>{value.isContact ? 'Rồi' : 'Chưa'}</Radio.Button>
             </Popconfirm>
           ) : null
       }
@@ -269,9 +282,9 @@ class TableRequestOrder extends React.PureComponent {
     }
     if (value && !value.transporter) {
       return (
-        <Popconfirm title='Xác nhận' onConfirm={() => this.onChangeRadioIsGetMoney(value, true)}>
+        <Popconfirm disabled={value.isGetMoney} title='Xác nhận' onConfirm={() => this.onChangeRadioIsGetMoney(value, true)}>
           {/* <Radio.Button className={value.isGetMoney ? 'radio-true-isGetMoney' : 'radio-false-isGetMoney'}>{'Tạo đơn GHTK'}</Radio.Button> */}
-          <Radio.Button className={'radio-false-isGetMoney'}>{'Tạo đơn GHTK'}</Radio.Button>
+          <Radio.Button className={'radio-false-isGetMoney'}>{value.isGetMoney ? 'Chưa GHTK' : 'Tạo đơn GHTK'}</Radio.Button>
         </Popconfirm>
         // <Button style={{ width: '100%' }} onClick={() => this.onPushOrderToGHTK(value)}>Tạo đơn GHTK</Button>
       )
@@ -493,6 +506,7 @@ class TableRequestOrder extends React.PureComponent {
     console.log('deleteTransport', deleteTransport)
     if (deleteTransport?.result?.success) {
       showNotification('Xoá đơn thành công')
+      this.fetchTableData(1)
     } else {
       showNotification('Xoá đơn không thành công')
     }
@@ -735,6 +749,41 @@ class TableRequestOrder extends React.PureComponent {
 
           this.onRefeshPage()
         }, 1000)
+      })
+    }
+  }
+
+  onChangeRadioIsContact = async (row, isPushGHTK = false) => {
+    const { userData } = this.props
+    console.log('onChangeRadioisContact')
+    console.log(row)
+
+    const newData = [...this.state.orderData]
+    const index = newData.findIndex((item) => row.objectId === item.objectId)
+    const item = newData[index]
+    let newItem = { ...item, ...row, isContact: !item.isContact }
+
+    if (newItem && newItem.isContact === true) {
+      newItem = { ...item, ...row, isContact: !item.isContact }
+    }
+
+    console.log('newItem', newItem)
+
+    if (!isEqual(newItem, item)) {
+      newData.splice(index, 1, newItem)
+      this.setState({
+        orderData: newData
+      }, async () => {
+        console.log(newItem)
+        let res = await GapService.updateOrderRequest(newItem)
+
+        if (res && res.objectId) {
+          showNotification('Thay đổi thành công')
+          message.destroy()
+        } else {
+          message.destroy()
+          showNotification('Tạo khách hàng thất bại')
+        }
       })
     }
   }
@@ -1136,7 +1185,8 @@ class TableRequestOrder extends React.PureComponent {
             productList: [item.product],
             productId: item?.product?.objectId,
             productCode: item?.product?.code,
-            isGetMoney: (item.isGetMoney || false)
+            isGetMoney: (item.isGetMoney || false),
+            isContact: (item.isContact || false)
           })
         })
         this.setState({

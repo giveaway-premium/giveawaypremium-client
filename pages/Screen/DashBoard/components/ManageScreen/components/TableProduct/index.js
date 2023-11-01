@@ -733,6 +733,10 @@ class TableProductScreen extends React.PureComponent {
           defaultValue={images.aLogoBlack}
           src={item?.data?.secure_url}
           style={{ maxWidth: '70px', height: '70px', objectFit: 'contain' }}
+          onError={({ currentTarget }) => {
+            currentTarget.onerror = null // prevents looping
+            currentTarget.src = images.aLogoBlack
+          }}
         />
       </div>
     ))
@@ -844,7 +848,7 @@ class TableProductScreen extends React.PureComponent {
         key: 'rateNew',
         editable: true,
         width: 80,
-        render: (value) => <span>100%</span>
+        render: (value) => <span>{value}%</span>
       },
       {
         title: 'Chi tiết sản phẩm',

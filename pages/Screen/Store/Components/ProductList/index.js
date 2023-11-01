@@ -16,6 +16,7 @@ import GapService from 'controller/Api/Services/Gap'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import { OBJECTID_CATEGORY } from 'common/constants'
+import Image from 'next/image'
 
 const ProductList = (props) => {
   const { productList, currentPage, maxPage, isLoadingMore, handleScrollActive, currentCategoryId } = props
@@ -40,11 +41,20 @@ const ProductList = (props) => {
           return (
             <div key={key} className='item-container' onClick={() => onOpenProductScreen(item)}>
               <div className='big-avatar-img-box'>
-                <img src={item && item.medias && item.medias[0] && item.medias[0].data && item.medias[0].data.url ? item.medias[0].data.url : images.aLogoBlack} className='big-avatar-img' />
+                <img
+                  defaultValue={images.aLogoBlack}
+                  src={item && item.medias && item.medias[0] && item.medias[0].data && item.medias[0].data.url ? item.medias[0].data.url : images.aLogoBlack}
+                  className='big-avatar-img'
+                  onError={({ currentTarget }) => {
+                    currentTarget.onerror = null // prevents looping
+                    currentTarget.src = images.aLogoBlack
+                  }}
+                />
+                {/* <img defaultValue={images.aLogoWhite} src={item && item.medias && item.medias[0] && item.medias[0].data && item.medias[0].data.url ? item.medias[0].data.url : images.aLogoBlack} className='big-avatar-img' /> */}
                 <div className='detail-box'>
                   {item && item.name && <span className='detail-box-name'>{item.name || '--'}</span>}
                   {item && item.price && <span className='detail-box-price'>{numberWithCommas(item.price * 1000)} ₫</span>}
-                  {item && <span className='detail-box-rateNew'>{item.rateNew === 0 ? 'Đã sử dụng' : 'Mới' }</span>}
+                  {item && <span className='detail-box-rateNew'>{item.rateNew === 100 ? 'Mới' : 'Đã sử dụng' }</span>}
                 </div>
               </div>
             </div>

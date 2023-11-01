@@ -184,51 +184,13 @@ class Product extends React.PureComponent {
     console.log('user data', getDataLocal('CUSTOMER_DATA'))
     const userData = getDataLocal('CUSTOMER_DATA')
 
-    if (!userData || !userData.clientInfo || !userData.shippingInfo) {
+    if (
+      !userData || !userData.clientInfo || !userData?.clientInfo?.fullName || !userData?.clientInfo?.phoneNumber || !userData.shippingInfo || !userData.shippingInfo.orderAdressDistrict || !userData.shippingInfo.orderAdressProvince || !userData.shippingInfo.orderAdressWard) {
       showNotification('Vui lòng nhập thông tin khách hàng trước khi đặt hàng')
       return
     }
 
-    const resData = await Gap.setOrderGuest(detailInfo.objectId, 1, userData)
-
-    console.log('resData1', resData)
-    if (resData && resData?.result?.objectId) {
-      const waitingCode = randomString()
-      console.log('waitingCode', waitingCode)
-      const updateClientRes = await Gap.updateClientInfoOrderRequest(resData?.result?.objectId, userData, waitingCode)
-      // const updateClientRes = await Gap.updateProductCodeOrderRequest(resData?.result?.objectId, resData.result.product, waitingCode)
-
-      const orderRequest = getDataLocal('orderRequest') || []
-
-      orderRequest.push({
-        orderRequestId: resData.result.objectId,
-        productId: detailInfo.objectId,
-        timeRegister: moment().format('DD-MM-YYYY HH:mm:ss'),
-        unix: resData.result.unix,
-        count: resData.result.count,
-        product: resData.result.product,
-        userData: userData,
-        waitingCode: waitingCode
-      })
-  
-      saveDataLocal('orderRequest', orderRequest)
-      this.myModal.current.openModal(this.renderClientInfoPopup(resData?.result, waitingCode), { closable: true })
-      this.setState({
-        isBookingAlready: true,
-        theLastValidBooking: {
-          orderRequestId: resData.result.objectId,
-          productId: detailInfo.objectId,
-          timeRegister: moment().format('DD-MM-YYYY HH:mm:ss'),
-          unix: resData.result.unix,
-          count: resData.result.count,
-          product: resData.result.product,
-          userData: userData,
-          waitingCode: waitingCode
-        }
-      })
-    } else {
-      showNotification('Xin lỗi quý khách vì sự bất tiện này, hiện tại đang hết ghế chờ, quý khách vui lòng quay lại sau hoặc chọn sản phẩm khác.')
-    }
+    return
   }
 
 
@@ -296,7 +258,13 @@ class Product extends React.PureComponent {
     if (photoAlbumRes?.length > 0) {
       photoAlbumRes.map((item, itemKey) => {
         imgArr.push(
-          <img className='cursor-pointer item-detail-img' key={itemKey} src={item} style={{ objectFit: 'contain', width: 'auto' }} />
+          <img 
+            className='cursor-pointer item-detail-img' key={itemKey} src={item} style={{ objectFit: 'contain', width: 'auto' }} 
+            onError={({ currentTarget }) => {
+              currentTarget.onerror = null // prevents looping
+              currentTarget.src = images.aLogoBlack
+            }}
+          />
         )
         // const props = {
         //   // width: 400,

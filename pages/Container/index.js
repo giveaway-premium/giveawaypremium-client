@@ -214,12 +214,12 @@ class BaseContainer extends PureComponent {
         <p className='phoneTxt'>*Chúng tôi chỉ sử dụng thông tin này cho vận đơn, quản lý thông tin đơn hàng và cam kết bảo mật tuyệt đối</p>
 
         <div className='phoneBox'>
-          <span className='phoneTxt'>Số điện thoại: </span>
+          <span className='phoneTxt'>*Số điện thoại: </span>
           <Input defaultValue={clientInfo?.phoneNumber} minLength={10} maxLength={11} allowClear onChange={(value) => this.onChangeDataClient(value, 'phoneNumber')} placeholder='...' />
         </div>
 
         <div className='phoneBox'>
-          <span className='phoneTxt'>Tên khách hàng: </span>
+          <span className='phoneTxt'>*Tên khách hàng: </span>
           <Input defaultValue={clientInfo?.fullName} minLength={10} maxLength={30} allowClear onChange={(value) => this.onChangeDataClient(value, 'fullName')} placeholder='...' />
         </div>
 
@@ -239,8 +239,8 @@ class BaseContainer extends PureComponent {
         </div> */}
 
         <div className='phoneBox'>
-          <span className='phoneTxt'>Địa chỉ: </span>
-          <Input defaultValue={clientInfo?.userAddress} minLength={10} maxLength={11} allowClear onChange={(value) => this.onChangeDataClient(value, 'userAddress')} placeholder='Số nhà & Tên Đường' />
+          <span className='phoneTxt'>*Địa chỉ: </span>
+          <Input defaultValue={clientInfo?.userAddress} minLength={1} maxLength={30} allowClear onChange={(value) => this.onChangeDataClient(value, 'userAddress')} placeholder='Số nhà & Tên Đường' />
         </div>
 
         <div className='phoneBox'>
@@ -252,7 +252,7 @@ class BaseContainer extends PureComponent {
                 placeholder={(shippingInfo.orderAdressProvince && shippingInfo.orderAdressDistrict && shippingInfo.orderAdressWard) ? `${shippingInfo.orderAdressProvince}-${shippingInfo.orderAdressDistrict}-${shippingInfo.orderAdressWard}` : 'Thành phố/Tỉnh - Quận/Huyện - Xã/Phường'}
                 options={this.state.optionsAddressArr}
                 defaultValue={[]}
-                displayRender={this.displayRender}
+                // displayRender={this.displayRender}
                 style={{ width: '100%' }}
                 onChange={this.onChangeCasacderSeller}
               />

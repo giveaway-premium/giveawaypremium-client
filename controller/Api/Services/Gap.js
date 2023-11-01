@@ -459,7 +459,8 @@ export default class Gap {
         }
       } else {
         body = {
-          isGetMoney: item.isGetMoney || false
+          isGetMoney: item.isGetMoney || false,
+          isContact: item.isContact || false
         }
 
         if (item && item.timeConfirmGetMoney) {
