@@ -190,7 +190,46 @@ class Product extends React.PureComponent {
       return
     }
 
-    return
+    const resData = await Gap.setOrderGuest(detailInfo.objectId, 1, userData)
+
+    console.log('resData1', resData)
+    if (resData && resData?.result?.objectId) {
+      const waitingCode = randomString()
+      console.log('waitingCode', waitingCode)
+      const updateClientRes = await Gap.updateClientInfoOrderRequest(resData?.result?.objectId, userData, waitingCode)
+      // const updateClientRes = await Gap.updateProductCodeOrderRequest(resData?.result?.objectId, resData.result.product, waitingCode)
+
+      const orderRequest = getDataLocal('orderRequest') || []
+
+      orderRequest.push({
+        orderRequestId: resData.result.objectId,
+        productId: detailInfo.objectId,
+        timeRegister: moment().format('DD-MM-YYYY HH:mm:ss'),
+        unix: resData.result.unix,
+        count: resData.result.count,
+        product: resData.result.product,
+        userData: userData,
+        waitingCode: waitingCode
+      })
+  
+      saveDataLocal('orderRequest', orderRequest)
+      this.myModal.current.openModal(this.renderClientInfoPopup(resData?.result, waitingCode), { closable: true })
+      this.setState({
+        isBookingAlready: true,
+        theLastValidBooking: {
+          orderRequestId: resData.result.objectId,
+          productId: detailInfo.objectId,
+          timeRegister: moment().format('DD-MM-YYYY HH:mm:ss'),
+          unix: resData.result.unix,
+          count: resData.result.count,
+          product: resData.result.product,
+          userData: userData,
+          waitingCode: waitingCode
+        }
+      })
+    } else {
+      showNotification('Xin lỗi quý khách vì sự bất tiện này, hiện tại đang hết ghế chờ, quý khách vui lòng quay lại sau hoặc chọn sản phẩm khác.')
+    }
   }
 
 
@@ -596,11 +635,11 @@ class Product extends React.PureComponent {
                               {/* <span className='buyTxt'>Quý khách vui lòng copy mã chờ và nhắn đến Facebook GiveawayPremium để chúng tôi tư vấn và đặt hàng.</span> */}
                               {/* <p style={{ color: 'blue', marginTop: '1em' }} onClick={() => this.onRouteFacebook(theLastValidBooking.orderRequestId)}>Nhấn vào đây để chuyển đến phòng chat và gửi thông tin mã chờ trên: https://www.facebook.com/messages/t/104637727623228</p> */}
                             </div>
-                          ) : (
+                          ) : detailInfo.remainNumberProduct !== 0 ? (
                             <div className='buyButton' onClick={this.onRegisterOrderRequest}>
                               <span className='buyTxt'>MUA NGAY</span>
                             </div>
-                          )
+                          ) : null
                         }
                       </>
                     )
