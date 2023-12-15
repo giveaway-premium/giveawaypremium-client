@@ -8,7 +8,7 @@ const withPlugins = require('next-compose-plugins')
 const optimizedImages = require('next-optimized-images')
 require('dotenv').config()
 const nextConfig = {
-  // webpack5: false,
+  webpack5: false,
   poweredByHeader: false,
   swcMinify: false,
   webpack (config) {
