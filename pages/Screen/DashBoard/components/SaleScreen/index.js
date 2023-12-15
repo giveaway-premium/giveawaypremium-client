@@ -128,6 +128,7 @@ const SaleScreen = (props) => {
         optionTransfer: 'tk'
       },
       isTransferWithBank: 'false',
+      isTransferWithBankAndOffline: 'false',
       productList: [
         // { amount: 1, name: ao da tron, code: ma-322-001}
       ],
@@ -137,7 +138,9 @@ const SaleScreen = (props) => {
       isLoadingUser: false,
       isFoundUser: false,
       totalNumberOfProductForSale: 0,
-      totalMoneyForSale: 0
+      totalMoneyForSale: 0,
+      transferBankMoneyAmount: null,
+      transferOfflineMoneyAmount: null
     })
 
     let currenIndexName = 0
@@ -173,6 +176,7 @@ const SaleScreen = (props) => {
         optionTransfer: 'tk'
       },
       isTransferWithBank: 'false',
+      isTransferWithBankAndOffline: 'false',
       productList: [
         // { amount: 1, name: ao da tron, code: ma-322-001}
       ],
@@ -183,7 +187,9 @@ const SaleScreen = (props) => {
       isFoundUser: false,
       isCreatedSuccessfully: false,
       totalNumberOfProductForSale: 0,
-      totalMoneyForSale: 0
+      totalMoneyForSale: 0,
+      transferBankMoneyAmount: null,
+      transferOfflineMoneyAmount: null
     }
 
     setPanes(paneTemp)
@@ -263,7 +269,8 @@ const SaleScreen = (props) => {
 
   const optionsTransferMoney = [
     { label: 'Trực tiếp', value: 'false' },
-    { label: 'Chuyển khoản', value: 'true' }
+    { label: 'Chuyển khoản', value: 'true' },
+    { label: 'Cả hai', value: 'both' }
   ]
 
   const optionsTransferOrder = [
@@ -276,9 +283,15 @@ const SaleScreen = (props) => {
     const paneTemp = [...panes]
     if (value[0] === 'true') {
       paneTemp[currentPaneIndex].isTransferWithBank = 'true'
+      paneTemp[currentPaneIndex].isTransferWithBankAndOffline = 'false'
+      setPanes(paneTemp)
+    } else if (value[0] === 'both') {
+      paneTemp[currentPaneIndex].isTransferWithBank = 'false'
+      paneTemp[currentPaneIndex].isTransferWithBankAndOffline = 'true'
       setPanes(paneTemp)
     } else {
       paneTemp[currentPaneIndex].isTransferWithBank = 'false'
+      paneTemp[currentPaneIndex].isTransferWithBankAndOffline = 'false'
       setPanes(paneTemp)
     }
   }
@@ -760,6 +773,55 @@ const SaleScreen = (props) => {
         mail: event.target.value ? event.target.value.trim() : ''
       }
       setPanes(paneTemp)
+      // numberWithCommas((panes[currentPaneIndex].totalMoneyForSale || 0) * 1000)
+    } else if (keyValue === 'transferOfflineMoneyAmount') {
+      console.log('Number(keyValue)', Number(event.target.value.trim()))
+      if (!(Number(event.target.value.trim()) >= 0)) {
+        paneTemp[currentPaneIndex] = {
+          ...paneTemp[currentPaneIndex],
+          transferOfflineMoneyAmount: null,
+          transferBankMoneyAmount: null
+        }
+        return
+      }
+      if (Number(event.target.value.trim()) > Number(paneTemp[currentPaneIndex].totalMoneyForSale)) {
+        paneTemp[currentPaneIndex] = {
+          ...paneTemp[currentPaneIndex],
+          transferOfflineMoneyAmount: paneTemp[currentPaneIndex].totalMoneyForSale,
+          transferBankMoneyAmount: 0
+        }
+      } else {
+        paneTemp[currentPaneIndex] = {
+          ...paneTemp[currentPaneIndex],
+          transferOfflineMoneyAmount: event.target.value ? Number(event.target.value.trim()) : 0,
+          transferBankMoneyAmount: (Number(paneTemp[currentPaneIndex].totalMoneyForSale) - Number(event.target.value.trim())) || 0
+        }
+      }
+      setPanes(paneTemp)
+    } else if (keyValue === 'transferBankMoneyAmount') {
+      console.log('Number(keyValue)', Number(event.target.value.trim()))
+      if (!(Number(event.target.value.trim()) >= 0)) {
+        paneTemp[currentPaneIndex] = {
+          ...paneTemp[currentPaneIndex],
+          transferOfflineMoneyAmount: null,
+          transferBankMoneyAmount: null
+        }
+        return
+      }
+      if (Number(event.target.value.trim()) > Number(paneTemp[currentPaneIndex].totalMoneyForSale)) {
+        paneTemp[currentPaneIndex] = {
+          ...paneTemp[currentPaneIndex],
+          transferOfflineMoneyAmount: 0,
+          transferBankMoneyAmount: paneTemp[currentPaneIndex].totalMoneyForSale
+        }
+      } else {
+        paneTemp[currentPaneIndex] = {
+          ...paneTemp[currentPaneIndex],
+          transferOfflineMoneyAmount: (Number(paneTemp[currentPaneIndex].totalMoneyForSale) - Number(event.target.value.trim())) || 0,
+          transferBankMoneyAmount: event.target.value ? Number(event.target.value.trim()) : 0
+        }
+      }
+      setPanes(paneTemp)
     }
   }
 
@@ -903,199 +965,217 @@ const SaleScreen = (props) => {
         ))}
       </Tabs>
 
-      {panes[currentPaneIndex] && !panes[currentPaneIndex].isCreatedSuccessfully ? <div className='saleScreen-container-inner'>
-        <div className='InputBox'>
-          <Input id='SearchbyScanning' onKeyDown={onKeyPressBarcode} onBlur={barcodeAutoFocus} suffix={<QrcodeOutlined />} ref={node => { searchInput = node }} onChange={onChangeTextProductInput} value={panes[currentPaneIndex].inputText} onPressEnter={onHandleEnterAndCheckIdProduct} autoFocus className='inputID' placeholder='Nhập ID Sản Phẩm' />
-          <Checkbox.Group options={optionsTypeOnlineSale} value={panes[currentPaneIndex].isOnlineSale} defaultValue={['false']} onChange={onChangeRadioTypeOnlineSale} />
-          <Button onClick={onHandleCreateOrder} className='buttonCreateBox'>
-            <span>Tạo Đơn Hàng</span>
-          </Button>
-        </div>
-        {/* <Divider style={{ margin: '10px 0' }} orientation='left'>Danh sách sản phẩm{`${panes[currentPaneIndex].isOnlineSale} + ${currentPaneIndex} + ${panes[currentPaneIndex].title}`}</Divider> */}
+      {panes[currentPaneIndex] && !panes[currentPaneIndex].isCreatedSuccessfully
+        ? (
+          <div className='saleScreen-container-inner'>
+            <div className='InputBox'>
+              <Input id='SearchbyScanning' onKeyDown={onKeyPressBarcode} onBlur={barcodeAutoFocus} suffix={<QrcodeOutlined />} ref={node => { searchInput = node }} onChange={onChangeTextProductInput} value={panes[currentPaneIndex].inputText} onPressEnter={onHandleEnterAndCheckIdProduct} autoFocus className='inputID' placeholder='Nhập ID Sản Phẩm' />
+              <Checkbox.Group options={optionsTypeOnlineSale} value={panes[currentPaneIndex].isOnlineSale} defaultValue={['false']} onChange={onChangeRadioTypeOnlineSale} />
+              <Button onClick={onHandleCreateOrder} className='buttonCreateBox'>
+                <span>Tạo Đơn Hàng</span>
+              </Button>
+            </div>
+            {/* <Divider style={{ margin: '10px 0' }} orientation='left'>Danh sách sản phẩm{`${panes[currentPaneIndex].isOnlineSale} + ${currentPaneIndex} + ${panes[currentPaneIndex].title}`}</Divider> */}
 
-        <div className='ContentBox'>
-          <div className='productBox'>
-            <Divider style={{ margin: '15px 0' }} orientation='left'>Danh sách sản phẩm{panes[currentPaneIndex].totalNumberOfProductForSale ? `:  ${panes[currentPaneIndex].totalNumberOfProductForSale} món` : '' }</Divider>
-            {
-              panes[currentPaneIndex].productList.length > 0
-                ? <List
-                  style={{ maxHeight: '50vh' }}
-                  itemLayout='horizontal'
-                  dataSource={panes[currentPaneIndex].productList}
-                  header={
-                    <List.Item className='itemBox' style={{ backgroundColor: 'whitesmoke', margin: '0' }}>
-                      <div className='item-stt'>
+            <div className='ContentBox'>
+              <div className='productBox'>
+                <Divider style={{ margin: '15px 0' }} orientation='left'>Danh sách sản phẩm{panes[currentPaneIndex].totalNumberOfProductForSale ? `:  ${panes[currentPaneIndex].totalNumberOfProductForSale} món` : '' }</Divider>
+                {
+                  panes[currentPaneIndex].productList.length > 0
+                    ? <List
+                      style={{ maxHeight: '50vh' }}
+                      itemLayout='horizontal'
+                      dataSource={panes[currentPaneIndex].productList}
+                      header={
+                        <List.Item className='itemBox' style={{ backgroundColor: 'whitesmoke', margin: '0' }}>
+                          <div className='item-stt'>
                         #
-                      </div>
-                      <div className='item-name'>
-                        <span>Mã sản phẩm</span>
-                        <span>Tên sản phẩm</span>
-                      </div>
-                      <div className='item-sl'>
+                          </div>
+                          <div className='item-name'>
+                            <span>Mã sản phẩm</span>
+                            <span>Tên sản phẩm</span>
+                          </div>
+                          <div className='item-sl'>
                         SL
-                      </div>
-                      <div className='item-price'>
+                          </div>
+                          <div className='item-price'>
                         Giá
-                      </div>
-                      <div className='item-totalPrice'>
+                          </div>
+                          <div className='item-totalPrice'>
                         Tổng giá
-                      </div>
-                    </List.Item>
-                  }
-                  renderItem={(item, itemIndex) => (
-                    <List.Item className='itemBox'>
-                      <div className='item-stt'>
-                        {itemIndex + 1}
-                        <div className='deleteIcon' onClick={() => onDeleteProductItem(itemIndex)}>
-                          <DeleteOutlined style={{ color: colors.red[300] }} />
+                          </div>
+                        </List.Item>
+                      }
+                      renderItem={(item, itemIndex) => (
+                        <List.Item className='itemBox'>
+                          <div className='item-stt'>
+                            {itemIndex + 1}
+                            <div className='deleteIcon' onClick={() => onDeleteProductItem(itemIndex)}>
+                              <DeleteOutlined style={{ color: colors.red[300] }} />
+                            </div>
+                          </div>
+                          <div className='item-name'>
+                            <span className='item-name-code'>{item.code}</span>
+                            <span>{item.name}</span>
+                          </div>
+                          <div className='item-sl'>
+                            <InputNumber min={1} max={item.remainNumberProduct || 1} defaultValue={1} value={item.numberOfProductForSale || 1} onChange={(value) => onChangeProductItem(value, 'productNumber', itemIndex)} />
+                            <span className='item-sl-max'>Max: {item.remainNumberProduct}</span>
+                          </div>
+                          <div className='item-price'>
+                            {numberWithCommas(item.price * 1000)} vnđ
+                          </div>
+                          <div className='item-totalPrice'>
+                            {numberWithCommas(item.price * 1000 * (item.numberOfProductForSale || 1))} vnđ
+                          </div>
+                        </List.Item>
+                      )}
+                    />
+                    : <Empty description={false} />
+                }
+              </div>
+
+              <div className='informationBox'>
+                <Divider style={{ margin: '15px 0' }} orientation='left'>Thông tin đơn hàng</Divider>
+                <div className='saleInfoBox'>
+                  <div className='totalPriceBox'>
+                    <span className='totalPriceTxt'>Tổng tiền: </span>
+                    <span className='totalPriceValue'>{numberWithCommas((panes[currentPaneIndex].totalMoneyForSale || 0) * 1000)} vnđ</span>
+                  </div>
+
+                  <div className='typeTranferBox'>
+                    <span className='typeTranferTxt'>Hình thức trả tiền: </span>
+                    <Checkbox.Group options={panes[currentPaneIndex].isOnlineSale === 'true' ? optionsTransferMoneyWithBank : optionsTransferMoney} value={panes[currentPaneIndex].isTransferWithBankAndOffline === 'true' ? 'both' : panes[currentPaneIndex].isTransferWithBank || 'false'} defaultValue={['false']} onChange={onChangeRadioTransferMoney} />
+                  </div>
+
+                  {
+                    panes[currentPaneIndex].isTransferWithBankAndOffline === 'true' ? (
+                      <div className='customerInfoBox' style={{ paddingLeft: 0, paddingRight: 0 }}>
+                        <div className='phoneBox'>
+                          <span className='phoneTxt'>Tiền mặt: </span>
+                          <Input value={panes[currentPaneIndex]?.transferOfflineMoneyAmount} minLength={1} maxLength={11} allowClear onChange={(value) => onChangeDataClient(value, 'transferOfflineMoneyAmount')} placeholder='0 vnd' />
+                        </div>
+                        <div className='phoneBox'>
+                          <span className='phoneTxt'>Tiền chuyển khoản: </span>
+                          <Input value={panes[currentPaneIndex]?.transferBankMoneyAmount} minLength={1} maxLength={11} allowClear onChange={(value) => onChangeDataClient(value, 'transferBankMoneyAmount')} placeholder='0 vnd' />
                         </div>
                       </div>
-                      <div className='item-name'>
-                        <span className='item-name-code'>{item.code}</span>
-                        <span>{item.name}</span>
-                      </div>
-                      <div className='item-sl'>
-                        <InputNumber min={1} max={item.remainNumberProduct || 1} defaultValue={1} value={item.numberOfProductForSale || 1} onChange={(value) => onChangeProductItem(value, 'productNumber', itemIndex)} />
-                        <span className='item-sl-max'>Max: {item.remainNumberProduct}</span>
-                      </div>
-                      <div className='item-price'>
-                        {numberWithCommas(item.price * 1000)} vnđ
-                      </div>
-                      <div className='item-totalPrice'>
-                        {numberWithCommas(item.price * 1000 * (item.numberOfProductForSale || 1))} vnđ
-                      </div>
-                    </List.Item>
-                  )}
-                />
-                : <Empty description={false} />
-            }
-          </div>
+                    ) : null
+                  }
 
-          <div className='informationBox'>
-            <Divider style={{ margin: '15px 0' }} orientation='left'>Thông tin đơn hàng</Divider>
-            <div className='saleInfoBox'>
-              <div className='totalPriceBox'>
-                <span className='totalPriceTxt'>Tổng tiền: </span>
-                <span className='totalPriceValue'>{numberWithCommas((panes[currentPaneIndex].totalMoneyForSale || 0) * 1000)} vnđ</span>
-              </div>
-
-              <div className='typeTranferBox'>
-                <span className='typeTranferTxt'>Hình thức trả tiền: </span>
-                <Checkbox.Group options={panes[currentPaneIndex].isOnlineSale === 'true' ? optionsTransferMoneyWithBank : optionsTransferMoney} value={panes[currentPaneIndex].isTransferWithBank || 'false'} defaultValue={['false']} onChange={onChangeRadioTransferMoney} />
-              </div>
-
-              <div className='typeTranferBox'>
-                <span className='typeTranferTxt'>Lưu ý: </span>
-                <TextArea placeholder='Ghi Chú' value={panes[currentPaneIndex].note || ''} type={'number'} id='note' key='note' onChange={onHanleChangeTextNote} />
-              </div>
-            </div>
-
-            <Divider style={{ margin: '15px 0' }} orientation='left'>Thông tin khách hàng</Divider>
-
-            <div className='customerInfoBox'>
-              <div className='phoneBox'>
-                <span className='phoneTxt'>Số điện thoại: </span>
-                <Input value={panes[currentPaneIndex]?.clientInfo?.phoneNumber} minLength={10} maxLength={11} allowClear onChange={fetchUserByPhoneNumber} placeholder='...' suffix={panes[currentPaneIndex].isLoadingUser ? <LoadingOutlined /> : panes[currentPaneIndex].isFoundUser ? <CheckCircleFilled style={{ color: 'green ' }} /> : null} />
-              </div>
-
-              <div className='phoneBox'>
-                <span className='phoneTxt'>Tên khách hàng: </span>
-                <Input value={panes[currentPaneIndex]?.clientInfo?.fullName} minLength={10} maxLength={11} allowClear onChange={(value) => onChangeDataClient(value, 'fullName')} placeholder='...' />
-              </div>
-
-              <div className='phoneBox'>
-                <span className='phoneTxt'>Chứng minh nhân dân: </span>
-                <Input value={panes[currentPaneIndex]?.clientInfo?.consignerIdCard} minLength={10} maxLength={11} allowClear onChange={(value) => onChangeDataClient(value, 'consignerIdCard')} placeholder='...' />
-              </div>
-
-              <div className='phoneBox'>
-                <span className='phoneTxt'>Email: </span>
-                <Input value={panes[currentPaneIndex]?.clientInfo?.mail} minLength={10} maxLength={11} allowClear onChange={(value) => onChangeDataClient(value, 'mail')} placeholder='...' />
-              </div>
-
-              <div className='phoneBox'>
-                <span className='phoneTxt'>Tên ngân hàng: </span>
-                <Input value={panes[currentPaneIndex]?.clientInfo?.bankName} allowClear onChange={(value) => onChangeDataClient(value, 'bankName')} placeholder='...' />
-              </div>
-
-              <div className='phoneBox'>
-                <span className='phoneTxt'>ID ngân hàng: </span>
-                <Input value={panes[currentPaneIndex]?.clientInfo?.bankId} allowClear onChange={(value) => onChangeDataClient(value, 'bankId')} placeholder='...' />
-              </div>
-
-              <div className='phoneBox'>
-                <span className='phoneTxt'>Sinh nhật: </span>
-                <Input value={panes[currentPaneIndex]?.clientInfo?.birthday} allowClear onChange={(value) => onChangeDataClient(value, 'birthday')} placeholder='...' />
-              </div>
-            </div>
-
-            {
-              panes[currentPaneIndex].isOnlineSale === 'true'
-                ? <div style={{ marginBottom: '2em' }}>
-                  <Divider style={{ margin: '15px 0' }} orientation='left'>Thông tin vận chuyển</Divider>
-                  <div className='customerInfoBox'>
-                    <div className='phoneBox'>
-                      <span className='phoneTxt'>Địa chi lấy hàng: </span>
-                      <Input disabled={panes[currentPaneIndex].shippingInfo.optionTransfer === 'tt'} value={ADDRESS_STREET_GET_ORDER} allowClear placeholder='...' />
-                    </div>
-                    <div className='phoneBox'>
-                      <Cascader
-                        disabled={panes[currentPaneIndex].shippingInfo.optionTransfer === 'tt'}
-                        options={optionsAddressArr}
-                        value={ADDRESS_GET_ORDER_ARRAY}
-                        defaultValue={ADDRESS_GET_ORDER_ARRAY}
-                        displayRender={displayRender}
-                        style={{ width: '100%' }}
-                      />
-                    </div>
-                    <div className='phoneBox'>
-                      <span className='phoneTxt'>Địa chỉ giao hàng: </span>
-                      <Input disabled={panes[currentPaneIndex].shippingInfo.optionTransfer === 'tt'} onChange={onChangeOrderAddressStreet} value={panes[currentPaneIndex]?.shippingInfo?.orderAdressStreet} allowClear placeholder='Số nhà - đường' />
-                      {/* <Input value={panes[currentPaneIndex]?.shippingInfo?.addressFromInfo?.pick_province} minLength={10} maxLength={11} allowClear onChange={(value) => onChangeDataShipping(value, 'pick_province')} placeholder='...'  /> */}
-                    </div>
-                    <div className='phoneBox'>
-                      <Cascader
-                        allowClear
-                        showSearch
-                        disabled={panes[currentPaneIndex].shippingInfo.optionTransfer === 'tt'}
-                        placeholder='Thành phố/Tỉnh - Quận/Huyện - Xã/Phường'
-                        options={optionsAddressArr}
-                        defaultValue={[]}
-                        displayRender={displayRender}
-                        style={{ width: '100%' }}
-                        onChange={onChangeCasacderSeller}
-                      />
-                    </div>
-
-                    <div className='typeTranferBox'>
-                      <span className='typeTranferTxt'>Hình thức trả tiền: </span>
-                      <Checkbox.Group options={optionsTransferOrder} value={panes[currentPaneIndex].shippingInfo.optionTransfer || 'tk'} defaultValue={['tk']} onChange={onChangeRadioTransferOrder} />
-                    </div>
-
-                    <div className='phoneBox'>
-                      <span className='phoneTxt'>Phí giao hàng </span>
-
-                      <span className='phoneTxt'>{panes[currentPaneIndex]?.shippingInfo?.shippingFee} vnd</span>
-
-                      {/* <Input suffix={<span>vnđ</span>} defaultValue={0} value={panes[currentPaneIndex]?.shippingInfo?.shippingFee} placeholder='0' /> */}
-                    </div>
+                  <div className='typeTranferBox'>
+                    <span className='typeTranferTxt'>Lưu ý: </span>
+                    <TextArea placeholder='Ghi Chú' value={panes[currentPaneIndex].note || ''} type={'number'} id='note' key='note' onChange={onHanleChangeTextNote} />
                   </div>
-                </div> : null
+                </div>
 
-            }
+                <Divider style={{ margin: '15px 0' }} orientation='left'>Thông tin khách hàng</Divider>
+
+                <div className='customerInfoBox'>
+                  <div className='phoneBox'>
+                    <span className='phoneTxt'>Số điện thoại: </span>
+                    <Input value={panes[currentPaneIndex]?.clientInfo?.phoneNumber} minLength={10} maxLength={11} allowClear onChange={fetchUserByPhoneNumber} placeholder='...' suffix={panes[currentPaneIndex].isLoadingUser ? <LoadingOutlined /> : panes[currentPaneIndex].isFoundUser ? <CheckCircleFilled style={{ color: 'green ' }} /> : null} />
+                  </div>
+
+                  <div className='phoneBox'>
+                    <span className='phoneTxt'>Tên khách hàng: </span>
+                    <Input value={panes[currentPaneIndex]?.clientInfo?.fullName} minLength={10} maxLength={11} allowClear onChange={(value) => onChangeDataClient(value, 'fullName')} placeholder='...' />
+                  </div>
+
+                  <div className='phoneBox'>
+                    <span className='phoneTxt'>Chứng minh nhân dân: </span>
+                    <Input value={panes[currentPaneIndex]?.clientInfo?.consignerIdCard} minLength={10} maxLength={11} allowClear onChange={(value) => onChangeDataClient(value, 'consignerIdCard')} placeholder='...' />
+                  </div>
+
+                  <div className='phoneBox'>
+                    <span className='phoneTxt'>Email: </span>
+                    <Input value={panes[currentPaneIndex]?.clientInfo?.mail} minLength={5} maxLength={50} allowClear onChange={(value) => onChangeDataClient(value, 'mail')} placeholder='...' />
+                  </div>
+
+                  <div className='phoneBox'>
+                    <span className='phoneTxt'>Tên ngân hàng: </span>
+                    <Input value={panes[currentPaneIndex]?.clientInfo?.bankName} allowClear onChange={(value) => onChangeDataClient(value, 'bankName')} placeholder='...' />
+                  </div>
+
+                  <div className='phoneBox'>
+                    <span className='phoneTxt'>ID ngân hàng: </span>
+                    <Input value={panes[currentPaneIndex]?.clientInfo?.bankId} allowClear onChange={(value) => onChangeDataClient(value, 'bankId')} placeholder='...' />
+                  </div>
+
+                  <div className='phoneBox'>
+                    <span className='phoneTxt'>Sinh nhật: </span>
+                    <Input value={panes[currentPaneIndex]?.clientInfo?.birthday} allowClear onChange={(value) => onChangeDataClient(value, 'birthday')} placeholder='...' />
+                  </div>
+                </div>
+
+                {
+                  panes[currentPaneIndex].isOnlineSale === 'true'
+                    ? <div style={{ marginBottom: '2em' }}>
+                      <Divider style={{ margin: '15px 0' }} orientation='left'>Thông tin vận chuyển</Divider>
+                      <div className='customerInfoBox'>
+                        <div className='phoneBox'>
+                          <span className='phoneTxt'>Địa chi lấy hàng: </span>
+                          <Input disabled={panes[currentPaneIndex].shippingInfo.optionTransfer === 'tt'} value={ADDRESS_STREET_GET_ORDER} allowClear placeholder='...' />
+                        </div>
+                        <div className='phoneBox'>
+                          <Cascader
+                            disabled={panes[currentPaneIndex].shippingInfo.optionTransfer === 'tt'}
+                            options={optionsAddressArr}
+                            value={ADDRESS_GET_ORDER_ARRAY}
+                            defaultValue={ADDRESS_GET_ORDER_ARRAY}
+                            displayRender={displayRender}
+                            style={{ width: '100%' }}
+                          />
+                        </div>
+                        <div className='phoneBox'>
+                          <span className='phoneTxt'>Địa chỉ giao hàng: </span>
+                          <Input disabled={panes[currentPaneIndex].shippingInfo.optionTransfer === 'tt'} onChange={onChangeOrderAddressStreet} value={panes[currentPaneIndex]?.shippingInfo?.orderAdressStreet} allowClear placeholder='Số nhà - đường' />
+                          {/* <Input value={panes[currentPaneIndex]?.shippingInfo?.addressFromInfo?.pick_province} minLength={10} maxLength={11} allowClear onChange={(value) => onChangeDataShipping(value, 'pick_province')} placeholder='...'  /> */}
+                        </div>
+                        <div className='phoneBox'>
+                          <Cascader
+                            allowClear
+                            showSearch
+                            disabled={panes[currentPaneIndex].shippingInfo.optionTransfer === 'tt'}
+                            placeholder='Thành phố/Tỉnh - Quận/Huyện - Xã/Phường'
+                            options={optionsAddressArr}
+                            defaultValue={[]}
+                            displayRender={displayRender}
+                            style={{ width: '100%' }}
+                            onChange={onChangeCasacderSeller}
+                          />
+                        </div>
+
+                        <div className='typeTranferBox'>
+                          <span className='typeTranferTxt'>Hình thức trả tiền: </span>
+                          <Checkbox.Group options={optionsTransferOrder} value={panes[currentPaneIndex].shippingInfo.optionTransfer || 'tk'} defaultValue={['tk']} onChange={onChangeRadioTransferOrder} />
+                        </div>
+
+                        <div className='phoneBox'>
+                          <span className='phoneTxt'>Phí giao hàng </span>
+
+                          <span className='phoneTxt'>{panes[currentPaneIndex]?.shippingInfo?.shippingFee} vnd</span>
+
+                          {/* <Input suffix={<span>vnđ</span>} defaultValue={0} value={panes[currentPaneIndex]?.shippingInfo?.shippingFee} placeholder='0' /> */}
+                        </div>
+                      </div>
+                    </div> : null
+
+                }
+              </div>
+            </div>
+
           </div>
-        </div>
-
-      </div> : panes[currentPaneIndex] && panes[currentPaneIndex].isCreatedSuccessfully ? (
-        <div className='successBox'>
-          {
-            panes[currentPaneIndex] && panes[currentPaneIndex].isOnlineSale === 'true' ? <>
-              <Steps style={{ padding: '10px 5%', marginBottom: '10%' }} current={0} onChange={onChangeStep}>
-                <Step status='finish' title='Đơn Hàng' description='Bước 1' />
-                <Step status='finish' title='Khách Hàng' description='Bước 2' />
-                <Step status='finish' title='Vận chuyển' description='Bước 3' />
-                <Step status='finish' title='Hoàn Thành' description='' />
-              </Steps>
+        ) : panes[currentPaneIndex] && panes[currentPaneIndex].isCreatedSuccessfully ? (
+          <div className='successBox'>
+            {
+              panes[currentPaneIndex] && panes[currentPaneIndex].isOnlineSale === 'true' ? <>
+                <Steps style={{ padding: '10px 5%', marginBottom: '10%' }} current={0} onChange={onChangeStep}>
+                  <Step status='finish' title='Đơn Hàng' description='Bước 1' />
+                  <Step status='finish' title='Khách Hàng' description='Bước 2' />
+                  <Step status='finish' title='Vận chuyển' description='Bước 3' />
+                  <Step status='finish' title='Hoàn Thành' description='' />
+                </Steps>
                 </> : <>
                   <Steps style={{ padding: '10px 5%', marginBottom: '10%' }} current={0} onChange={onChangeStep}>
                     <Step status='finish' title='Đơn Hàng' description='Bước 1' />
@@ -1103,25 +1183,25 @@ const SaleScreen = (props) => {
                     <Step status='finish' title='Hoàn Thành' description='' />
                   </Steps>
                 </>
-          }
+            }
 
-          <div style={{ display: 'flex' }}>
-            <ReactToPrint
-              content={reactToPrintContent}
-              // onAfterPrint={handleAfterPrint}
-              // onBeforeGetContent={handleOnBeforeGetContent}
-              // onBeforePrint={handleBeforePrint}
-              removeAfterPrint
-              trigger={reactToPrintTrigger}
-            />
-            <Button className='createNewButton' onClick={resetData}>Tạo mới</Button>
-          </div>
+            <div style={{ display: 'flex' }}>
+              <ReactToPrint
+                content={reactToPrintContent}
+                // onAfterPrint={handleAfterPrint}
+                // onBeforeGetContent={handleOnBeforeGetContent}
+                // onBeforePrint={handleBeforePrint}
+                removeAfterPrint
+                trigger={reactToPrintTrigger}
+              />
+              <Button className='createNewButton' onClick={resetData}>Tạo mới</Button>
+            </div>
 
-          <div id='BoxContainer'>
-            <ReceiptOffline data={panes[currentPaneIndex]} ref={componentRef} />
+            <div id='BoxContainer'>
+              <ReceiptOffline data={panes[currentPaneIndex]} ref={componentRef} />
+            </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
 
       {/* <button onClick={() => printWithId('qrcode')}>Print qrcode</button> */}
 
@@ -1162,8 +1242,10 @@ const SaleScreen = (props) => {
   )
 }
 
-const mapStateToProps = (state) => ({
-  locale: state.locale,
+const mapStateToProps = state => ({
+  locale: state.locale.lang,
+  key: state.locale.lang,
+  messages: state.locale.messages,
   userData: state.userData,
   addressInfoArrayRedux: state.addressInfoArrayRedux
 })

@@ -99,11 +99,29 @@ class SummaryScreen extends React.PureComponent {
     let moneyAfterFee = 0
     let moneyFromFee = 0
     let totalProduct = 0
+    let transferBankMoneyAmount = 0
+    let transferOfflineMoneyAmount = 0
+    let numberOnlineSale = 0
+    let numberOfflineSale = 0
+    let moneyForOnlineSale = 0
+    let moneyForOfflineSale = 0
+
     if (orderList && orderList.results && orderList.results.length > 0) {
       orderList.results.map((item, indexItem) => {
         moneyForSale += Number(item.totalMoneyForSale || 0)
         moneyAfterFee += Math.floor(this.convertPriceAfterFee(Number(item.totalMoneyForSale)))
         totalProduct += Number(item.totalNumberOfProductForSale)
+        transferBankMoneyAmount += Number(item.transferBankMoneyAmount)
+        transferOfflineMoneyAmount += Number(item.transferOfflineMoneyAmount)
+
+        if (item.isOnlineSale) {
+          numberOnlineSale += 1
+          moneyForOnlineSale += Number(item.totalMoneyForSale || 0)
+        } else {
+          numberOfflineSale += 1
+          moneyForOfflineSale += Number(item.totalMoneyForSale || 0)
+        }
+
         // if (!item.totalMoneyForSaleAfterFee || !moneyAfterFee) {
         //   console.log('item <- index', item)
         //   console.log('item -> index', indexItem)
@@ -124,15 +142,15 @@ class SummaryScreen extends React.PureComponent {
 
       moneyFromFee += moneyForSale - moneyAfterFee
 
-      if (moneyFromFee < 120000) {
-        const newMoneyFromFee = 120000 + random(3000, 10000)
+      // if (moneyFromFee < 120000) {
+      //   const newMoneyFromFee = 120000 + random(3000, 10000)
 
-        const raito = (newMoneyFromFee) / moneyFromFee
+      //   const raito = (newMoneyFromFee) / moneyFromFee
 
-        moneyForSale = Math.floor(raito * moneyForSale)
-        moneyAfterFee = Math.floor(moneyForSale * 77 / 100)
-        moneyFromFee = moneyForSale - moneyAfterFee
-      }
+      //   moneyForSale = Math.floor(raito * moneyForSale)
+      //   moneyAfterFee = Math.floor(moneyForSale * 77 / 100)
+      //   moneyFromFee = moneyForSale - moneyAfterFee
+      // }
 
       this.setState({
         moneyForSale: moneyForSale,
@@ -141,7 +159,13 @@ class SummaryScreen extends React.PureComponent {
         totalProduct: totalProduct,
         dataOrderList: orderList.results,
         totalOrder: orderList.count,
-        isLoadingSummary: false
+        isLoadingSummary: false,
+        transferBankMoneyAmount: transferBankMoneyAmount,
+        transferOfflineMoneyAmount: transferOfflineMoneyAmount,
+        numberOnlineSale: numberOnlineSale,
+        numberOfflineSale: numberOfflineSale,
+        moneyForOnlineSale: moneyForOnlineSale,
+        moneyForOfflineSale: moneyForOfflineSale
       }, () => {
         console.log('state', this.state)
       })
@@ -154,15 +178,21 @@ class SummaryScreen extends React.PureComponent {
         totalProduct: totalProduct,
         dataOrderList: orderList.results,
         totalOrder: orderList.count,
-        isLoadingSummary: false
+        isLoadingSummary: false,
+        transferBankMoneyAmount: transferBankMoneyAmount,
+        transferOfflineMoneyAmount: transferOfflineMoneyAmount,
+        numberOnlineSale: 0,
+        numberOfflineSale: 0,
+        moneyForOnlineSale: 0,
+        moneyForOfflineSale: 0
       })
     }
   }
 
   render () {
     const {
-      fromDateMoment, toDateMoment, isLoadingSummary,
-      totalOrder, totalProduct, moneyFromFee, moneyAfterFee, moneyForSale
+      fromDateMoment, toDateMoment, isLoadingSummary, numberOnlineSale, moneyForOfflineSale, moneyForOnlineSale, numberOfflineSale,
+      totalOrder, totalProduct, moneyFromFee, moneyAfterFee, moneyForSale, transferBankMoneyAmount, transferOfflineMoneyAmount
     } = this.state
     return (
       <div className='tableConsignemntScreen-container'>
@@ -178,6 +208,14 @@ class SummaryScreen extends React.PureComponent {
                 <Statistic className='Statistic-Item' title='SL Khách' value={totalOrder} prefix={<UserOutlined />} />
                 <Statistic className='Statistic-Item' title='SL Sản phẩm' value={totalProduct} prefix={<BoxPlotOutlined />} />
                 <Statistic className='Statistic-Item' title='Số tiền bán' value={`${numberWithCommas(moneyForSale * 1000)} vnđ`} prefix={<MoneyCollectOutlined />} />
+                <Statistic className='Statistic-Item' title='Tiền mặt' value={`${numberWithCommas(transferOfflineMoneyAmount * 1000)} vnđ`} prefix={<MoneyCollectOutlined />} />
+                <Statistic className='Statistic-Item' title='Tiền chuyển khoản' value={`${numberWithCommas(transferBankMoneyAmount * 1000)} vnđ`} prefix={<MoneyCollectOutlined />} />
+
+                <Statistic className='Statistic-Item' title='SL đơn online' value={numberOnlineSale} prefix={<MoneyCollectOutlined />} />
+                <Statistic className='Statistic-Item' title='Doanh thu online' value={`${numberWithCommas(moneyForOnlineSale * 1000)} vnđ`} prefix={<MoneyCollectOutlined />} />
+                <Statistic className='Statistic-Item' title='SL đơn offline' value={numberOfflineSale} prefix={<MoneyCollectOutlined />} />
+                <Statistic className='Statistic-Item' title='Doanh thu offline' value={`${numberWithCommas(moneyForOfflineSale * 1000)} vnđ`} prefix={<MoneyCollectOutlined />} />
+
                 <Statistic className='Statistic-Item' title='Số tiền trả khách' value={`${numberWithCommas(moneyAfterFee * 1000)} vnđ`} prefix={<MoneyCollectOutlined />} />
                 <Statistic className='Statistic-Item' title='Lợi nhuận' value={`${numberWithCommas(moneyFromFee * 1000)} vnđ`} prefix={<MoneyCollectOutlined />} />
               </div>

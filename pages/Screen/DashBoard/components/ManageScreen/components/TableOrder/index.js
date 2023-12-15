@@ -149,6 +149,22 @@ class TableOrderScreen extends React.PureComponent {
         render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
       },
       {
+        title: 'Tiền mặt',
+        dataIndex: 'transferOfflineMoneyAmount',
+        key: '4',
+        width: 140,
+        // editable: true,
+        render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
+      },
+      {
+        title: 'Tiền chuyển khoản',
+        dataIndex: 'transferBankMoneyAmount',
+        key: '4',
+        width: 140,
+        // editable: true,
+        render: (value) => <span>{value ? numberWithCommas(value * 1000) : '0'} đ</span>
+      },
+      {
         title: 'Thanh toán',
         dataIndex: 'isTransferMoneyWithBank',
         width: 120,
@@ -327,6 +343,13 @@ class TableOrderScreen extends React.PureComponent {
         // width: 180
       },
       {
+        title: 'Mã ký gửi',
+        dataIndex: 'consignmentId',
+        key: 'consignmentId'
+        // editable: true,
+        // width: 180
+      },
+      {
         title: 'Tên SP',
         dataIndex: 'name',
         key: 'name'
@@ -361,6 +384,7 @@ class TableOrderScreen extends React.PureComponent {
     console.log(recordData)
 
     recordData && recordData.productList && recordData.productList.map((item, index) => {
+      console.log('item', item)
       data.push({
         key: index,
         name: item.name,
@@ -369,6 +393,7 @@ class TableOrderScreen extends React.PureComponent {
         code: item.code || '',
         price: Number(item.price) || 0,
         count: Number(item.count) || 0,
+        consignmentId: item.consignment.consignmentId,
         priceAfterFee: Number(item.priceAfterFee) || 0,
         soldNumberProduct: Number(item.soldNumberProduct) || 0,
         remainNumberProduct: Number(item.count) - Number(item.soldNumberProduct || 0),
@@ -935,6 +960,8 @@ class TableOrderScreen extends React.PureComponent {
             phoneNumber: item?.phoneNumber,
             totalNumberOfProductForSale: `${Number(item.totalNumberOfProductForSale)}`,
             isTransferMoneyWithBank: item.isTransferMoneyWithBank ? 'Chuyển khoản' : 'Trực tiếp',
+            transferBankMoneyAmount: item.transferBankMoneyAmount || '---',
+            transferOfflineMoneyAmount: item.transferOfflineMoneyAmount || '---',
             totalMoneyForSale: item.totalMoneyForSale ? `${item.totalMoneyForSale}` : 0,
             totalMoneyForSaleAfterFee: (item.totalMoneyForSaleAfterFee ? `${item.totalMoneyForSaleAfterFee}` : `${this.convertPriceAfterFee(item.totalMoneyForSaleAfterFee)}`) || 0,
             createdAt: moment(item.createdAt).format('DD-MM-YYYY hh:mm'),

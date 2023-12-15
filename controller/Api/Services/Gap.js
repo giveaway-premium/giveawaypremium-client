@@ -635,6 +635,9 @@ export default class Gap {
       consignee: { '__type': 'Pointer', 'className': '_User', 'objectId': consigneeData },
       client: { '__type': 'Pointer', 'className': '_User', 'objectId': consignerData },
       isTransferMoneyWithBank: dataOrder.isTransferWithBank === 'true',
+      isTransferMoneyWithBankAndOffline: !(dataOrder.isTransferWithBank === 'true') && dataOrder.isTransferMoneyWithBankAndOffline === 'true',
+      transferBankMoneyAmount: dataOrder.transferBankMoneyAmount || 0,
+      transferOfflineMoneyAmount: dataOrder.transferOfflineMoneyAmount || 0,
       productList: dataOrder.productList || [],
       totalNumberOfProductForSale: `${dataOrder.totalNumberOfProductForSale}`,
       totalMoneyForSale: `${dataOrder.totalMoneyForSale}`,
@@ -755,7 +758,7 @@ export default class Gap {
       const customQuery = `skip=${skip}&limit=${limited}&count=1&include=client,transporter&where={${allSearchRegex}}`
       console.log('customQuery')
       console.log(customQuery)
-      const customQueryWithoutCondition = `include=client,transporter`
+      const customQueryWithoutCondition = `include=client,transporter,productList.consignment`
 
       if (selectedKeys.objectId) {
         return this.fetchData(`/classes/Order/${selectedKeys.objectId.trim()}`, REQUEST_TYPE.GET, null, null, null, null, customQueryWithoutCondition)
@@ -769,7 +772,7 @@ export default class Gap {
       console.log('fromDateFormated', fromDateFormated)
       console.log('toDateFormated', toDateFormated)
 
-      const customQuery = `skip=${skip}&limit=${limited}&count=1&include=client,transporter&where={"deletedAt":${null}, "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"},"$lte": {"__type": "Date","iso": "${toDateFormated}"}}}`
+      const customQuery = `skip=${skip}&limit=${limited}&count=1&include=client,transporter,productList.consignment&where={"deletedAt":${null}, "createdAt": {"$gte": {"__type": "Date","iso": "${fromDateFormated}"},"$lte": {"__type": "Date","iso": "${toDateFormated}"}}}`
       return this.fetchData('/classes/Order', REQUEST_TYPE.GET, null, null, null, null, customQuery)
     }
   }
