@@ -52,8 +52,8 @@ const nextConfig = {
   env: {}
 }
 module.exports = withPlugins([
-  // [optimizedImages, {
-  //   handleImages: ['jpeg', 'png', 'gif', 'svg', 'ico']
-  // }],
+  [optimizedImages, {
+    handleImages: ['jpeg', 'png', 'gif', 'svg', 'ico']
+  }],
   withFonts, withSass, withCss, withLess, [withBundleAnalyzer]
 ], nextConfig)
