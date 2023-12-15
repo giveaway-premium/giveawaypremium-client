@@ -73,7 +73,7 @@
     "react-redux": "^7.1.0",
     "react-router-dom": "5.2.0",
     "react-router-transition": "^2.1.0",
-    "react-scripts": "5.0.0",
+    "react-scripts": "3.4.1",
     "react-scroll-to-top": "^1.0.5",
     "react-slick": "^0.28.1",
     "react-slideshow-image": "^3.6.0",
