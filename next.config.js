@@ -10,7 +10,6 @@ require('dotenv').config()
 const nextConfig = {
   webpack5: false,
   poweredByHeader: false,
-  swcMinify: false,
   webpack (config) {
     // Returns environment variables as an object
     const env = Object.keys(process.env).reduce((acc, curr) => {

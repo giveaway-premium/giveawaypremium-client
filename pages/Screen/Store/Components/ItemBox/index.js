@@ -16,7 +16,7 @@ import GapService from 'controller/Api/Services/Gap'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import { OBJECTID_CATEGORY } from 'common/constants'
-import Image from 'next/image'
+// import Image from 'next/image'
 
 const ItemBox = (props) => {
   const { itemData } = props
