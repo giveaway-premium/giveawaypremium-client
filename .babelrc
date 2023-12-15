@@ -24,5 +24,12 @@
       "@babel/plugin-transform-async-generator-functions"
     ],
     "@babel/plugin-syntax-dynamic-import"
-  ]
+  ],
+  // "env": {
+  //   "production": {
+  //     "plugins": [
+  //       "transform-remove-console"
+  //     ]
+  //   }
+  // }
 }
