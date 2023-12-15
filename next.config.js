@@ -8,7 +8,10 @@ const withPlugins = require('next-compose-plugins')
 const optimizedImages = require('next-optimized-images')
 require('dotenv').config()
 const nextConfig = {
-  webpack (config) {
+  webpack5: false,
+  poweredByHeader: false,
+  optimizedImages: false,
+  webpack(config) {
     // Returns environment variables as an object
     const env = Object.keys(process.env).reduce((acc, curr) => {
       acc[`process.env.${curr}`] = JSON.stringify(process.env[curr])
