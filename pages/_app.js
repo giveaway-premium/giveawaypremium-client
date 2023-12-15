@@ -15,21 +15,21 @@ import storageActions from 'controller/Redux/actions/storageActions'
 import init from 'controller/Redux/lib/initState'
 import { checkLocalStoreToRedux } from 'controller/Redux/lib/reducerConfig'
 import BaseContainer from 'pages/Container'
-import Observer from 'common/observer'
-import { KEY_STORE, OBSERVER_KEY } from 'common/constants'
+// import Observer from 'common/observer'
+import { KEY_STORE } from 'common/constants'
 import { getDataLocal } from 'common/function'
-import { Spin } from 'antd'
+// import { Spin } from 'antd'
 import './Style/override.less'
 import './Style/global.scss'
 import '../static/jank-empty.css'
 import 'animate.css'
 
 import Lottie from 'react-lottie'
-import { images } from 'config/images'
-import { Router } from 'common/routes'
+// import { images } from 'config/images'
+// import { Router } from 'common/routes'
 // import NProgress from 'nprogress'
 import homeLoadingJson from 'static/Assets/Image/Lottie/homeLoadingBar.json'
-import GapService from 'controller/Api/Services/Gap'
+// import GapService from 'controller/Api/Services/Gap'
 
 addLocaleData([...intlEN, ...intlJA, ...intlCN])
 class GiveAway extends App {
@@ -45,8 +45,7 @@ class GiveAway extends App {
     this.state = {
       isLoading: true,
       seoData: props.seoData,
-      isShowBanner: props.router.asPath === '/',
-      seoData: props.seoData
+      isShowBanner: props.router.asPath === '/'
     }
     this.currentInterval = null
   }
@@ -130,7 +129,7 @@ class GiveAway extends App {
 
   render () {
     const { Component, pageProps } = this.props
-    const { isShowBanner } = this.state
+    // const { isShowBanner } = this.state
     const defaultOptions = {
       loop: false,
       autoplay: true,

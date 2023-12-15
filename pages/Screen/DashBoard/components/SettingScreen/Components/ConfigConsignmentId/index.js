@@ -9,7 +9,7 @@ import { Router } from 'common/routes'
 import { isMobile } from 'react-device-detect'
 import './style.scss'
 import GapService from 'controller/Api/Services/Gap'
-import TweenOneGroup from 'rc-tween-one'
+// import TweenOneGroup from 'rc-tween-one'
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons'
 import moment from 'moment'
 
@@ -150,28 +150,38 @@ class ConfigConsignmentId extends React.Component {
   }
 
   render () {
-    const { tags, inputVisible, inputValue, isLoadingTags, timeGetMoney } = this.state
-    const tagChild = tags.map(this.forMap)
+    const { tags, inputVisible, isLoadingTags, timeGetMoney } = this.state
     return (
       <div className='ConfigConsignmentId-container'>
         <div style={{ marginBottom: 16 }}>
           {
             isLoadingTags ? <LoadingOutlined />
-              : <TweenOneGroup
-                enter={{
-                  scale: 0.8,
-                  opacity: 0,
-                  type: 'from',
-                  duration: 100,
-                  onComplete: e => {
-                    e.target.style = ''
-                  }
+              : tags.map((tag, tagIndex) => <Tag
+                key={tagIndex}
+                closable
+                onClose={e => {
+                  e.preventDefault()
+                  this.handleClose(tag)
                 }}
-                leave={{ opacity: 0, width: 0, scale: 0, duration: 200 }}
-                appear={false}
               >
-                {tagChild}
-              </TweenOneGroup>
+                {tag}
+              </Tag>)
+
+            // : <TweenOneGroup
+            //   enter={{
+            //     scale: 0.8,
+            //     opacity: 0,
+            //     type: 'from',
+            //     duration: 100,
+            //     onComplete: e => {
+            //       e.target.style = ''
+            //     }
+            //   }}
+            //   leave={{ opacity: 0, width: 0, scale: 0, duration: 200 }}
+            //   appear={false}
+            // >
+            //   {tagChild}
+            // </TweenOneGroup>
           }
         </div>
         {inputVisible && (
