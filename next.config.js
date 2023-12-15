@@ -6,6 +6,10 @@ const withFonts = require('next-fonts')
 const FilterWarningsPlugin = require('webpack-filter-warnings-plugin')
 const withPlugins = require('next-compose-plugins')
 const optimizedImages = require('next-optimized-images')
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.REACT_APP_STATE === 'PRODUCTION'
+})
+
 require('dotenv').config()
 const nextConfig = {
   webpack5: false,
@@ -51,5 +55,5 @@ module.exports = withPlugins([
   [optimizedImages, {
     handleImages: ['jpeg', 'png', 'gif', 'svg', 'ico']
   }],
-  withFonts, withSass, withCss, withLess
+  withFonts, withSass, withCss, withLess, [withBundleAnalyzer]
 ], nextConfig)
