@@ -222,7 +222,7 @@ const SaleScreen = (props) => {
 
   // action = 'add' | 'remove'
   const onEdit = (targetKey, action) => {
-    console.log('onEdit')
+    // console.log('onEdit')
     if (action === 'add') {
       add()
     } else {
@@ -246,8 +246,8 @@ const SaleScreen = (props) => {
   )
 
   const onChangeStep = (stepValue, indexPane) => {
-    console.log('stepValue', stepValue)
-    console.log(indexPane)
+    // console.log('stepValue', stepValue)
+    // console.log(indexPane)
     // set
   }
   /// ////////////////////////////////////////////////// Tabs - TabPane -- END /////////////////////////////////////////////////////
