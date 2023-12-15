@@ -1,5 +1,6 @@
 {
-  "presets" : [
+  "presets": [
+    "@babel/preset-react",
     [
       "next/babel"
     ]
@@ -21,7 +22,7 @@
       }
     ],
     [
-      "@babel/plugin-transform-async-generator-functions"
+      "@babel/plugin-transform-arrow-functions"
     ],
     "@babel/plugin-syntax-dynamic-import"
   ],

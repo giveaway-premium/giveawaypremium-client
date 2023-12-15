@@ -11,7 +11,7 @@ const nextConfig = {
   webpack5: false,
   poweredByHeader: false,
   optimizedImages: false,
-  webpack(config) {
+  webpack (config) {
     // Returns environment variables as an object
     const env = Object.keys(process.env).reduce((acc, curr) => {
       acc[`process.env.${curr}`] = JSON.stringify(process.env[curr])
