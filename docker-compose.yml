@@ -17,7 +17,7 @@ services:
       - REACT_APP_STATE=PRODUCTION
       - REACT_NEED_DEBUG=true
       - GENERATE_SOURCEMAP=false
-      - NODE_OPTIONS=--max_old_space_size=768
+      - NODE_OPTIONS=--max_old_space_size=1024
       - PORT = 3003
       - API_APP=https://giveaway-premium.herokuapp.com/api
       - APP_ID=EJKfA5jFxiC98aMbvir0vSAuDHO4NQ7x
