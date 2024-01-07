@@ -67,14 +67,16 @@ class Product extends React.PureComponent {
       // call api to load infomation about this item hereinafter
       const queryId = router.query.id
       console.log('queryId', queryId)
+            console.log('productData', productData)
+
       let resData = productData
-      let productId = resData.results[0].objectId
+      let productId = resData?.results?.[0]?.objectId
       let resOrderRequest
       const photoAlbumRes = []
       let isBookingAlready = false
       let theLastValidBooking = {}
       if (router?.query?.id) {
-        // resData = await Gap.getProductWithObjectKey(queryId)
+        resData = await Gap.getProductWithObjectKey(queryId)
 
         console.log('resData', resData)
         if (resData && resData.count > 0 && resData?.results?.length > 0 && resData?.results[0].status === 'ACTIVE') {
