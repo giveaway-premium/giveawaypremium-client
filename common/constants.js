@@ -350,6 +350,128 @@ export const TIME_BOOKING = {
       timeName: '18:30',
       timeCode: '1830'
     }
+  ],
+  OPTION_9: [
+    {
+      timeName: '10:00',
+      timeCode: '1000'
+    },
+    {
+      timeName: '10:15',
+      timeCode: '1015'
+    },
+    {
+      timeName: '10:30',
+      timeCode: '1030'
+    },
+    {
+      timeName: '10:45',
+      timeCode: '1045'
+    },
+    {
+      timeName: '11:00',
+      timeCode: '1100'
+    },
+    {
+      timeName: '11:15',
+      timeCode: '1115'
+    },
+    {
+      timeName: '11:30',
+      timeCode: '1130'
+    },
+    {
+      timeName: '11:45',
+      timeCode: '1145'
+    },
+    {
+      timeName: '13:00',
+      timeCode: '1300'
+    },
+    {
+      timeName: '13:15',
+      timeCode: '1315'
+    },
+    {
+      timeName: '13:30',
+      timeCode: '1330'
+    },
+    {
+      timeName: '13:45',
+      timeCode: '1345'
+    },
+    {
+      timeName: '14:00',
+      timeCode: '1400'
+    },
+    {
+      timeName: '14:15',
+      timeCode: '1415'
+    },
+    {
+      timeName: '14:30',
+      timeCode: '1430'
+    },
+    {
+      timeName: '14:45',
+      timeCode: '1445'
+    },
+    {
+      timeName: '15:00',
+      timeCode: '1500'
+    },
+    {
+      timeName: '15:15',
+      timeCode: '1515'
+    },
+    {
+      timeName: '15:30',
+      timeCode: '1530'
+    },
+    {
+      timeName: '15:45',
+      timeCode: '1545'
+    },
+    {
+      timeName: '16:00',
+      timeCode: '1600'
+    },
+    {
+      timeName: '16:15',
+      timeCode: '1615'
+    },
+    {
+      timeName: '16:30',
+      timeCode: '1630'
+    },
+    {
+      timeName: '16:45',
+      timeCode: '1645'
+    },
+    {
+      timeName: '17:00',
+      timeCode: '1700'
+    },
+    {
+      timeName: '17:15',
+      timeCode: '1715'
+    },
+    {
+      timeName: '17:30',
+      timeCode: '1730'
+    },
+    {
+      timeName: '17:45',
+      timeCode: '1745'
+    },
+    {
+      timeName: '18:00',
+      timeCode: '1800'
+    },
+    {
+      timeName: '18:30',
+      timeCode: '1830'
+    }
   ]
 }
 

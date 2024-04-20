@@ -136,6 +136,7 @@ class ConsignmentScreen extends React.PureComponent {
       else if (bookingOptionData.OPTION_6 && bookingOptionData.OPTION_6.includes(choosenDayCode.dayCode)) return { option: 6, timeBooking: TIME_BOOKING.OPTION_6 }
       else if (bookingOptionData.OPTION_7 && bookingOptionData.OPTION_7.includes(choosenDayCode.dayCode)) return { option: 7, timeBooking: TIME_BOOKING.OPTION_7 }
       else if (bookingOptionData.OPTION_8 && bookingOptionData.OPTION_8.includes(choosenDayCode.dayCode)) return { option: 8, timeBooking: TIME_BOOKING.OPTION_8 }
+      else if (bookingOptionData.OPTION_9 && bookingOptionData.OPTION_9.includes(choosenDayCode.dayCode)) return { option: 9, timeBooking: TIME_BOOKING.OPTION_9 }
       else return { option: 8, timeBooking: TIME_BOOKING.OPTION_8 }
     } else {
       return { option: 8, timeBooking: TIME_BOOKING.OPTION_8 }
@@ -439,7 +440,7 @@ class ConsignmentScreen extends React.PureComponent {
                     </div>
                   </div>
                 </div> : <>
-                  <div style={{ gridTemplateColumns: 'auto auto' }} className={'timeBooking-grid' + (step === 1 && isHideUserForm ? ' show' : '')}>
+                  <div style={bookingOptionValue === 9 ? { gridTemplateColumns: 'auto auto auto' } : { gridTemplateColumns: 'auto auto' }} className={'timeBooking-grid' + (step === 1 && isHideUserForm ? ' show' : '')}>
                     {timeBooking.map((itemTime, indexTime) => {
                       const isReady = !bookingDataCode.includes(choosenTimeCode + choosenDayCode) && itemTime.timeCode === choosenTimeCode
                       const isBusy = bookingDataCode.includes(itemTime.timeCode + choosenDayCode)

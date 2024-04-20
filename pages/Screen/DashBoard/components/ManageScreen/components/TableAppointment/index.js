@@ -139,6 +139,7 @@ class TableAppointment extends React.Component {
       else if (bookingOptionData.OPTION_6 && bookingOptionData.OPTION_6.includes(choosenDayCode.dayCode)) return { option: 6, timeBooking: TIME_BOOKING.OPTION_6 }
       else if (bookingOptionData.OPTION_7 && bookingOptionData.OPTION_7.includes(choosenDayCode.dayCode)) return { option: 7, timeBooking: TIME_BOOKING.OPTION_7 }
       else if (bookingOptionData.OPTION_8 && bookingOptionData.OPTION_8.includes(choosenDayCode.dayCode)) return { option: 8, timeBooking: TIME_BOOKING.OPTION_8 }
+      else if (bookingOptionData.OPTION_9 && bookingOptionData.OPTION_9.includes(choosenDayCode.dayCode)) return { option: 9, timeBooking: TIME_BOOKING.OPTION_9 }
       else return { option: 8, timeBooking: TIME_BOOKING.OPTION_8 }
     } else {
       return { option: 8, timeBooking: TIME_BOOKING.OPTION_8 }
@@ -287,6 +288,7 @@ class TableAppointment extends React.Component {
     bookingOptionList.OPTION_6 = bookingOptionList.OPTION_6 ? bookingOptionList.OPTION_6.replaceAll(choosenDayCode, '-') : '-'
     bookingOptionList.OPTION_7 = bookingOptionList.OPTION_7 ? bookingOptionList.OPTION_7.replaceAll(choosenDayCode, '-') : '-'
     bookingOptionList.OPTION_8 = bookingOptionList.OPTION_8 ? bookingOptionList.OPTION_8.replaceAll(choosenDayCode, '-') : '-'
+    bookingOptionList.OPTION_9 = bookingOptionList.OPTION_9 ? bookingOptionList.OPTION_9.replaceAll(choosenDayCode, '-') : '-'
     bookingOptionList[`OPTION_${value}`] = bookingOptionList[`OPTION_${value}`] + `--${choosenDayCode}--`
     let res = await GapService.updateSettingWithKeyAndValue(BOOKING_OPTION_EACH_DAY, bookingOptionList)
 
@@ -432,6 +434,7 @@ class TableAppointment extends React.Component {
           <Option value={6}>{'Chiều 1 tiếng'}</Option>
           <Option value={7}>{'Off nghỉ!'}</Option>
           <Option value={8}>{'Định dạng cũ'}</Option>
+          <Option value={9}>{'Full ngày - 15 phút'}</Option>
         </>
       )
     } else {
@@ -498,6 +501,13 @@ class TableAppointment extends React.Component {
                           <>
                             <Option value={1}>{'Full ngày - 30 phút'}</Option>
                             <Option value={8}>{'Định dạng cũ'}</Option>
+
+                          </>
+        )
+      case 9:
+        return (
+                          <>
+                            <Option value={7}>{'Off nghỉ!'}</Option>
                           </>
         )
       default:
@@ -570,7 +580,7 @@ class TableAppointment extends React.Component {
             </div>
 
             <div className='timeBooking-box'>
-              <div style={isShowEightSlot ? { gridTemplateColumns: 'auto auto' } : {}} className={'timeBooking-grid show'}>
+              <div style={bookingOptionValue === 9 ? { gridTemplateColumns: 'auto auto auto' } : isShowEightSlot ? { gridTemplateColumns: 'auto auto' } : {}} className={'timeBooking-grid show'}>
                 {
                   isLoadingBooking
                     ? <div className='flex justity-center align-center'>

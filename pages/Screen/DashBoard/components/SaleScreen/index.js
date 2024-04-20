@@ -409,19 +409,53 @@ const SaleScreen = (props) => {
         return
       }
 
-      paneTemp[currentPaneIndex].productList.map(item => {
+      let existProductIndex
+      paneTemp[currentPaneIndex].productList.map((item, itemIndex) => {
         if (item.objectId === productResArr?.results?.[0].objectId) {
           isExistProduct = true
+          existProductIndex = itemIndex
         }
       })
-      if (isExistProduct) {
-        showNotification('Đã có sản phẩm này rồi')
+      let productRes = productResArr?.results?.[0]
+
+      if (isExistProduct && existProductIndex >= 0) {
+        showNotification('Sản phẩm tương đồng')
+
         paneTemp[currentPaneIndex].inputText = ''
+
+        if ((paneTemp[currentPaneIndex].productList[existProductIndex].numberOfProductForSale || 1) + 1 > paneTemp[currentPaneIndex].productList[existProductIndex].remainNumberProduct) {
+          showNotification(`Số lượng tối đa là ${paneTemp[currentPaneIndex].productList[existProductIndex].remainNumberProduct}`)
+          return
+        }
+        paneTemp[currentPaneIndex].productList[existProductIndex].numberOfProductForSale = (!paneTemp[currentPaneIndex].productList[existProductIndex].numberOfProductForSale || paneTemp[currentPaneIndex].productList[existProductIndex].numberOfProductForSale === 1) ? 2 : paneTemp[currentPaneIndex].productList[existProductIndex].numberOfProductForSale + 1
+
+        paneTemp[currentPaneIndex].totalNumberOfProductForSale = (paneTemp[currentPaneIndex].totalNumberOfProductForSale || 0) + 1
+        paneTemp[currentPaneIndex].totalMoneyForSale = (paneTemp[currentPaneIndex].totalMoneyForSale || 0) + productRes.price
+        paneTemp[currentPaneIndex].totalMoneyForSaleAfterFee = (paneTemp[currentPaneIndex].totalMoneyForSaleAfterFee || 0) + productRes.priceAfterFee
+        // let totalNumberOfProductForSale = 0
+        // let totalMoneyForSale = 0
+        // let totalMoneyForSaleAfterFee = 0
+        // paneTemp[currentPaneIndex].productList.map(item => {
+        //   totalNumberOfProductForSale += item.numberOfProductForSale || 1
+        //   totalMoneyForSale += (item.numberOfProductForSale || 1) * item.price
+        //   totalMoneyForSaleAfterFee += (item.numberOfProductForSale || 1) * item.priceAfterFee
+        // })
+        // paneTemp[currentPaneIndex].totalNumberOfProductForSale = totalNumberOfProductForSale
+        // paneTemp[currentPaneIndex].totalMoneyForSale = totalMoneyForSale
+        // paneTemp[currentPaneIndex].totalMoneyForSaleAfterFee = totalMoneyForSaleAfterFee
         setPanes(paneTemp)
+
+        // onChangeProductItem(paneTemp[currentPaneIndex].productList[existProductIndex].numberOfProductForSale + 1, 'productNumber', existProductIndex)
+
+        // paneTemp[currentPaneIndex].totalNumberOfProductForSale = (paneTemp[currentPaneIndex].totalNumberOfProductForSale || 0) + 1
+        // paneTemp[currentPaneIndex].totalMoneyForSale = (paneTemp[currentPaneIndex].totalMoneyForSale || 0) + productRes.price
+        // paneTemp[currentPaneIndex].totalMoneyForSaleAfterFee = (paneTemp[currentPaneIndex].totalMoneyForSaleAfterFee || 0) + productRes.priceAfterFee
+        // setPanes(paneTemp)
         return
       }
 
-      let productRes = productResArr?.results?.[0]
+      // <InputNumber min={1} max={item.remainNumberProduct || 1} defaultValue={1} value={item.numberOfProductForSale || 1} onChange={(value) => onChangeProductItem(value, 'productNumber', itemIndex)} />
+
       paneTemp[currentPaneIndex].productList = [...paneTemp[currentPaneIndex].productList, productRes]
       paneTemp[currentPaneIndex].inputText = ''
       paneTemp[currentPaneIndex].totalNumberOfProductForSale = (paneTemp[currentPaneIndex].totalNumberOfProductForSale || 0) + 1
@@ -559,15 +593,16 @@ const SaleScreen = (props) => {
   const onHandleCreateOrder = async () => {
     let isError = false
     const paneTemp = [...panes]
-    if (!paneTemp[currentPaneIndex].clientInfo || !paneTemp[currentPaneIndex].clientInfo.fullName) {
-      isError = true
-      showNotification(`Chưa nhập tên Khách hàng`)
-    } else if (!paneTemp[currentPaneIndex].clientInfo.phoneNumber || paneTemp[currentPaneIndex]?.clientInfo?.phoneNumber.length <= 9) {
+
+    if (!paneTemp[currentPaneIndex].clientInfo.phoneNumber || paneTemp[currentPaneIndex]?.clientInfo?.phoneNumber.length <= 9) {
       isError = true
       showNotification(`Chưa nhập số điện thoại`)
     } else if (!paneTemp[currentPaneIndex].productList || paneTemp[currentPaneIndex]?.productList?.length === 0) {
       isError = true
       showNotification(`Chưa có sản phẩm nào`)
+    } else if (paneTemp[currentPaneIndex].isOnlineSale === 'true' && (!paneTemp[currentPaneIndex].clientInfo || !paneTemp[currentPaneIndex].clientInfo.fullName)) {
+      isError = true
+      showNotification(`Chưa nhập tên Khách hàng`)
     } else if (paneTemp[currentPaneIndex].isOnlineSale === 'true' && paneTemp[currentPaneIndex].shippingInfo && (!paneTemp[currentPaneIndex].shippingInfo?.orderAdressStreet || paneTemp[currentPaneIndex].shippingInfo?.orderAdressStreet.length === 0)) {
       isError = true
       showNotification(`Vui nhập thêm thông tin số nhà/tên đường nha`)
@@ -891,7 +926,7 @@ const SaleScreen = (props) => {
     console.log('clicked', label, option)
   }
 
-  const displayRender = (labels, selectedOptions) =>
+  const displayRender = (labels, selectedOptions) => {
     labels.map((label, i) => {
       const option = selectedOptions[i]
       if (i === labels.length - 1) {
@@ -903,6 +938,7 @@ const SaleScreen = (props) => {
       }
       return <span key={option.value}>{label} / </span>
     })
+  }
 
   const onChangeOrderAddressStreet = async (value) => {
     console.log('onChangeCasacderSeller', value)
