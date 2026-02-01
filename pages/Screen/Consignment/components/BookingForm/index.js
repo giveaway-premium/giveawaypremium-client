@@ -95,7 +95,6 @@ class ConsignmentScreen extends React.PureComponent {
     for (let i = 0; i < workingDayCountTemp; i++) {
       dayBookingCount.push('')
     }
-    dayBookingCount.push('')
 
     let dayBookingTemp = []
     let bookingOptionEachDay = newSettingRedux.BOOKING_OPTION_EACH_DAY || BOOKING_OPTION_EACH_DAY_DATA_DEFAULT
