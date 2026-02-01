@@ -76,7 +76,8 @@ class ConsignmentScreen extends React.PureComponent {
       isShowEightSlot: true,
       bookingOptionValue: 8,
       bookingOptionEachDay: {},
-      workingDayCount: 14
+      workingDayCount: 14,
+      bookingCustomOptionString: undefined
     }
     this.myModal = React.createRef()
   }
@@ -94,6 +95,7 @@ class ConsignmentScreen extends React.PureComponent {
     for (let i = 0; i < workingDayCountTemp; i++) {
       dayBookingCount.push('')
     }
+    dayBookingCount.push('')
 
     let dayBookingTemp = []
     let bookingOptionEachDay = newSettingRedux.BOOKING_OPTION_EACH_DAY || BOOKING_OPTION_EACH_DAY_DATA_DEFAULT
@@ -109,7 +111,14 @@ class ConsignmentScreen extends React.PureComponent {
     const choosenDayCode = dayBookingTemp && dayBookingTemp[0] ? dayBookingTemp[0].dayCode : ''
     const { option, timeBooking } = this.checkDayCodeToBookingOption(dayBookingTemp[0], bookingOptionEachDay)
 
+    let bookingCustomOptionString = 'default'
+
+    if (newSettingRedux.BOOKING_OPTION_CUSTOM_EACH_DAY && newSettingRedux.BOOKING_OPTION_CUSTOM_EACH_DAY[choosenDayCode]) {
+      bookingCustomOptionString = newSettingRedux.BOOKING_OPTION_CUSTOM_EACH_DAY[choosenDayCode]
+    }
+
     this.setState({
+      bookingCustomOptionString: bookingCustomOptionString,
       bookingOptionValue: option,
       timeBooking: timeBooking,
       bookingOptionEachDay: bookingOptionEachDay,
@@ -188,12 +197,20 @@ class ConsignmentScreen extends React.PureComponent {
     }
   }
 
-  onChooseDay = (choosenDay) => {
+  onChooseDay = async (choosenDay) => {
     const { bookingOptionEachDay } = this.state
+    const newSettingRedux = await ReduxServices.getSetting()
 
     const { option, timeBooking } = this.checkDayCodeToBookingOption(choosenDay, bookingOptionEachDay)
 
+    let bookingCustomOptionString = 'default'
+
+    if (newSettingRedux.BOOKING_OPTION_CUSTOM_EACH_DAY && newSettingRedux.BOOKING_OPTION_CUSTOM_EACH_DAY[choosenDay.dayCode]) {
+      bookingCustomOptionString = newSettingRedux.BOOKING_OPTION_CUSTOM_EACH_DAY[choosenDay.dayCode]
+    }
+
     this.setState({
+      bookingCustomOptionString: bookingCustomOptionString,
       bookingOptionValue: option,
       timeBooking: timeBooking,
       step: 1,
@@ -227,6 +244,7 @@ class ConsignmentScreen extends React.PureComponent {
 
   onConsign = async () => {
     const { formData, choosenDayCode, choosenTimeCode, bookingDataCode } = this.state
+
     if (choosenTimeCode && choosenDayCode) {
       this.setState({
         isConsigning: true
@@ -354,7 +372,7 @@ class ConsignmentScreen extends React.PureComponent {
   render () {
     const {
       step, dayBooking, choosenDayCode, timeBooking, bookingDataCode, isErrorMax, errorSlotInfo,
-      choosenTimeCode, formData, isHideUserForm, isConsigning, isHideDayColumn, bookingOptionValue
+      choosenTimeCode, formData, isHideUserForm, isConsigning, isHideDayColumn, bookingOptionValue, bookingCustomOptionString
     } = this.state
     let isShowBookingForm = ReduxServices.getSettingWithKey('IS_SHOW_BOOKING_FORM', 'true')
 
@@ -445,6 +463,10 @@ class ConsignmentScreen extends React.PureComponent {
                       const isReady = !bookingDataCode.includes(choosenTimeCode + choosenDayCode) && itemTime.timeCode === choosenTimeCode
                       const isBusy = bookingDataCode.includes(itemTime.timeCode + choosenDayCode)
 
+                      const isShow = bookingCustomOptionString === 'default' ? true : bookingCustomOptionString.includes(itemTime.timeCode)
+                      if (!isShow) {
+                        return null
+                      }
                       return (
                         <div style={isBusy ? { pointerEvents: 'none', cursor: 'none' } : {}} onClick={() => isBusy ? {} : this.onChooseTime(itemTime)} key={indexTime} className={'time-box' + (isReady ? ' ready' : isBusy ? ' busy' : '')}>
                           <span className='text'>{itemTime.timeName}</span>
@@ -517,11 +539,16 @@ class ConsignmentScreen extends React.PureComponent {
                       </Col>
                     </Form.Item>
 
+                    <div className='bookingNoteString'>
+                      <span>*Chúng tôi sẽ giữ lịch tối đa 15 phút nếu đến trễ Anh/Chị vui lòng đợi theo số thứ tự tại cửa hàng</span>
+                    </div>
+
                     {
                       errorSlotInfo ? <div className='bookingErrorSlot'>
                         <span>Khách hàng {errorSlotInfo.customerName} đã đặt lịch cho khung thời gian {errorSlotInfo.dateTime} ngày {errorSlotInfo.date}. Vui lòng đặt lịch lại cho vào ngày khác hoặc liên hệ hotline 0703334443 để được thay đổi lịch hẹn cùng ngày.</span>
                       </div> : null
                     }
+
                     <div className='flex justify-around align-center' style={{ width: '100%' }}>
                       <Button onClick={this.backStepOne} type='secondary'>Quay lại</Button>
                       <Button disabled={isErrorMax || formData.numberOfProduct < 5 || formData.numberOfProduct > 100} loading={isConsigning} type='secondary' htmlType='submit'>Xác nhận</Button>

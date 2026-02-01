@@ -63,6 +63,8 @@ export const EMAIL_TITLE = {
 }
 
 export const BOOKING_OPTION_EACH_DAY = 'BOOKING_OPTION_EACH_DAY'
+export const BOOKING_OPTION_CUSTOM_EACH_DAY = 'BOOKING_OPTION_CUSTOM_EACH_DAY'
+
 export const WORKING_DAY_COUNT = 'WORKING_DAY_COUNT'
 
 export const DEFAULT_BOOKING_OPTION_VALUE = 8
@@ -75,7 +77,8 @@ export const BOOKING_OPTION_EACH_DAY_DATA_DEFAULT = {
   OPTION_5: '',
   OPTION_6: '',
   OPTION_7: '',
-  OPTION_8: ''
+  OPTION_8: '',
+  OPTION_9: ''
 }
 
 export const LOCALE_DATA = {
@@ -94,6 +97,10 @@ export const LOCALE_DATA = {
 
 export const TIME_BOOKING = {
   OPTION_1: [
+    {
+      timeName: '9:30',
+      timeCode: '0930'
+    },
     {
       timeName: '10:00',
       timeCode: '1000'
@@ -157,7 +164,28 @@ export const TIME_BOOKING = {
     {
       timeName: '18:30',
       timeCode: '1830'
+    },
+    {
+      timeName: '19:00',
+      timeCode: '1900'
+    },
+    {
+      timeName: '19:30',
+      timeCode: '1930'
+    },
+    {
+      timeName: '20:00',
+      timeCode: '2000'
+    },
+    {
+      timeName: '20:30',
+      timeCode: '2030'
+    },
+    {
+      timeName: '21:00',
+      timeCode: '2100'
     }
+
   ],
   OPTION_2: [
     {

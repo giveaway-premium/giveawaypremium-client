@@ -1,7 +1,7 @@
 import React from 'react'
 import { withRouter } from 'next/router'
 import { connect } from 'react-redux'
-import { Input, Button, Spin, Tabs, Tag, DatePicker, Row, Descriptions, Select } from 'antd'
+import { Input, Button, Spin, Tabs, Tag, DatePicker, Row, Descriptions, Select, Checkbox } from 'antd'
 import { images } from 'config/images'
 import MyModal from 'pages/Components/MyModal'
 import { showNotification } from 'common/function'
@@ -15,7 +15,7 @@ import rightArrowJson from 'static/Assets/Image/Lottie/rightArrow.json'
 import Lottie from 'react-lottie'
 import { bindActionCreators } from 'redux'
 import StorageActions from 'controller/Redux/actions/storageActions'
-import { BOOKING_OPTION_EACH_DAY, BOOKING_OPTION_EACH_DAY_DATA_DEFAULT, TIME_BOOKING, WORKING_DAY_COUNT } from 'common/constants'
+import { BOOKING_OPTION_CUSTOM_EACH_DAY, BOOKING_OPTION_EACH_DAY, BOOKING_OPTION_EACH_DAY_DATA_DEFAULT, TIME_BOOKING, WORKING_DAY_COUNT } from 'common/constants'
 const { Option } = Select
 class TableAppointment extends React.Component {
   static async getInitialProps ({ query }) {
@@ -77,7 +77,8 @@ class TableAppointment extends React.Component {
       isLast7Day: false,
       bookingOptionValue: 8,
       bookingOptionEachDay: {},
-      workingDayCount: 14
+      workingDayCount: 14,
+      bookingCustomOptionString: undefined
     }
     this.myModal = React.createRef()
   }
@@ -117,7 +118,14 @@ class TableAppointment extends React.Component {
       workingDayCountTemp = settingRedux.WORKING_DAY_COUNT
     }
 
+    let bookingCustomOptionString = 'default'
+
+    if (settingRedux.BOOKING_OPTION_CUSTOM_EACH_DAY && settingRedux.BOOKING_OPTION_CUSTOM_EACH_DAY[choosenDayCode]) {
+      bookingCustomOptionString = settingRedux.BOOKING_OPTION_CUSTOM_EACH_DAY[choosenDayCode]
+    }
+
     this.setState({
+      bookingCustomOptionString: bookingCustomOptionString,
       bookingOptionValue: option,
       timeBooking: timeBooking,
       bookingOptionEachDay: bookingOptionEachDay,
@@ -212,15 +220,28 @@ class TableAppointment extends React.Component {
   }
 
   onChooseDay = (choosenDay, isLast7Day = false) => {
-    // console.log('onChooseDay')
-
     const { bookingOptionEachDay } = this.state
+    const { settingRedux } = this.props
+
+    console.log('onChooseDay', choosenDay)
+    console.log('bookingOptionEachDay', bookingOptionEachDay)
+    console.log('bookingCustomOptionString', settingRedux.BOOKING_OPTION_CUSTOM_EACH_DAY)
+
     const { option, timeBooking } = this.checkDayCodeToBookingOption(choosenDay, bookingOptionEachDay)
     // console.log(option)
     // console.log(choosenDay)
     // console.log(bookingOptionEachDay)
 
+    let bookingCustomOptionString = 'default'
+
+    if (settingRedux.BOOKING_OPTION_CUSTOM_EACH_DAY && settingRedux.BOOKING_OPTION_CUSTOM_EACH_DAY[choosenDay.dayCode]) {
+      bookingCustomOptionString = settingRedux.BOOKING_OPTION_CUSTOM_EACH_DAY[choosenDay.dayCode]
+    }
+
+    console.log('this bookingCustomOptionString', bookingCustomOptionString)
+
     this.setState({
+      bookingCustomOptionString: bookingCustomOptionString,
       bookingOptionValue: option,
       timeBooking: timeBooking,
       isLast7Day: isLast7Day,
@@ -308,6 +329,70 @@ class TableAppointment extends React.Component {
       console.log(settingReduxTemp)
       setSetting(settingReduxTemp)
       showNotification('Thay đổi thành công')
+    }
+  }
+
+  onSelectTimeBooking = async (selectedTimeCode, isOn = true) => {
+    const { choosenDayCode, timeBooking } = this.state
+    const { settingRedux, setSetting } = this.props
+    let bookingOptionCustomEachDay = settingRedux.BOOKING_OPTION_CUSTOM_EACH_DAY
+    const bookingCustomOptionList = { ...bookingOptionCustomEachDay }
+    let isExistCustomThisDay = false
+
+    if (bookingOptionCustomEachDay && bookingOptionCustomEachDay[choosenDayCode]) {
+      isExistCustomThisDay = true
+    }
+
+    let acceptedCustomTimeCodeString = ''
+    if (!isExistCustomThisDay) {
+      let acceptedCustomTimeCodeString = ''
+      if (!isOn) {
+        timeBooking.map(itemItem => {
+          acceptedCustomTimeCodeString += `-${selectedTimeCode === itemItem.timeCode ? '-' : itemItem.timeCode}-`
+        })
+      }
+
+      console.log('acceptedCustomTimeCodeString', acceptedCustomTimeCodeString)
+
+      bookingCustomOptionList[choosenDayCode] = acceptedCustomTimeCodeString
+    } else {
+      acceptedCustomTimeCodeString = bookingOptionCustomEachDay[choosenDayCode]
+
+      if (!isOn) {
+        acceptedCustomTimeCodeString = acceptedCustomTimeCodeString.replaceAll(selectedTimeCode, '-')
+      } else {
+        acceptedCustomTimeCodeString += `-${selectedTimeCode}-`
+      }
+
+      console.log('acceptedCustomTimeCodeString', acceptedCustomTimeCodeString)
+
+      bookingCustomOptionList[choosenDayCode] = acceptedCustomTimeCodeString
+    }
+
+    console.log('bookingOptionCustomEachDay', bookingOptionCustomEachDay)
+    console.log('isExistCustomThisDay', isExistCustomThisDay)
+
+    console.log('selectedTimeCode', selectedTimeCode)
+    console.log('timeBooking', timeBooking)
+    console.log('choosenDayCode', choosenDayCode)
+    console.log('isOn', isOn)
+    console.log('bookingCustomOptionList', bookingCustomOptionList)
+
+    let res = await GapService.updateSettingWithKeyAndValue(BOOKING_OPTION_CUSTOM_EACH_DAY, bookingCustomOptionList)
+
+    if (res.code === 101 || res.error) {
+      showNotification('Thay đổi không thành công')
+    } else {
+      this.setState({
+        bookingCustomOptionList: bookingCustomOptionList,
+        bookingCustomOptionString: acceptedCustomTimeCodeString || this.state.bookingCustomOptionString
+      }, () => {
+        const settingReduxTemp = { ...settingRedux }
+        settingReduxTemp.BOOKING_OPTION_CUSTOM_EACH_DAY = bookingCustomOptionList
+        console.log(settingReduxTemp)
+        setSetting(settingReduxTemp)
+        showNotification('Thay đổi thành công')
+      })
     }
   }
 
@@ -538,8 +623,12 @@ class TableAppointment extends React.Component {
   render () {
     const {
       step, dayBooking, choosenDayCode, timeBooking, bookingDataCode, isErrorMax, isLast7Day, bookingOptionValue,
-      choosenTimeCode, formData, isHideUserForm, isConsigning, isHideDayColumn, isLoadingBooking, isShowEightSlot, searchInfo
+      choosenTimeCode, formData, isHideUserForm, isConsigning, isHideDayColumn, isLoadingBooking, isShowEightSlot, searchInfo, bookingCustomOptionString
     } = this.state
+
+    const {
+      settingRedux
+    } = this.props
 
     const defaultOptionsRightArrow = {
       loop: true,
@@ -610,9 +699,15 @@ class TableAppointment extends React.Component {
                       // console.log(isBusy)
 
                       return (
-                        <div style={!isBusy ? { pointerEvents: 'none', cursor: 'none' } : {}} onClick={() => isBusy ? this.onChooseTime(itemTime) : {}} key={indexTime} className={'time-box' + (isReady ? ' ready' : isBusy ? ' busy' : '')}>
-                          <span className='text'>{itemTime.timeName}</span>
+                        <div key={indexTime} style={{ display: 'flex' }}>
+                          <Checkbox checked={bookingCustomOptionString === 'default' ? true : bookingCustomOptionString?.includes(itemTime.timeCode)} style={{ marginBottom: '5px' }} defaultChecked onChange={(e) => {
+                            this.onSelectTimeBooking(itemTime.timeCode, e.target.checked)
+                          }} />
+                          <div style={!isBusy ? { pointerEvents: 'none', cursor: 'none' } : {}} onClick={() => isBusy ? this.onChooseTime(itemTime) : {}} className={'time-box' + (isReady ? ' ready' : isBusy ? ' busy' : '')}>
+                            <span className='text'>{itemTime.timeName}</span>
+                          </div>
                         </div>
+
                       )
                     }) : null}
               </div>

@@ -24,7 +24,7 @@ class ManageScreen extends React.PureComponent {
   constructor (props) {
     super(props)
     this.state = {
-      tabKey: '1'
+      tabKey: '6'
     }
     this.formRef = React.createRef()
     this.myModal = React.createRef()
@@ -63,7 +63,7 @@ class ManageScreen extends React.PureComponent {
 
     return (
       <div className='managescreen-container'>
-        <Tabs defaultActiveKey='1' onChange={this.onChangeTab} >
+        <Tabs defaultActiveKey='6' onChange={this.onChangeTab} >
           <TabPane tab='Ký gửi' key='1'>
             <TableConsignemntScreen />
           </TabPane>

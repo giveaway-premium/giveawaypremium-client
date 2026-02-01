@@ -195,7 +195,7 @@ class ConfigConsignmentId extends React.Component {
             <br />
             <p className='MT10'>Đến: </p>
             <br />
-            <DatePicker disabled placeholder='DD-MM-YYYY' format='DD-MM-YYYY' value={moment(timeGetMoney).add(10, 'days')} defaultValue={moment()} style={{ width: 200, height: 40, maxWidth: '50%' }} />
+            <DatePicker placeholder='DD-MM-YYYY' format='DD-MM-YYYY' value={moment(timeGetMoney).add(5, 'days')} defaultValue={moment()} style={{ width: 200, height: 40, maxWidth: '50%' }} />
           </Input.Group>
           <Button onClick={this.handleInputConfirm} className='MT20'>Thêm</Button>
         </>
